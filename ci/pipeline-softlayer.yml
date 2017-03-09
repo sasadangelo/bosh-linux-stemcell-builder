@@ -289,7 +289,7 @@ resources:
     type: git
     source:
       uri: https://github.com/jianqiu/bosh-linux-stemcell-builder
-      branch: master
+      branch: 3363.x
 
   - name: bosh-src
     type: git
