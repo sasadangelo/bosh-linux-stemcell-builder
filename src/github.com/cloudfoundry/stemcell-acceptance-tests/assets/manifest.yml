@@ -22,7 +22,7 @@ instance_groups:
   vm_type: default
   instances: 1
   networks:
-  - {name: default}
+  - {name: dynamic}
   azs: [z1]
   jobs:
   - name: syslog_storer
@@ -33,7 +33,7 @@ instance_groups:
         port: 514
 - name: syslog_forwarder
   stemcell: default
-  vm_type: default
+  vm_type: dynamic
   azs: [z1]
   instances: 1
   networks:

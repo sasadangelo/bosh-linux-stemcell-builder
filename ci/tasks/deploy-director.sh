@@ -11,6 +11,12 @@ function fromEnvironment() {
   cat $environment | jq -r "$key"
 }
 
+function cp_artifacts {
+   mv $HOME/.bosh director-state/
+   mv director.yml director-creds.yml director-state.json director-state/
+}
+trap cp_artifacts EXIT
+
 export BOSH_internal_cidr=$(fromEnvironment '.network1.vCenterCIDR')
 export BOSH_internal_gw=$(fromEnvironment '.network1.vCenterGateway')
 export BOSH_internal_ip=$(fromEnvironment '.network1["staticIP-1"]')
@@ -42,5 +48,3 @@ export BOSH_CLIENT_SECRET=`$bosh_cli int director-creds.yml --path /admin_passwo
 
 $bosh_cli -n update-cloud-config bosh-deployment/vsphere/cloud-config.yml --vars-env "BOSH"
 
-mv $HOME/.bosh director-state/
-mv director.yml director-creds.yml director-state.json director-state/
