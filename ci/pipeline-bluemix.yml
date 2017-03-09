@@ -83,7 +83,7 @@ jobs:
     plan:
       - get: version
         params:
-          bump: patch
+          bump: minor
       - put: version
         params:
           file: version/number
@@ -93,7 +93,6 @@ jobs:
     plan:
       - aggregate:
         - get: version
-          trigger: true
           passed:
             - create-softlayer-light-stemcell
         - get: bosh-linux-stemcell-builder
@@ -150,17 +149,10 @@ jobs:
         params:
           AWS_ACCESS_KEY_ID: {{stemcell-aws-access-key}}
           AWS_SECRET_ACCESS_KEY: {{stemcell-aws-secret-key}}
-          CANDIDATE_BUCKET_NAME: {{candidate-stemcell-bucket}}
-          PUBLISHED_BUCKET_NAME: {{published-stemcell-bucket}}
+          CANDIDATE_BUCKET_NAME: {{candidate-bluemix-stemcell-bucket}}
+          PUBLISHED_BUCKET_NAME: {{published-bluemix-stemcell-bucket}}
           COPY_KEYS: |
             light-bosh-stemcell-%s-softlayer-xen-ubuntu-trusty-go_agent.tgz
-          BOSHIO_TOKEN: ec74e6889e4686117d8248af1716d9443df8104cac89f719e58c17534b57704897dd37716724854c
-      - put: bosh-linux-stemcell-builder-push
-        params:
-          repository: bosh-linux-stemcell-builder
-          tag: version-tag/tag
-          only_tag: true
-
 
   #
   # SoftLayer
@@ -170,7 +162,6 @@ jobs:
     plan:
       - aggregate:
           - get: version
-            trigger: true
           - get: bosh-linux-stemcell-builder
           - get: bosh-src
       - task: create-stemcell
@@ -291,43 +282,37 @@ jobs:
           - <<: *teardown
 
 resources:
-  - name: bosh-linux-stemcell-builder-push
-    type: git
-    source:
-      uri: git@github.com:jianqiu/bosh-linux-stemcell-builder
-      branch: {{stemcell-branch}}
-      private_key: {{bosh-src-key}}
-
   - name: bosh-linux-stemcell-builder
     type: git
     source:
       uri: https://github.com/jianqiu/bosh-linux-stemcell-builder
-      branch: 3363.x
+      branch: {{bluemix-stemcell-branch}}
 
   - name: bosh-src
     type: git
     source:
       uri: {{bosh_src_url}}
-      branch: 3363.x
+      branch: {{bluemix-stemcell-branch}}
       paths:
         - "src/bosh-stemcell"
         - "src/stemcell_builder"
         - "src/go/src/github.com/cloudfoundry/bosh-agent"
+      private_key: {{bosh-src-key}}
 
   - name: version
     type: semver
     source:
       driver: s3
-      initial_version: {{stemcell_initial_version}}
-      key: {{stemcell_version_key}}
-      bucket: {{candidate-stemcell-bucket}}
+      initial_version: {{bluemix_stemcell_initial_version}}
+      key: {{bluemix_stemcell_version_key}}
+      bucket: {{candidate-bluemix-stemcell-bucket}}
       access_key_id: {{stemcell-aws-access-key}}
       secret_access_key: {{stemcell-aws-secret-key}}
 
   - name: stemcell-info
     type: s3
     source:
-      bucket: {{candidate-stemcell-bucket}}
+      bucket: {{candidate-bluemix-stemcell-bucket}}
       access_key_id: {{stemcell-aws-access-key}}
       secret_access_key: {{stemcell-aws-secret-key}}
       versioned_file: stemcell-info.json
@@ -335,13 +320,13 @@ resources:
   - name: bosh-softlayer-tools
     type: git
     source:
-      branch: container_based_stemcell_pipeline
+      branch: container_based_bluemix_stemcell_pipeline
       uri: https://github.com/mattcui/bosh-softlayer-tools
 
   - name: light-softlayer-stemcell
     type: s3
     source:
-      bucket: {{candidate-stemcell-bucket}}
+      bucket: {{candidate-bluemix-stemcell-bucket}}
       regexp: light-bosh-stemcell-(.*)-softlayer-(.*).tgz
       access_key_id: {{stemcell-aws-access-key}}
       secret_access_key: {{stemcell-aws-secret-key}}
@@ -368,7 +353,7 @@ resources:
   - name: softlayer-xen-ubuntu-trusty
     type: s3
     source:
-      bucket: {{candidate-stemcell-bucket}}
+      bucket: {{candidate-bluemix-stemcell-bucket}}
       regexp: bosh-stemcell-(.+)-softlayer-esxi-ubuntu-trusty-go_agent.tgz
       access_key_id: {{stemcell-aws-access-key}}
       secret_access_key: {{stemcell-aws-secret-key}}
