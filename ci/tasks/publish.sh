@@ -28,7 +28,6 @@ for file in $COPY_KEYS ; do
       || sleep 5
   done
 
-  echo ""
 done
 
 echo "stable-${VERSION}" > version-tag/tag
