@@ -2,6 +2,7 @@
 groups:
   - name: all
     jobs:
+      - build-stemcell
       - new-stemcell-version
       - convert-softlayer-stemcell
       - import-softlayer-stemcell
@@ -77,6 +78,16 @@ jobs:
       - put: version
         params: {file: version/number}
 
+  - name: build-stemcell
+    serial: true
+    plan:
+      - get: version
+        params:
+          bump: patch
+      - put: version
+        params:
+          file: version/number
+
   - name: test-stemcells
     serial: true
     plan:
@@ -127,11 +138,11 @@ jobs:
       - aggregate:
         - get: version
           passed:
-            - test-stemcells
             - bats-ubuntu
         - get: bosh-linux-stemcell-builder
-          passed:
-            - bats-ubuntu
+        - get: stemcell
+          trigger: true
+          resource: light-softlayer-stemcell
       - task: copy-artifacts
         file: bosh-linux-stemcell-builder/ci/tasks/publish.yml
         params:
@@ -158,7 +169,6 @@ jobs:
       - aggregate:
           - get: version
             trigger: true
-            passed: [new-stemcell-version]
           - get: bosh-linux-stemcell-builder
           - get: bosh-src
       - task: create-stemcell
@@ -302,11 +312,11 @@ resources:
         - "src/stemcell_builder"
         - "src/go/src/github.com/cloudfoundry/bosh-agent"
 
-
   - name: version
     type: semver
     source:
       driver: s3
+      initial_version: {{stemcell_initial_version}}
       key: {{stemcell_version_key}}
       bucket: {{candidate-stemcell-bucket}}
       access_key_id: {{stemcell-aws-access-key}}

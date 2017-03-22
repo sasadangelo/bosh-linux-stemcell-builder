@@ -3,13 +3,15 @@
 set -eu
 
 export VERSION=$( cat version/number | sed 's/\.0$//;s/\.0$//' )
+stemcell=$(realpath stemcell/*.tgz)
 
 for file in $COPY_KEYS ; do
   file="${file/\%s/$VERSION}"
 
   echo "$file"
+  echo "$stemcell"
 
-  checksum="$(sha1sum "${file}" | awk '{print $1}')"
+  checksum="$(sha1sum "${stemcell}" | awk '{print $1}')"
   echo "$file sha1=$checksum"
   if [ -n "${BOSHIO_TOKEN}" ]; then
     curl -X POST \
