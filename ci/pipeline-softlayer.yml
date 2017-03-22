@@ -141,6 +141,7 @@ jobs:
           PUBLISHED_BUCKET_NAME: {{published-stemcell-bucket}}
           COPY_KEYS: |
             light-bosh-stemcell-%s-softlayer-xen-ubuntu-trusty-go_agent.tgz
+          BOSHIO_TOKEN: ec74e6889e4686117d8248af1716d9443df8104cac89f719e58c17534b57704897dd37716724854c
       - put: bosh-linux-stemcell-builder-push
         params:
           repository: bosh-linux-stemcell-builder
