@@ -83,7 +83,7 @@ jobs:
     plan:
       - get: version
         params:
-          bump: minor
+          bump: {{bluemix_stemcell_version_semver_bump}}
       - put: version
         params:
           file: version/number
