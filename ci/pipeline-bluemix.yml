@@ -289,7 +289,7 @@ resources:
   - name: bosh-linux-stemcell-builder
     type: git
     source:
-      uri: https://github.com/jianqiu/bosh-linux-stemcell-builder
+      uri: https://github.com/bluebosh/bosh-linux-stemcell-builder
       branch: {{bluemix-stemcell-branch}}
 
   - name: bosh-src
@@ -325,7 +325,7 @@ resources:
     type: git
     source:
       branch: container_based_bluemix_stemcell_pipeline
-      uri: https://github.com/mattcui/bosh-softlayer-tools
+      uri: https://github.com/bluebosh/bosh-softlayer-tools
 
   - name: light-softlayer-stemcell
     type: s3
@@ -369,7 +369,7 @@ resources:
   - name: bosh-deployment
     type: git
     source:
-      uri: https://github.com/mattcui/bosh-deployment
+      uri: https://github.com/bluebosh/bosh-deployment
       branch: softlayer
 
   #
@@ -386,20 +386,20 @@ resources:
   - name: pipelines
     type: git
     source:
-      uri: https://github.com/jianqiu/bosh-cpi-certification
+      uri: https://github.com/bluebosh/bosh-cpi-certification
       branch: master
 
   - name: bats
     type: git
     source:
-      uri: https://github.com/mattcui/bosh-acceptance-tests.git
+      uri: https://github.com/bluebosh/bosh-acceptance-tests.git
       branch: master
 
   - name: environment
     type: pool
     source:
       pool: softlayer
-      uri: git@github.com:jianqiu/bats-concourse-pool.git
+      uri: git@github.com:bluebosh/bats-concourse-pool.git
       branch: master
       private_key: {{bosh-src-key}}
 
