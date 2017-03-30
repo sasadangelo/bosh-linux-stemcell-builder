@@ -33,11 +33,11 @@ instance_groups:
         port: 514
 - name: syslog_forwarder
   stemcell: default
-  vm_type: dynamic
+  vm_type: default
   azs: [z1]
   instances: 1
   networks:
-  - {name: default}
+  - {name: dynamic}
   jobs:
   - name: syslog_forwarder
     release: syslog
