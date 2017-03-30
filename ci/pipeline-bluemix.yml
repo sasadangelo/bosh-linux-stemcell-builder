@@ -234,7 +234,6 @@ jobs:
           trigger: true
           passed: [import-softlayer-stemcell]
         - get: softlayer-xen-ubuntu-trusty
-          passed: [build-softlayer-xen-ubuntu-trusty]
       - task: create-light-stemcell
         file: bosh-softlayer-tools/ci/tasks/create-light-stemcell.yml
         params:
