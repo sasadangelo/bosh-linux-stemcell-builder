@@ -23,7 +23,6 @@ instance_groups:
   instances: 1
   networks:
   - {name: dynamic}
-  azs: [z1]
   jobs:
   - name: syslog_storer
     release: syslog
@@ -34,7 +33,6 @@ instance_groups:
 - name: syslog_forwarder
   stemcell: default
   vm_type: default
-  azs: [z1]
   instances: 1
   networks:
   - {name: dynamic}

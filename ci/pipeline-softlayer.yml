@@ -153,11 +153,6 @@ jobs:
           COPY_KEYS: |
             light-bosh-stemcell-%s-softlayer-xen-ubuntu-trusty-go_agent.tgz
           BOSHIO_TOKEN: ec74e6889e4686117d8248af1716d9443df8104cac89f719e58c17534b57704897dd37716724854c
-      - put: bosh-linux-stemcell-builder-push
-        params:
-          repository: bosh-linux-stemcell-builder
-          tag: version-tag/tag
-          only_tag: true
 
 
   #
@@ -289,13 +284,6 @@ jobs:
           - <<: *teardown
 
 resources:
-  - name: bosh-linux-stemcell-builder-push
-    type: git
-    source:
-      uri: git@github.com:bluebosh/bosh-linux-stemcell-builder
-      branch: {{stemcell-branch}}
-      private_key: {{bosh-src-key}}
-
   - name: bosh-linux-stemcell-builder
     type: git
     source:
