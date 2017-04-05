@@ -61,7 +61,7 @@ sudo --preserve-env --set-home --user ubuntu -- /bin/bash --login -i <<SUDO
   cd bosh-src/src
 
   bundle install --local
-  bundle exec rake stemcell:build[$IAAS,esxi,$OS_NAME,$OS_VERSION,go,bosh-os-images,bosh-$OS_NAME-$OS_VERSION-os-image.tgz]
+  bundle exec rake stemcell:build[softlayer,esxi,$OS_NAME,$OS_VERSION,go,bosh-os-images,bosh-$OS_NAME-$OS_VERSION-os-image.tgz]
   rm -f ./tmp/base_os_image.tgz
 SUDO
 
@@ -84,7 +84,7 @@ if [ -e bosh-src/src/tmp/*-raw.tgz ] ; then
 fi
 
 stemcell_filename="${stemcell_name}.tgz"
-mv "bosh-src/src/tmp/${stemcell_filename}" "${output_dir}/${stemcell_filename}"
+mv bosh-src/src/tmp/*.tgz "${output_dir}/${stemcell_filename}"
 
 #checksum="$(sha1sum "${output_dir}/${stemcell_filename}" | awk '{print $1}')"
 #echo "$stemcell_filename sha1=$checksum"
