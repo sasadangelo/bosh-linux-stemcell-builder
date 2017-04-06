@@ -93,7 +93,6 @@ jobs:
     plan:
       - aggregate:
         - get: version
-          trigger: true
           passed:
             - create-softlayer-light-stemcell
         - get: bosh-linux-stemcell-builder
@@ -114,8 +113,8 @@ jobs:
           params:
             SL_API_KEY: {{softlayer-api-key}}
             SL_USERNAME:  {{softlayer-username}}
-            SL_VLAN_PRIVATE: {{softlayer-vlan-private}}
-            SL_VLAN_PUBLIC: {{softlayer-vlan-public}}
+            SL_VLAN_PRIVATE: {{softlayer-vlan-private-old}}
+            SL_VLAN_PUBLIC: {{softlayer-vlan-public-old}}
             SL_VM_DOMAIN: softlayer.com
             SL_VM_NAME_PREFIX: {{softlayer-director-name-prefix}}
             SL_VM_NAME_PREFIX_2: {{softlayer-vm-name-prefix}}
@@ -143,6 +142,8 @@ jobs:
         - get: stemcell
           trigger: true
           resource: light-softlayer-stemcell
+          passed:
+            - bats-ubuntu
       - task: copy-artifacts
         file: bosh-linux-stemcell-builder/ci/tasks/publish.yml
         params:
