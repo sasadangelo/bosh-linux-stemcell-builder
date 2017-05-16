@@ -13,6 +13,8 @@ EOF
 #echo "nameserver 114.114.114.114" > /etc/resolv.conf
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
+export custom_stemcell_version=$( cat version/number | sed 's/\.0$//;s/\.0$//' )
+
 echo -e "Capture the VM ${stemcell_vm_id} to a private image"
 if [ `slcli image list | grep "Template created from imported bosh-stemcell-${custom_stemcell_version}-bluemix-esxi-ubuntu-trusty-go_agent.vhd" | wc -l` -gt 0 ]; then
   echo -e "The image with name 'Template created from imported bosh-stemcell-${custom_stemcell_version}-bluemix-esxi-ubuntu-trusty-go_agent.vhd' already exists, exiting..."
