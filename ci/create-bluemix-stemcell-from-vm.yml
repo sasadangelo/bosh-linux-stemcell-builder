@@ -4,14 +4,14 @@ groups:
     jobs:
       - customize-stemcell-version
       - capture-stemcell
-      - create-light-stemcell
+      - generate-light-stemcell
       - bats-ubuntu
       - test-stemcells
       - promte-stemcell
   - name: bluemix
     jobs:
       - capture-stemcell
-      - create-light-stemcell
+      - generate-light-stemcell
   - name: test
     jobs:
       - bats-ubuntu
@@ -87,19 +87,17 @@ jobs:
       - put: stemcell-info
         params: {file: stemcell-image/stemcell-info.json}
 
-  - name: create-light-stemcell
+  - name: generate-light-stemcell
     plan:
       - aggregate:
-        - get: bosh-softlayer-tools
         - get: stemcell-info
           trigger: true
           passed: [capture-stemcell]
-        - get: bluemix-xen-ubuntu-trusty
         - get: version
           trigger: true
           passed: [capture-stemcell]
-      - task: create-light-stemcell
-        file: bosh-softlayer-tools/ci/tasks/create-light-stemcell.yml
+      - task: generate-light-stemcell
+        file: bosh-softlayer-tools/ci/tasks/generate-light-stemcell.yml
         params:
           HYPERVISOR: xen
           IAAS: bluemix
@@ -107,8 +105,6 @@ jobs:
           OS_VERSION: trusty
           SL_USERNAME: {{softlayer-username}}
           SL_API_KEY: {{softlayer-api-key}}
-        input_mapping:
-          stemcell: bluemix-xen-ubuntu-trusty
       - put: light-bluemix-stemcell
         params: {file: light-stemcell/*.tgz}
 
@@ -257,14 +253,6 @@ resources:
     type: bosh-io-release
     source:
       repository: cloudfoundry/bosh-softlayer-cpi-release
-
-  - name: bluemix-xen-ubuntu-trusty
-    type: s3
-    source:
-      bucket: {{candidate-custom-bluemix-stemcell-bucket}}
-      regexp: bosh-stemcell-(.+)-bluemix-esxi-ubuntu-trusty-go_agent.tgz
-      access_key_id: {{stemcell-aws-access-key}}
-      secret_access_key: {{stemcell-aws-secret-key}}
 
   - name: bosh-deployment
     type: git

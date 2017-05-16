@@ -13,8 +13,7 @@ EOF
 #echo "nameserver 114.114.114.114" > /etc/resolv.conf
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
-export custom_stemcell_version=$( cat version/number | sed 's/\.0$//;s/\.0$//' )
-
+custom_stemcell_version=$( cat version/number | sed 's/\.0$//;s/\.0$//' )
 echo -e "Capture the VM ${stemcell_vm_id} to a private image"
 if [ `slcli image list | grep "Template created from imported bosh-stemcell-${custom_stemcell_version}-bluemix-esxi-ubuntu-trusty-go_agent.vhd" | wc -l` -gt 0 ]; then
   echo -e "The image with name 'Template created from imported bosh-stemcell-${custom_stemcell_version}-bluemix-esxi-ubuntu-trusty-go_agent.vhd' already exists, exiting..."
@@ -67,7 +66,7 @@ curl -X POST -d "{
 }" https://${SL_USERNAME}:${SL_API_KEY}@api.softlayer.com/rest/v3.1/SoftLayer_Virtual_Guest_Block_Device_Template_Group/${private_image_id}/createPublicArchiveTransaction >> stemcell-image/stemcell-info.json
 
 sleep 10
-stemcell_id=`cat stemcell-image/stemcell-info.json`
+stemcell_id=$(cat stemcell-image/stemcell-info.json | sed 's/\.0$//;s/\.0$//')
 convert_success=false
 for (( i=1; i<=60; i++ ))
 do
@@ -88,4 +87,8 @@ if [ "${convert_success}" = false ]; then
 fi
 
 echo -e "Enable HVM mode for the public stemcell ${stemcell_id}"
-curl -sk https://${SL_USERNAME}:${SL_API_KEY}@api.softlayer.com/rest/v3/SoftLayer_Virtual_Guest_Block_Device_Template_Group/${stemcell_id}/setBootMode/HVM.json
+hvm_enabled=`curl -sk https://${SL_USERNAME}:${SL_API_KEY}@api.softlayer.com/rest/v3/SoftLayer_Virtual_Guest_Block_Device_Template_Group/${stemcell_id}/setBootMode/HVM.json`
+if [ "${hvm_enabled}" != true ]; then
+  echo -e "Enabling HVM mode on the stemcell ${stemcell_id} failed"
+  exit 1
+fi
