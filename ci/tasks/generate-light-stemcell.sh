@@ -43,7 +43,7 @@ EOF
 
 echo -e "Compress light stemcell tgz file"
 touch image
-stemcell_filename=light-bosh-stemcell-${stemcell_version}-${IAAS}-${HYPERVISOR}-${ubuntu}-${trusty}-go_agent.tgz
+stemcell_filename=light-bosh-stemcell-${stemcell_version}-${IAAS}-${HYPERVISOR}-${OS_NAME}-${OS_VERSION}-go_agent.tgz
 
 tar zcvf $stemcell_filename image stemcell.MF
 checksum="$(sha1sum "${stemcell_filename}" | awk '{print $1}')"
