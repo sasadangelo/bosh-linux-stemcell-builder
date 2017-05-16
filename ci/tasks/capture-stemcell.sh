@@ -65,7 +65,7 @@ curl -X POST -d "{
   ]
 }" https://${SL_USERNAME}:${SL_API_KEY}@api.softlayer.com/rest/v3.1/SoftLayer_Virtual_Guest_Block_Device_Template_Group/${private_image_id}/createPublicArchiveTransaction >> stemcell-image/stemcell-info.json
 
-sleep 10
+sleep 20
 stemcell_id=$(cat stemcell-image/stemcell-info.json | sed 's/\.0$//;s/\.0$//')
 convert_success=false
 for (( i=1; i<=60; i++ ))

@@ -16,11 +16,13 @@ for file in $COPY_KEYS ; do
 
   # occasionally this fails for unexpected reasons; retry a few times
   for i in {1..4}; do
-    aws s3 cp "s3://$CANDIDATE_BUCKET_NAME/$file" "s3://$PUBLISHED_BUCKET_NAME/$file" \
+    aws s3 cp "s3://${CANDIDATE_BUCKET_NAME}/$file" "s3://${PUBLISHED_BUCKET_NAME}/$file" \
       && break \
       || sleep 5
   done
 
 done
+
+echo -e "Stemcell Download URL -> https://s3.amazonaws.com/${PUBLISHED_BUCKET_NAME}/${file}"
 
 echo "Done"

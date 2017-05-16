@@ -78,7 +78,7 @@ jobs:
       - get: version
         trigger: true
         passed: [customize-stemcell-version]
-      - task: capture-stemcell-image
+      - task: capture-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/capture-stemcell.yml
         params:
           stemcell_vm_id: {{stemcell_vm_id}}
