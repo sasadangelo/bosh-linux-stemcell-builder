@@ -50,18 +50,22 @@ private_image_id=`slcli image list --name "Template created from imported bosh-s
 
 echo -e "Convert the private image ${private_image_id} to a public image"
 sleep 5
-curl -X POST -d '{
-  "parameters":
+curl -X POST -d "{
+  \"parameters\":
   [
-    "light-bosh-stemcell-${custom_stemcell_version}-bluemix-xen-ubuntu-trusty-go_agent",
-    "Public_light_stemcell_${custom_stemcell_version}",
-    "Public_light_stemcell_${custom_stemcell_version}",
+    \"light-bosh-stemcell-${custom_stemcell_version}-bluemix-xen-ubuntu-trusty-go_agent\",
+    \"Public_light_stemcell_${custom_stemcell_version}\",
+    \"Public_light_stemcell_${custom_stemcell_version}\",
     [
       {
-          "id":358694,
-          "longName":"London 2",
-          "name":"lon02"
+          \"id\":358694,
+          \"longName\":\"London 2\",
+          \"name\":\"lon02\"
       }
     ]
   ]
-}' https://${SL_USERNAME}:${SL_API_KEY}@api.softlayer.com/rest/v3.1/SoftLayer_Virtual_Guest_Block_Device_Template_Group/${private_image_id}/createPublicArchiveTransaction >> stemcell-image/stemcell-info.json
+}" https://${SL_USERNAME}:${SL_API_KEY}@api.softlayer.com/rest/v3.1/SoftLayer_Virtual_Guest_Block_Device_Template_Group/${private_image_id}/createPublicArchiveTransaction >> stemcell-image/stemcell-info.json
+
+echo -e "Enable HVM mode for the public stemcell ${stemcell_id}"
+stemcell_id=`cat stemcell-image/stemcell-info.json`
+curl -sk https://${SL_USERNAME}:${SL_API_KEY}@api.softlayer.com/rest/v3/SoftLayer_Virtual_Guest_Block_Device_Template_Group/${stemcell_id}/setBootMode/HVM.json
