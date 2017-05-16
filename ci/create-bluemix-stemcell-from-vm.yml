@@ -67,6 +67,8 @@ jobs:
       - get: bosh-linux-stemcell-builder
       - task: customize-stemcell-version
         file: bosh-linux-stemcell-builder/ci/tasks/customize-stemcell-version.yml
+        params:
+          custom_stemcell_version: {{custom_stemcell_version}}
       - put: version
         params: {file: version/number}
 
@@ -74,12 +76,11 @@ jobs:
     plan:
       - get: bosh-linux-stemcell-builder
       - get: version
-          trigger: true
-          passed: [customize-stemcell-version]
+        trigger: true
+        passed: [customize-stemcell-version]
       - task: capture-stemcell-image
         file: bosh-linux-stemcell-builder/ci/tasks/capture-stemcell.yml
         params:
-          custom_stemcell_version: {{custom_stemcell_version}}
           stemcell_vm_id: {{stemcell_vm_id}}
           SL_USERNAME: {{softlayer-username}}
           SL_API_KEY: {{softlayer-api-key}}
