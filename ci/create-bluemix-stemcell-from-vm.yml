@@ -90,6 +90,7 @@ jobs:
   - name: generate-light-stemcell
     plan:
       - aggregate:
+        - get: bosh-linux-stemcell-builder
         - get: stemcell-info
           trigger: true
           passed: [capture-stemcell]
@@ -97,7 +98,7 @@ jobs:
           trigger: true
           passed: [capture-stemcell]
       - task: generate-light-stemcell
-        file: bosh-softlayer-tools/ci/tasks/generate-light-stemcell.yml
+        file: bosh-linux-stemcell-builder/ci/tasks/generate-light-stemcell.yml
         params:
           HYPERVISOR: xen
           IAAS: bluemix
@@ -119,14 +120,14 @@ jobs:
           trigger: true
           resource: light-bluemix-stemcell
           passed:
-            - create-light-stemcell
+            - generate-light-stemcell
         - get: pipelines
         - get: bosh-cli
         - get: bats
         - get: bosh-linux-stemcell-builder
         - get: version
           passed:
-            - create-light-stemcell
+            - generate-light-stemcell
 
       - <<: *prepare-director
 
@@ -149,13 +150,13 @@ jobs:
       - aggregate:
         - get: version
           passed:
-            - create-light-stemcell
+            - generate-light-stemcell
         - get: bosh-linux-stemcell-builder
         - get: bosh-deployment
         - get: bosh-cli
         - get: syslog-release
         - get: light-bluemix-stemcell
-          passed: [create-light-stemcell]
+          passed: [generate-light-stemcell]
         - put: environment
           params:
             acquire: true
@@ -224,12 +225,6 @@ resources:
       access_key_id: {{stemcell-aws-access-key}}
       secret_access_key: {{stemcell-aws-secret-key}}
       versioned_file: stemcell-info.json
-
-  - name: bosh-softlayer-tools
-    type: git
-    source:
-      branch: container_based_bluemix_stemcell_pipeline
-      uri: https://github.com/bluebosh/bosh-softlayer-tools
 
   - name: light-bluemix-stemcell
     type: s3

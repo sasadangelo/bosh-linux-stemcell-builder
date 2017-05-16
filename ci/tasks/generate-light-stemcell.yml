@@ -8,6 +8,7 @@ image_resource:
 inputs:
   - name: stemcell-info
   - name: version
+  - name: bosh-linux-stemcell-builder
 outputs:
   - name: light-stemcell
 
