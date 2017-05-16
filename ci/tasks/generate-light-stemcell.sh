@@ -15,7 +15,7 @@ echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
 echo -e "\n Get stemcell version..."
 stemcell_version=$(cat version/number | sed 's/\.0$//;s/\.0$//')
-stemcell_id=$(cat stemcell-image/stemcell-info.json | sed 's/\.0$//;s/\.0$//')
+stemcell_id=$(cat stemcell-info/stemcell-info.json)
 echo -e "Get UUID of stemcell ${stemcell_id}"
 stemcell_uuid=`slcli image detail ${stemcell_id} | grep global_identifier | tr -s [:space:] | cut -d " " -f 2`
 
