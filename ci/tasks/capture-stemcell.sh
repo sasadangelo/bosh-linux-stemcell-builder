@@ -32,7 +32,7 @@ for (( i=1; i<=60; i++ ))
 do
   slcli vs detail ${stemcell_vm_id} | grep RUNNING > /dev/null 2>&1
   if [ $? -ne 0 ]; then
-    echo -e "The image capture transaction is not completed, waiting 10 more seconds..."
+    echo -e "The image capture transaction is not completed yet, waiting 10 more seconds..."
     sleep 10
   else
     echo -e "The image capture transaction is completed"
@@ -66,6 +66,25 @@ curl -X POST -d "{
   ]
 }" https://${SL_USERNAME}:${SL_API_KEY}@api.softlayer.com/rest/v3.1/SoftLayer_Virtual_Guest_Block_Device_Template_Group/${private_image_id}/createPublicArchiveTransaction >> stemcell-image/stemcell-info.json
 
-echo -e "Enable HVM mode for the public stemcell ${stemcell_id}"
 stemcell_id=`cat stemcell-image/stemcell-info.json`
+convert_success=false
+for (( i=1; i<=60; i++ ))
+do
+  slcli image detail ${stemcell_id} | grep 'active_transaction  NULL' | grep 'status              NULL' > /dev/null 2>&1
+  if [ $? -ne 0 ]; then
+    echo -e "The image conversion transaction is not completed yet, waiting 10 more seconds..."
+    sleep 10
+  else
+    echo -e "The image conversion transaction is completed"
+    convert_success=true
+    break
+  fi
+done
+
+if [ "${convert_success}" = false ]; then
+  echo -e "The image conversion to public failed after 600 seconds, please check image ${stemcell_id} status"
+  exit 1
+fi
+
+echo -e "Enable HVM mode for the public stemcell ${stemcell_id}"
 curl -sk https://${SL_USERNAME}:${SL_API_KEY}@api.softlayer.com/rest/v3/SoftLayer_Virtual_Guest_Block_Device_Template_Group/${stemcell_id}/setBootMode/HVM.json
