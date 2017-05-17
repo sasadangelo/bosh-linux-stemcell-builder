@@ -70,5 +70,5 @@ set -ex
 #trap - ERR
 #
 #finish
-
+echo "i am here: $pwd"
 touch director-state/test.log
