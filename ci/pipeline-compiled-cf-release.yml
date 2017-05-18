@@ -38,11 +38,11 @@ resources:
   - name: director-state
     type: s3
     source:
-    bucket: {{candidate-custom-bluemix-stemcell-bucket}}
-    access_key_id: {{stemcell-sl-os-access-key}}
-    secret_access_key: {{stemcell-sl-os-secret-key}}
-    endpoint: {{stemcell-sl-os-endpoint}}
-    regexp: director-state.tgz
+      bucket: {{candidate-custom-bluemix-stemcell-bucket}}
+      access_key_id: {{stemcell-sl-os-access-key}}
+      secret_access_key: {{stemcell-sl-os-secret-key}}
+      endpoint: {{stemcell-sl-os-endpoint}}
+      regexp: director-state.tgz
 
 jobs:
   - name: prepare-director
