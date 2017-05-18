@@ -16,7 +16,7 @@ mkdir -p light-bosh-stecmcell/publish/${VERSION}
 echo $FILE_W3_STEMCELL_PEM > light-bosh-stecmcell/light-bosh-stecmcell.pem
 cp ${stemcell} light-bosh-stecmcell/publish/${VERSION}/
 cd light-bosh-stecmcell
-scp -i light-bosh-stecmcell.pem -r publish/${VERSION} light-bosh-stemcell@file.w3.bluemix.net:~/repo
+scp -o "StrictHostKeyChecking no" -i light-bosh-stecmcell.pem -r publish/${VERSION} light-bosh-stemcell@file.w3.bluemix.net:~/repo
 if [[ $? != 0 ]]; then
   echo -e "Uploading the light stemcell failed"
   exit 1
