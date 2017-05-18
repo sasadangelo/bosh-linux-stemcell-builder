@@ -42,7 +42,7 @@ resources:
       access_key_id: {{stemcell-sl-os-access-key}}
       secret_access_key: {{stemcell-sl-os-secret-key}}
       endpoint: {{stemcell-sl-os-endpoint}}
-      regexp: director-state/(.*).log
+      regexp: director-state/test-(.*).log
 
 jobs:
   - name: prepare-director
