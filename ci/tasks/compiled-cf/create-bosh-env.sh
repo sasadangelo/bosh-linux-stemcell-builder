@@ -1,6 +1,8 @@
 !/usr/bin/env bash
 set -ex
 
+echo "I am here!"
+
 source pipeline-src/ci/tasks/utils.sh
 
 check_param SL_VM_PREFIX
