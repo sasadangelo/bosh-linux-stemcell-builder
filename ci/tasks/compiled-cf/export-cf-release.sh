@@ -21,7 +21,7 @@ cat director-state/director-hosts >> /etc/hosts
 BOSH_CLI="$(pwd)/$(echo bosh-cli/bosh-cli-*)"
 chmod +x ${BOSH_CLI}
 
-echo "Trying to set target to director..."
+echo "Trying to set target to director: `cat director-state/director-hosts`"
 
 $BOSH_CLI  -e $(cat director-state/director-hosts |awk '{print $2}') --ca-cert <($BOSH_CLI int director-state/credentials.yml --path /DIRECTOR_SSL/ca ) alias-env bosh-env
 
