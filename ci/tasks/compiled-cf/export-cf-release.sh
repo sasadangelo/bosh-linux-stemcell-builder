@@ -92,7 +92,10 @@ done <<< "$releases"
 #
 $BOSH_CLI -e bosh-env -d ${deployment_name} releases
 $BOSH_CLI -e bosh-env -d ${deployment_name} deploy ${deployment_dir}/${manifest_filename} --no-redact -n
-$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${cf_release}/${cf_release_versioncf_release_version} ubuntu-trusty/${STEMCELL_VERSION}
+$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${cf_release}/${cf_release_version} ubuntu-trusty/${STEMCELL_VERSION}
+
+echo "upload cf-${cf_release}-${cf_release_version}-ubuntu-trusty.tgz to SL s3"
+mv cf-${cf_release}-${cf_release_version}-ubuntu-trusty-*.tgz cf-${cf_release}-${cf_release_version}-ubuntu-trusty.tgz
 
 #
 # currently comment out these releases
