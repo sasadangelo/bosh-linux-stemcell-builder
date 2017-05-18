@@ -205,6 +205,7 @@ jobs:
         params:
           AWS_ACCESS_KEY_ID: {{stemcell-sl-os-access-key}}
           AWS_SECRET_ACCESS_KEY: {{stemcell-sl-os-secret-key}}
+          AWS_ENDPOINT: {{stemcell-sl-os-endpoint}}
           CANDIDATE_BUCKET_NAME: {{candidate-custom-bluemix-stemcell-bucket}}
           PUBLISHED_BUCKET_NAME: {{custom-bluemix-stemcell-bucket}}
           COPY_KEYS: |
