@@ -26,3 +26,4 @@ params:
   SL_VLAN_PUBLIC:       replace-me
   SL_VLAN_PRIVATE:      replace-me
   SL_USERNAME:          replace-me
+  FILE_W3_BOSH_PEM:     replace-me
