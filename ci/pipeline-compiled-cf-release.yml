@@ -51,7 +51,7 @@ resources:
       access_key_id: {{stemcell-sl-os-access-key}}
       secret_access_key: {{stemcell-sl-os-secret-key}}
       endpoint: {{stemcell-sl-os-endpoint}}
-      regexp: cf-(.*).tgz
+      regexp: cf-compiled-release-(.*).tgz
 
 
 jobs:
@@ -119,7 +119,7 @@ jobs:
           unbound_release: {{unbound_release}}
           unbound_release_version: {{unbound_release_version}}
       - put: compiled-release
-        params: {file: {{cf_release}}-{{cf_release_version}}-ubuntu-trusty.tgz}
+        params: {file: cf-compiled-release-1.tgz}
 #        ensure:
 #          do:
 #          - task: teardown
