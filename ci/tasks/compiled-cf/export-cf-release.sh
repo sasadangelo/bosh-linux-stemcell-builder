@@ -10,6 +10,7 @@ check_param SL_API_KEY
 check_param SL_DATACENTER
 check_param SL_VLAN_PUBLIC
 check_param SL_VLAN_PRIVATE
+check_param FILE_W3_BOSH_PEM
 
 #
 # target/authenticate
@@ -114,3 +115,12 @@ echo $FILE_W3_BOSH_PEM > bosh/bosh.pem
 cp *.tgz bosh/publish/${cf_release_version}/
 cd bosh
 scp -i ./bosh.pem -r publish/${cf_release_version}/*.tgz bosh@file.w3.bluemix.net:~/repo
+
+
+mkdir -p bosh/publish/${cf_release_version}
+echo "FILE_W3_BOSH_PEM: ${FILE_W3_BOSH_PEM}"
+echo ${FILE_W3_BOSH_PEM} > bosh/bosh.pem
+cp director-state/director-state-1.txt bosh/publish/${cf_release_version}/
+
+cd bosh
+scp -i bosh.pem -o "StrictHostKeyChecking no" -r publish/${cf_release_version}/*.tgz bosh@file.w3.bluemix.net:~/repo
