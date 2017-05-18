@@ -40,7 +40,14 @@ resources:
     source:
       uri: git@github.com:bluebosh/bosh-linux-stemcell-builder.git
       branch: pipeline-artifacts
-      private_key: {{github_private_key_zhanggbj}}
+
+  - name: director-state
+    type: s3
+    source:
+    bucket: {{candidate-custom-bluemix-stemcell-bucket}}
+    access_key_id: {{stemcell-sl-os-access-key}}
+    secret_access_key: {{stemcell-sl-os-secret-key}}
+    endpoint: {{stemcell-sl-os-endpoint}}
 
 jobs:
   - name: prepare-director
