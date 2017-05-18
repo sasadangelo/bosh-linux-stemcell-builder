@@ -10,7 +10,6 @@ check_param SL_API_KEY
 check_param SL_DATACENTER
 check_param SL_VLAN_PUBLIC
 check_param SL_VLAN_PRIVATE
-check_param FILE_W3_BOSH_PEM
 
 #
 # target/authenticate
