@@ -117,8 +117,6 @@ jobs:
           marmot_logstash_forwarder_release_version: {{marmot_logstash_forwarder_release_version}}
           unbound_release: {{unbound_release}}
           unbound_release_version: {{unbound_release_version}}
-      - put: export-cf-release
-          params: {file: cf-deployment/export-cf-release-1.tgz}
 #        ensure:
 #          do:
 #          - task: teardown
