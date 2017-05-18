@@ -136,6 +136,7 @@ jobs:
     plan:
       - aggregate:
           - get: compiled-release
+            passed: [export-cf-release]
       - task: upload-cf-release
         file: pipeline-src/ci/tasks/compiled-cf/upload-cf-release.yml
         params:
