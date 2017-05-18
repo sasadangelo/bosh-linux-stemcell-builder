@@ -38,7 +38,7 @@ resources:
   - name: director-state
     type: git
     source:
-      repository: git@github.com:bluebosh/bosh-linux-stemcell-builder.git
+      uri: git@github.com:bluebosh/bosh-linux-stemcell-builder.git
       branch: pipeline-artifacts
       private_key: {{github_private_key_zhanggbj}}
 
