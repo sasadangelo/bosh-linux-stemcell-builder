@@ -113,4 +113,4 @@ mkdir -p bosh/publish/${cf_release_version}
 echo $FILE_W3_BOSH_PEM > bosh/bosh.pem
 cp *.tgz bosh/publish/${cf_release_version}/
 cd bosh
-scp -i ./bosh.pem -r publish/235018/*.tgz bosh@file.w3.bluemix.net:~/repo
+scp -i ./bosh.pem -r publish/${cf_release_version}/*.tgz bosh@file.w3.bluemix.net:~/repo
