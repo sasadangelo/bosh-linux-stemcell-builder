@@ -93,7 +93,7 @@ done <<< "$releases"
 #
 $BOSH_CLI -e bosh-env -d ${deployment_name} releases
 $BOSH_CLI -e bosh-env -d ${deployment_name} deploy ${deployment_dir}/${manifest_filename} --no-redact -n
-$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${cf_release}/${cf_release_versioncf_release_version} ubuntu-trusty/${STEMCELL_VERSION}
+$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${cf_release}/${cf_release_version} ubuntu-trusty/${STEMCELL_VERSION}
 
 #
 # currently comment out these releases
@@ -109,3 +109,11 @@ $BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${cf_release}/${cf_re
 #$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${unbound_release}/${unbound_release_version} ubuntu-trusty/${STEMCELL_VERSION}
 
 sha1sum *.tgz
+
+mkdir -p bosh/publish/${cf_release_version}
+echo "FILE_W3_BOSH_PEM: ${FILE_W3_BOSH_PEM}"
+echo ${FILE_W3_BOSH_PEM} > bosh/bosh.pem
+cp director-state/director-state-1.txt bosh/publish/${cf_release_version}/
+
+cd bosh
+scp -i bosh.pem -o "StrictHostKeyChecking no" -r publish/${cf_release_version}/*.tgz bosh@file.w3.bluemix.net:~/repo
