@@ -3,6 +3,7 @@ set -ex
 
 source pipeline-src/ci/tasks/utils.sh
 
+check_param BUILD_VERSION
 check_param SL_VM_PREFIX
 check_param SL_USERNAME
 check_param SL_API_KEY
@@ -13,7 +14,7 @@ check_param SL_VLAN_PRIVATE
 deployment_dir="${PWD}/deployment"
 mkdir -p $deployment_dir
 
-SL_VM_DOMAIN=${SL_VM_PREFIX}.softlayer.com
+SL_VM_DOMAIN=${SL_VM_PREFIX}-${BUILD_VERSION}.softlayer.com
 
 STEMCELL_NAME="$(ls stemcell|grep tgz)"
 ORG_STEMCELL_NAME="light-bosh-stemcell-3312.9-softlayer-xen-ubuntu-trusty-go_agent.tgz"
@@ -35,9 +36,9 @@ chmod +x ${BOSH_CLI}
     echo "Saving config..."
     cp $BOSH_CLI bosh-template.yml bosh-template-state.json ${deployment_dir}/
     pushd ${deployment_dir}
-      tar -zcvf  /tmp/director-state-1.tgz ./ >/dev/null 2>&1
+      tar -zcvf  /tmp/director-state-${BUILD_VERSION}.tgz ./ >/dev/null 2>&1
     popd
-    mv /tmp/director-state-1.tgz director-state/
+    mv /tmp/director-state-${BUILD_VERSION}.tgz director-state/
   }
 
 trap finish ERR

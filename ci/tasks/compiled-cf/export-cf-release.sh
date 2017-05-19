@@ -4,6 +4,7 @@ set -eux
 
 source pipeline-src/ci/tasks/utils.sh
 
+check_param BUILD_VERSION
 check_param SL_VM_PREFIX
 check_param SL_USERNAME
 check_param SL_API_KEY
@@ -15,7 +16,7 @@ check_param SL_VLAN_PRIVATE
 # target/authenticate
 #
 
-tar -zxvf director-state/director-state-1.tgz -C director-state/
+tar -zxvf director-state/director-state-${BUILD_VERSION}.tgz -C director-state/
 cat director-state/director-hosts >> /etc/hosts
 
 BOSH_CLI="$(pwd)/$(echo bosh-cli/bosh-cli-*)"
@@ -94,8 +95,8 @@ $BOSH_CLI -e bosh-env -d ${deployment_name} releases
 $BOSH_CLI -e bosh-env -d ${deployment_name} deploy ${deployment_dir}/${manifest_filename} --no-redact -n
 $BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${cf_release}/${cf_release_version} ubuntu-trusty/${STEMCELL_VERSION}
 
-echo "upload cf-compiled-release-1.tgz to SL s3"
-mv cf-*.tgz cf-compiled-release-1.tgz
+echo "upload cf-compiled-release-${BUILD_VERSION}.tgz to SL s3"
+mv cf-*.tgz cf-compiled-release-${BUILD_VERSION}.tgz
 
 #
 # currently comment out these releases
