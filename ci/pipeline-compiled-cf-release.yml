@@ -146,7 +146,7 @@ jobs:
         file: pipeline-src/ci/tasks/compiled-cf/upload-cf-release.yml
         params:
           BUILD_VERSION: {{build_version}}
-          cf_release: {{cf_release}}
+          cf_release_version: {{cf_release_version}}
           FILE_W3_BOSH_PEM: {{file_w3_bosh_pem}}
 
   - name: delete-bosh-env
