@@ -149,8 +149,8 @@ jobs:
     plan:
       - aggregate:
           - get: pipeline-src
-          - get: light-stemcell
           - get: bosh-cli
+          - get: bosh-softlayer-cpi-release
           - get: director-state
             passed: [prepare-director]
       - task: delete-bosh-env
