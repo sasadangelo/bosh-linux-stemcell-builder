@@ -15,6 +15,7 @@ echo ${FILE_W3_BOSH_PEM} > bosh/bosh.pem
 mv compiled-release/cf-compiled-release-${BUILD_VERSION}.tgz bosh/publish/${cf_release}/
 
 cd bosh
+chmod 400 bosh.pem
 scp -i bosh.pem -o "StrictHostKeyChecking no" -r publish/${cf_release}/cf-compiled-release-${BUILD_VERSION}.tgz bosh@file.w3.bluemix.net:~/repo
 
 echo "scp cf-compiled-release-${BUILD_VERSION}.tgz file to file w3:"
