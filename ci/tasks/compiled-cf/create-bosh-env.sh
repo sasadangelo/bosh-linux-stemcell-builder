@@ -40,7 +40,7 @@ chmod +x ${BOSH_CLI}
     popd
     mv /tmp/director-state-${BUILD_VERSION}.tgz director-state/
 
-    echo "You can download the director-state-${BUILD_VERSION}.tgz file by using this url:"
+    echo "You can download the director-state-${BUILD_VERSION}.tgz file by using this url after finish:"
     echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-cf-release/director-state/director-state-${BUILD_VERSION}.tgz"
   }
 

@@ -99,9 +99,6 @@ echo "cp cf-compiled-release-${BUILD_VERSION}.tgz to folder compiled-release"
 mv cf-*.tgz cf-compiled-release-${BUILD_VERSION}.tgz
 mv cf-compiled-release-${BUILD_VERSION}.tgz compiled-release/
 
-echo "You can download the cf-compiled-release-${BUILD_VERSION}.tgz file from SL S3 by using this url:"
-echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-cf-release/compiled-release/cf-compiled-release-${BUILD_VERSION}.tgz"
-
 #
 # currently comment out these releases
 #
@@ -116,3 +113,6 @@ echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-
 #$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${unbound_release}/${unbound_release_version} ubuntu-trusty/${STEMCELL_VERSION}
 
 sha1sum compiled-release/*.tgz
+
+echo "You can download the cf-compiled-release-${BUILD_VERSION}.tgz file from SL S3 by using this url after finish:"
+echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-cf-release/compiled-release/cf-compiled-release-${BUILD_VERSION}.tgz"
