@@ -15,7 +15,11 @@ echo ${FILE_W3_BOSH_PEM} > bosh/bosh.pem
 mv compiled-release/cf-compiled-release-${BUILD_VERSION}.tgz bosh/publish/${cf_release_version}/
 
 cd bosh
-cat bosh.pem | sed -i "s/-----BEGIN RSA PRIVATE KEY----- //g" bosh.pem | sed -i "s/ -----END RSA PRIVATE KEY-----//g" bosh.pem | sed -i "s/ /\n/g" bosh.pem | sed -i "1i\-----BEGIN RSA PRIVATE KEY-----" bosh.pem | sed -i "\$a-----END RSA PRIVATE KEY-----" bosh.pem
+cat bosh.pem | sed -i "s/-----BEGIN RSA PRIVATE KEY----- //g" bosh.pem
+cat bosh.pem | sed -i "s/ -----END RSA PRIVATE KEY-----//g" bosh.pem
+cat bosh.pem | sed -i "s/ /\n/g" bosh.pem
+cat bosh.pem | sed -i "1i\-----BEGIN RSA PRIVATE KEY-----" bosh.pem
+cat bosh.pem | sed -i "\$a-----END RSA PRIVATE KEY-----" bosh.pem
 chmod 400 bosh.pem
 scp -i bosh.pem -o "StrictHostKeyChecking no" -r publish/${cf_release_version}/ bosh@file.w3.bluemix.net:~/repo
 
