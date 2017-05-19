@@ -13,5 +13,5 @@ run:
   path: pipeline-src/ci/tasks/compiled-cf/upload-cf-release.sh
 
 params:
-  BUILD_VERSION: replace-me
-  FILE_W3_BOSH_PEM: replace-me
+  BUILD_VERSION:      replace-me
+  FILE_W3_BOSH_PEM:   replace-me
