@@ -138,6 +138,9 @@ jobs:
   - name: upload-cf-release
     plan:
       - aggregate:
+          - get: pipeline-src
+          - get: bosh-cli
+          - get: director-state
           - get: compiled-release
       - task: upload-cf-release
         file: pipeline-src/ci/tasks/compiled-cf/upload-cf-release.yml
