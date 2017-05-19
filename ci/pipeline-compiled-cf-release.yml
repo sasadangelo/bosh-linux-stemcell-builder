@@ -154,7 +154,7 @@ jobs:
           - get: director-state
             passed: [prepare-director]
       - task: teardown
-        file: pipeline-src/ci/pipelines/compiled-releases/tasks/bluemix/delete-bosh-env.yml
+        file: pipeline-src/ci/tasks/compiled-cf/delete-bosh-env.yml
         params:
           SL_USERNAME: {{softlayer_username}}
           SL_API_KEY: {{softlayer_api_key}}
