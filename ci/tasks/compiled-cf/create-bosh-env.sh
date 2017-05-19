@@ -14,7 +14,7 @@ check_param SL_VLAN_PRIVATE
 deployment_dir="${PWD}/deployment"
 mkdir -p $deployment_dir
 
-SL_VM_DOMAIN=${SL_VM_PREFIX}-${BUILD_VERSION}.softlayer.com
+SL_VM_DOMAIN=${SL_VM_PREFIX}.softlayer.com
 
 STEMCELL_NAME="$(ls stemcell|grep tgz)"
 ORG_STEMCELL_NAME="light-bosh-stemcell-3312.9-softlayer-xen-ubuntu-trusty-go_agent.tgz"
