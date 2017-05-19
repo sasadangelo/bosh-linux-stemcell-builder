@@ -95,8 +95,9 @@ $BOSH_CLI -e bosh-env -d ${deployment_name} releases
 $BOSH_CLI -e bosh-env -d ${deployment_name} deploy ${deployment_dir}/${manifest_filename} --no-redact -n
 $BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${cf_release}/${cf_release_version} ubuntu-trusty/${STEMCELL_VERSION}
 
-echo "upload cf-compiled-release-${BUILD_VERSION}.tgz to SL s3"
+echo "cp cf-compiled-release-${BUILD_VERSION}.tgz to folder compiled-release"
 mv cf-*.tgz cf-compiled-release-${BUILD_VERSION}.tgz
+mv cf-compiled-release-${BUILD_VERSION}.tgz compiled-release/
 
 #
 # currently comment out these releases

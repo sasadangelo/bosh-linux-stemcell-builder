@@ -121,7 +121,7 @@ jobs:
           unbound_release: {{unbound_release}}
           unbound_release_version: {{unbound_release_version}}
       - put: compiled-release
-        params: {file: cf-compiled-release-*.tgz}
+        params: {file: compiled-release/cf-compiled-release-*.tgz}
 
 #        ensure:
 #          do:
