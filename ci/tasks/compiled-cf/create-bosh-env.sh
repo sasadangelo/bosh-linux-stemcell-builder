@@ -17,7 +17,7 @@ mkdir -p $deployment_dir
 SL_VM_DOMAIN=${SL_VM_PREFIX}.softlayer.com
 
 STEMCELL_NAME="$(ls stemcell|grep tgz)"
-ORG_STEMCELL_NAME="light-bosh-stemcell-3312.9-softlayer-xen-ubuntu-trusty-go_agent.tgz"
+ORG_STEMCELL_NAME="light-bosh-stemcell-3363.20.2-bluemix-xen-ubuntu-trusty-go_agent.tgz"
 cp pipeline-src/ci/tasks/templates/bosh-template.yml bosh-template.yml
 sed -i 's/'"$ORG_STEMCELL_NAME"'/'"$STEMCELL_NAME"'/g' bosh-template.yml
 
