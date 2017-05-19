@@ -11,7 +11,7 @@ check_param FILE_W3_BOSH_PEM
 mkdir -p bosh/publish/${cf_release}
 echo "FILE_W3_BOSH_PEM: ${FILE_W3_BOSH_PEM}"
 echo ${FILE_W3_BOSH_PEM} > bosh/bosh.pem
-cp cf-compiled-release-${build_version}.tgz bosh/publish/${cf_release}/
+cp cf-compiled-release-${BUILD_VERSION}.tgz bosh/publish/${cf_release}/
 
 cd bosh
-scp -i bosh.pem -o "StrictHostKeyChecking no" -r publish/${cf_release}/cf-compiled-release-${build_version}.tgz bosh@file.w3.bluemix.net:~/repo
+scp -i bosh.pem -o "StrictHostKeyChecking no" -r publish/${cf_release}/cf-compiled-release-${BUILD_VERSION}.tgz bosh@file.w3.bluemix.net:~/repo
