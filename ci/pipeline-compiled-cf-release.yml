@@ -156,6 +156,7 @@ jobs:
       - task: delete-bosh-env
         file: pipeline-src/ci/tasks/compiled-cf/delete-bosh-env.yml
         params:
+          BUILD_VERSION: {{build_version}}
           SL_USERNAME: {{softlayer_username}}
           SL_API_KEY: {{softlayer_api_key}}
           SL_DATACENTER: {{softlayer_datacenter}}
