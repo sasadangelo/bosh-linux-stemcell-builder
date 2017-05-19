@@ -51,7 +51,7 @@ resources:
       access_key_id: {{stemcell-sl-os-access-key}}
       secret_access_key: {{stemcell-sl-os-secret-key}}
       endpoint: {{stemcell-sl-os-endpoint}}
-      regexp: cf-compiled-release-(.*).tgz
+      regexp: compiled-release/cf-compiled-release-(.*).tgz
 
 
 jobs:
