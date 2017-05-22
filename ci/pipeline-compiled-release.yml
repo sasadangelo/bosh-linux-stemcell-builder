@@ -54,13 +54,13 @@ resources:
       regexp: compiled-release/compiled-release-allinone-(.*).tgz
 
   - name: compiled-deploy
-      type: s3
-      source:
-        bucket: {{candidate-custom-bluemix-stemcell-bucket}}
-        access_key_id: {{stemcell-sl-os-access-key}}
-        secret_access_key: {{stemcell-sl-os-secret-key}}
-        endpoint: {{stemcell-sl-os-endpoint}}
-        regexp: compiled-deploy/compiled-deploy-(.*).yml
+    type: s3
+    source:
+      bucket: {{candidate-custom-bluemix-stemcell-bucket}}
+      access_key_id: {{stemcell-sl-os-access-key}}
+      secret_access_key: {{stemcell-sl-os-secret-key}}
+      endpoint: {{stemcell-sl-os-endpoint}}
+      regexp: compiled-deploy/compiled-deploy-(.*).yml
 
 jobs:
   - name: prepare-director
