@@ -176,11 +176,14 @@ jobs:
       - aggregate:
           - get: pipeline-src
           - get: bosh-cli
+          - get: light-stemcell
           - get: director-state
           - get: compiled-release
             passed: [export-cf-release]
       - task: upload-cf-release
         file: pipeline-src/ci/tasks/compiled-cf/verify-precompiled-deploy.yml
+        input_mapping:
+           stemcell: light-stemcell
         params:
           BUILD_VERSION: {{build_version}}
           SL_USERNAME: {{softlayer_username}}
