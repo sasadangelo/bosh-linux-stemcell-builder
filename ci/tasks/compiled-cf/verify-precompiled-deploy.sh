@@ -12,5 +12,25 @@ check_param SL_DATACENTER
 check_param SL_VLAN_PUBLIC
 check_param SL_VLAN_PRIVATE
 
-cd compiled-release
-tar -xvf cf-compiled-release-${BUILD_VERSION}.tgz
+
+tar -zxvf director-state/director-state-${BUILD_VERSION}.tgz -C director-state/
+cat director-state/director-hosts >> /etc/hosts
+
+tar -zxvf compiled-release/cf-compiled-release-${BUILD_VERSION}.tgz -C compiled-release/
+
+BOSH_CLI="$(pwd)/$(echo bosh-cli/bosh-cli-*)"
+chmod +x ${BOSH_CLI}
+
+echo "Trying to set target to director: `cat director-state/director-hosts`"
+
+$BOSH_CLI  -e $(cat director-state/director-hosts |awk '{print $2}') --ca-cert <($BOSH_CLI int director-state/credentials.yml --path /DIRECTOR_SSL/ca ) alias-env bosh-env
+
+echo "Trying to login to director..."
+
+export BOSH_CLIENT=admin
+export BOSH_CLIENT_SECRET=$(${BOSH_CLI} int director-state/credentials.yml --path /DI_ADMIN_PASSWORD)
+
+$BOSH_CLI -e bosh-env login
+
+$BOSH_CLI -e bosh-env releases
+
