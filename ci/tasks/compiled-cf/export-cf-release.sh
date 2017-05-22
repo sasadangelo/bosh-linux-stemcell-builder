@@ -82,7 +82,7 @@ do
     sed -i "/((${release}_version))/d" $template_file
   else
     bosh_init_params="${bosh_init_params} -v ${release}=${release_name} -v ${release}_version=${release_version}"
-    release_upload_list+=($release)
+    release_upload_list=($release_upload_list, $release)
     echo "$release_name $release_version exists, keep this release"
     if [ "$release_location" == "" ]; then
        echo "Keep using `cat $template_file | grep "((${release}_version))"`"
@@ -95,7 +95,7 @@ done
 
 echo "This is the release parameter list:"
 echo "$bosh_init_params"
-echo "This is the list which nee to be uploaded:"
+echo "This is the list which need to be uploaded:"
 echo $release_upload_list
 
 $BOSH_CLI int $template_file \
@@ -128,8 +128,8 @@ for release_upload in ${release_upload_list[@]}
 do
   release_upload_name=$(eval echo '$'$release)
   release_upload_version=$(eval echo '$'${release}_version)
-  release_tgz_version=`echo $(eval echo '$'${release}_version) | sed "s/\./_/g"`
-  stemcell_tgz_version=`echo ${STEMCELL_VERSION} | sed "s/\./_/g"`
+  release_tgz_version=`echo $(eval echo '$'${release}_version) | sed "s/\.//g"`
+  stemcell_tgz_version=`echo ${STEMCELL_VERSION} | sed "s/\.//g"`
   $BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${release_upload_name}/${release_upload_version} ubuntu-trusty/${STEMCELL_VERSION}
 
   echo "cp ${release_upload_name}-${release_tgz_version}-ubuntu-trusty-${stemcell_tgz_version}-${BUILD_VERSION}.tgz to folder compiled-release"
