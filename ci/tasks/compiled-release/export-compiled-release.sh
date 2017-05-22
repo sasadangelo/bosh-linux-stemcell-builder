@@ -47,7 +47,7 @@ DIRECTOR_PASSWORD=$($BOSH_CLI int director-state/credentials.yml --path /DI_ADMI
 STEMCELL_NAME=$($BOSH_CLI -e bosh-env stemcells|grep ubuntu-trusty|awk '{print $1}')
 STEMCELL_VERSION=$(cat stemcell/version)
 SL_VM_DOMAIN=${SL_VM_PREFIX}.softlayer.com
-deployment_dir="${PWD}/compiled-deploy"
+deployment_dir="compiled-deploy"
 manifest_filename="compiled-deploy-${BUILD_VERSION}.yml"
 deployment_name=compiled-release
 mkdir -p $deployment_dir
