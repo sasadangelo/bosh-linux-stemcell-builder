@@ -94,9 +94,6 @@ done
 echo "This is the release parameter list:"
 echo "$bosh_init_params"
 
-echo "Show $template_file file:"
-cat $template_file
-
 $BOSH_CLI int $template_file \
                                                         -v director_password=${DIRECTOR_PASSWORD} \
                                                         -v director_ip=${DIRECTOR} \
@@ -107,7 +104,7 @@ $BOSH_CLI int $template_file \
                                                         -v private_vlan_id=${SL_VLAN_PRIVATE} \
                                                         -v public_vlan_id=${SL_VLAN_PUBLIC} \
                                                         -v stemcell_version=${STEMCELL_VERSION} \
-                                                        $bosh_init_params
+                                                        $bosh_init_params \
                                                         > ${deployment_dir}/${manifest_filename}
 #
 # upload releases
