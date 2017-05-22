@@ -132,7 +132,7 @@ do
   $BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${release_upload_name}/${release_upload_version} ubuntu-trusty/${STEMCELL_VERSION}
 
   echo "cp ${release_upload_name}-${release_tgz_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz to folder compiled-release"
-  mv ${release_upload_name}-${release_tgz_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz ${release_upload_name}-${release_tgz_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz
+  mv ${release_upload_name}-${release_upload_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz ${release_upload_name}-${release_tgz_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz
   mv ${release_upload_name}-${release_tgz_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz compiled-release/
   sha1sum compiled-release/${release_upload_name}-${release_tgz_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz
 
