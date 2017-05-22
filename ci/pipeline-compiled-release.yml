@@ -10,7 +10,7 @@ resources:
     type: git
     source:
       uri: https://github.com/bluebosh/bosh-linux-stemcell-builder.git
-      branch: compiled-release-release
+      branch: compiled-release
 
   - name: bosh-softlayer-cpi-release
     type: bosh-io-release
