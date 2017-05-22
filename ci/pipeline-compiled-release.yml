@@ -195,7 +195,7 @@ jobs:
           - get: bosh-cli
           - get: director-state
           - get: compiled-release
-            passed: [export-cf-release]
+            passed: [export-compiled-release]
       - task: verify-compiled-release
         file: pipeline-src/ci/tasks/compiled-release/verify-compiled-deploy.yml
         params:
