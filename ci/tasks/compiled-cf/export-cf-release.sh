@@ -52,7 +52,43 @@ manifest_filename="cf-manifest.yml"
 deployment_name=compiled-cf
 mkdir -p $deployment_dir
 
-$BOSH_CLI int pipeline-src/ci/tasks/templates/bluemix-template.yml \
+release_list=(
+cf_release
+cf_services_release
+cf_services_contrib_release
+mod_vms_release
+security_release
+admin_ui_release
+habr_release
+loginserver_release
+marmot_logstash_forwarder_release
+unbound_release
+)
+
+
+template_file="pipeline-src/ci/tasks/templates/bluemix-template.yml"
+for release in ${release_list[@]}
+do
+  release_name=$(eval echo '$'$name)
+  release_version=$(eval echo '$'${name}_version)
+  release_location=$(eval echo '$'${name}_location)
+  echo -e "\nCheck $release information:"
+  if [ "$release_name" == "" ] || [ "$release_version" == "" ]; then
+    echo "$release_name $release_version does not exist, remove this release information from template.yml"
+    sed -i "/(($release))/d" $template_file
+    sed -i "/((${release}_version))/d" $template_file
+  else
+    echo "$release_name $release_version exists, keep this release"
+    if [ "$release_location" == "10.106.192.96" ]; then
+       echo "Keep using `cat $template_file | grep "((${release}_version))"`"
+    else
+       echo "Replace location by using $release_location"
+       sed -i "s/^- location:.*((${release}_version)).*$/$release_location/g" $template_file
+    fi
+  fi
+done
+
+$BOSH_CLI int $template_file \
                                                         -v director_password=${DIRECTOR_PASSWORD} \
                                                         -v director_ip=${DIRECTOR} \
                                                         -v director_pub_ip=${DIRECTOR} \
@@ -62,6 +98,24 @@ $BOSH_CLI int pipeline-src/ci/tasks/templates/bluemix-template.yml \
                                                         -v private_vlan_id=${SL_VLAN_PRIVATE} \
                                                         -v public_vlan_id=${SL_VLAN_PUBLIC} \
                                                         -v stemcell_version=${STEMCELL_VERSION} \
+                                                        -v cf-release=${cf_release} \
+                                                        -v cf-release-version=${cf_release_version} \
+                                                        -v cf-services-release=${cf_services_release} \
+                                                        -v cf-services-release-version=${cf_services_release_version} \
+                                                        -v cf-services-contrib-release=${cf_services_contrib_release} \
+                                                        -v cf-services-contrib-release-version=${cf_services_contrib_release_version} \
+                                                        -v mod_vms_release=${mod_vms_release} \
+                                                        -v mod_vms_release_version=${mod_vms_release_version} \
+                                                        -v security_release=${security_release} \
+                                                        -v security_release_version=${security_release_version} \
+                                                        -v admin_ui_release=${admin_ui_release} \
+                                                        -v admin_ui_release_version=${admin_ui_release_version} \
+                                                        -v habr_release=${habr_release} \
+                                                        -v habr_release_version=${habr_release_version} \
+                                                        -v loginserver_release=${loginserver_release} \
+                                                        -v loginserver_release_version=${loginserver_release_version} \
+                                                        -v marmot_logstash_forwarder_release=${marmot_logstash_forwarder_release} \
+                                                        -v marmot_logstash_forwarder_release_version=${marmot_logstash_forwarder_release_version} \
                                                         -v unbound_release=${unbound_release} \
                                                         -v unbound_release_version=${unbound_release_version} \
                                                         > ${deployment_dir}/${manifest_filename}

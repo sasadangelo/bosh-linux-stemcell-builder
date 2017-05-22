@@ -40,15 +40,15 @@ networks:
   name: default
   type: dynamic
 releases:
-- location: http://10.106.192.96/releases/cf/((cf-release-version))/cf-release.tgz
-  name: ((cf-release))
-  version: ((cf-release-version))
-- location: http://10.106.192.96/releases/cf-services/((cf-services-release-version))/cf-services-release.tgz
-  name: ((cf-services-release))
-  version: ((cf-services-release-version))
-- location: http://10.106.192.96/releases/cf-services-contrib/((cf-services-contrib-release-version))/cf-services-contrib-release.tgz
-  name: ((cf-services-contrib-release))
-  version: ((cf-services-contrib-release-version))
+- location: http://10.106.192.96/releases/cf/((cf_release_version))/cf-release.tgz
+  name: ((cf_release))
+  version: ((cf_release_version))
+- location: http://10.106.192.96/releases/cf-services/((cf_services_release_version))/cf-services-release.tgz
+  name: ((cf_services_release))
+  version: ((cf_services_release_version))
+- location: http://10.106.192.96/releases/cf-services-contrib/((cf_services_contrib_release_version))/cf-services-contrib-release.tgz
+  name: ((cf_services_contrib_release))
+  version: ((cf_services_contrib_release_version))
 - location: http://10.106.192.96/releases/mod-vms/((mod_vms_release_version))/mod-vms-((mod_vms_release_version)).tgz
   name: ((mod_vms_release))
   version: ((mod_vms_release_version))
