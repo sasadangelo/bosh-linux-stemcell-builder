@@ -16,7 +16,7 @@ SL_VM_PREFIX=${SL_VM_PREFIX}-${BUILD_VERSION}
 tar -zxvf director-state/director-state-${BUILD_VERSION}.tgz -C director-state/
 cat director-state/director-hosts >> /etc/hosts
 
-tar -zxvf compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz -C compiled-release/
+tar -xvf compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz
 rm -rf compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz
 
 
