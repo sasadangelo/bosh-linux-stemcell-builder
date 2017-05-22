@@ -141,6 +141,5 @@ tar -cvf compiled-release-allinone-${BUILD_VERSION}.tgz compiled-release/
 rm -rf compiled-release/*
 mv compiled-release-allinone-${BUILD_VERSION}.tgz compiled-release/
 sha1sum compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz
-cp ${deployment_dir}/${manifest_filename} compiled-release/
 echo "You can download the compiled-release-allinone-${BUILD_VERSION}.tgz file from SL S3 by using this url after finish:"
 echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-release-release/compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz"

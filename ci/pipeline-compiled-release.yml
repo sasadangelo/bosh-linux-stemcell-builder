@@ -60,7 +60,7 @@ resources:
       access_key_id: {{stemcell-sl-os-access-key}}
       secret_access_key: {{stemcell-sl-os-secret-key}}
       endpoint: {{stemcell-sl-os-endpoint}}
-      regexp: compiled-release/compiled-deploy-(.*).yml
+      regexp: compiled-deploy/compiled-deploy-(.*).yml
 
 jobs:
   - name: prepare-director
@@ -141,7 +141,7 @@ jobs:
       - put: compiled-release
         params: {file: compiled-release/compiled-release-allinone-*.tgz}
       - put: compiled-deploy
-        params: {file: compiled-release/compiled-deploy-*.yml}
+        params: {file: compiled-deploy/compiled-deploy-*.yml}
 
 #        ensure:
 #          do:
