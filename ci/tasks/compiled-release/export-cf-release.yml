@@ -16,7 +16,7 @@ outputs:
   - name: compiled-release
 
 run:
-  path: pipeline-src/ci/tasks/compiled-cf/export-cf-release.sh
+  path: pipeline-src/ci/tasks/compiled-release/export-compiled-release.sh
 
 params:
   BUILD_VERSION: replace-me

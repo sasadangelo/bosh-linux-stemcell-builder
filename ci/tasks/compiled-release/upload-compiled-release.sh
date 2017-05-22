@@ -7,13 +7,10 @@ source pipeline-src/ci/tasks/utils.sh
 check_param BUILD_VERSION
 check_param FILE_W3_BOSH_PEM
 
-STEMCELL_VERSION=$(cat stemcell/version)
-
-pwd
-mkdir -p bosh/publish/precompiled
+mkdir -p bosh/publish/compiled
 #echo "FILE_W3_BOSH_PEM: ${FILE_W3_BOSH_PEM}"
 echo ${FILE_W3_BOSH_PEM} > bosh/bosh.pem
-mv compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz bosh/publish/precompiled/
+mv compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz bosh/publish/compiled/
 
 cd bosh
 sed -i "s/-----BEGIN RSA PRIVATE KEY----- //g" bosh.pem
@@ -26,4 +23,4 @@ chmod 400 bosh.pem
 scp -i bosh.pem -o "StrictHostKeyChecking no" -r publish/precompiled/ bosh@file.w3.bluemix.net:~/repo
 
 echo "scp compiled-release-allinone-${BUILD_VERSION}.tgz file to file w3:"
-echo "http://file.w3.bluemix.net/releases/bosh/precompiled/compiled-release-allinone-${BUILD_VERSION}.tgz"
+echo "http://file.w3.bluemix.net/releases/bosh/compiled/compiled-release-allinone-${BUILD_VERSION}.tgz"

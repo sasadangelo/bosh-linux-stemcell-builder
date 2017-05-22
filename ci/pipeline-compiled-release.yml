@@ -10,7 +10,7 @@ resources:
     type: git
     source:
       uri: https://github.com/bluebosh/bosh-linux-stemcell-builder.git
-      branch: compiled-cf-release
+      branch: compiled-release-release
 
   - name: bosh-softlayer-cpi-release
     type: bosh-io-release
@@ -53,6 +53,15 @@ resources:
       endpoint: {{stemcell-sl-os-endpoint}}
       regexp: compiled-release/compiled-release-allinone-(.*).tgz
 
+  - name: compiled-deploy
+      type: s3
+      source:
+        bucket: {{candidate-custom-bluemix-stemcell-bucket}}
+        access_key_id: {{stemcell-sl-os-access-key}}
+        secret_access_key: {{stemcell-sl-os-secret-key}}
+        endpoint: {{stemcell-sl-os-endpoint}}
+        regexp: compiled-deploy/compiled-deploy-(.*).yml
+
 jobs:
   - name: prepare-director
     plan:
@@ -65,7 +74,7 @@ jobs:
             trigger: true
           - get: bosh-cli
       - task: deploy-director
-        file: pipeline-src/ci/tasks/compiled-cf/create-bosh-env.yml
+        file: pipeline-src/ci/tasks/compiled-release/create-bosh-env.yml
         input_mapping:
           stemcell: light-stemcell
         params:
@@ -79,7 +88,7 @@ jobs:
       - put: director-state
         params: {file: director-state/director-state-*.tgz}
 
-  - name: export-cf-release
+  - name: export-compiled-release
     plan:
       - aggregate:
           - get: pipeline-src
@@ -87,8 +96,8 @@ jobs:
           - get: bosh-cli
           - get: director-state
             passed: [prepare-director]
-      - task: export-cf-release
-        file: pipeline-src/ci/tasks/compiled-cf/export-cf-release.yml
+      - task: export-compiled-release
+        file: pipeline-src/ci/tasks/compiled-release/export-compiled-release.yml
         input_mapping:
           stemcell: light-stemcell
         params:
@@ -131,6 +140,8 @@ jobs:
           unbound_release_location: {{unbound_release_location}}
       - put: compiled-release
         params: {file: compiled-release/compiled-release-allinone-*.tgz}
+      - put: compiled-deploy
+        params: {file: compiled-deploy/compiled-deploy-*.yml}
 
 #        ensure:
 #          do:
@@ -144,18 +155,16 @@ jobs:
 #              SL_VLAN_PRIVATE: {{softlayer_vlan_private}}
 #              SL_VM_PREFIX: {{softlayer_director_name_prefix}}
 
-  - name: upload-cf-release
+  - name: upload-compiled-release
     plan:
       - aggregate:
           - get: pipeline-src
           - get: bosh-cli
-          - get: light-stemcell
           - get: director-state
           - get: compiled-release
-      - task: upload-cf-release
-        file: pipeline-src/ci/tasks/compiled-cf/upload-cf-release.yml
-        input_mapping:
-          stemcell: light-stemcell
+          - get: compiled-deploy
+      - task: upload-compiled-release
+        file: pipeline-src/ci/tasks/compiled-release/upload-compiled-release.yml
         params:
           BUILD_VERSION: {{build_version}}
           FILE_W3_BOSH_PEM: {{file_w3_bosh_pem}}
@@ -169,7 +178,7 @@ jobs:
           - get: director-state
             passed: [prepare-director]
       - task: teardown
-        file: pipeline-src/ci/tasks/compiled-cf/delete-bosh-env.yml
+        file: pipeline-src/ci/tasks/compiled-release/delete-bosh-env.yml
         params:
           BUILD_VERSION: {{build_version}}
           SL_USERNAME: {{softlayer_username}}
@@ -179,19 +188,16 @@ jobs:
           SL_VLAN_PRIVATE: {{softlayer_vlan_private}}
           SL_VM_PREFIX: {{softlayer_director_name_prefix}}
 
-  - name: verify-precompiled-deploy
+  - name: verify-compiled-deploy
     plan:
       - aggregate:
           - get: pipeline-src
           - get: bosh-cli
-          - get: light-stemcell
           - get: director-state
           - get: compiled-release
             passed: [export-cf-release]
-      - task: upload-cf-release
-        file: pipeline-src/ci/tasks/compiled-cf/verify-precompiled-deploy.yml
-        input_mapping:
-           stemcell: light-stemcell
+      - task: verify-compiled-release
+        file: pipeline-src/ci/tasks/compiled-release/verify-compiled-deploy.yml
         params:
           BUILD_VERSION: {{build_version}}
           SL_USERNAME: {{softlayer_username}}

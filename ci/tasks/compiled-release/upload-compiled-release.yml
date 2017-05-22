@@ -9,12 +9,12 @@ image_resource:
 inputs:
   - name: pipeline-src
   - name: bosh-cli
-  - name: stemcell
   - name: director-state
   - name: compiled-release
+  - name: compiled-deploy
 
 run:
-  path: pipeline-src/ci/tasks/compiled-cf/upload-cf-release.sh
+  path: pipeline-src/ci/tasks/compiled-release/upload-compiled-release.sh
 
 params:
   BUILD_VERSION:          replace-me

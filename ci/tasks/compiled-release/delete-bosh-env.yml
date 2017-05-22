@@ -13,7 +13,7 @@ inputs:
   - name: bosh-softlayer-cpi-release
 
 run:
-  path: pipeline-src/ci/tasks/compiled-cf/delete-bosh-env.sh
+  path: pipeline-src/ci/tasks/compiled-release/delete-bosh-env.sh
 
 params:
   BUILD_VERSION:        replace-me

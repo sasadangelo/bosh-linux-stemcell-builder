@@ -17,7 +17,7 @@ outputs:
   - name: director-state
 
 run:
-  path: pipeline-src/ci/tasks/compiled-cf/create-bosh-env.sh
+  path: pipeline-src/ci/tasks/compiled-release/create-bosh-env.sh
 
 params:
   BUILD_VERSION:             replace-me

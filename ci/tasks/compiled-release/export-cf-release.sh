@@ -47,9 +47,9 @@ DIRECTOR_PASSWORD=$($BOSH_CLI int director-state/credentials.yml --path /DI_ADMI
 STEMCELL_NAME=$($BOSH_CLI -e bosh-env stemcells|grep ubuntu-trusty|awk '{print $1}')
 STEMCELL_VERSION=$(cat stemcell/version)
 SL_VM_DOMAIN=${SL_VM_PREFIX}.softlayer.com
-deployment_dir="${PWD}/cf-deployment"
-manifest_filename="cf-manifest.yml"
-deployment_name=compiled-cf
+deployment_dir="${PWD}/compiled-deploy"
+manifest_filename="compiled-deploy-${BUILD_VERSION}.yml"
+deployment_name=compiled-release
 mkdir -p $deployment_dir
 
 release_list=(
@@ -142,4 +142,4 @@ rm -rf compiled-release/*
 mv compiled-release-allinone-${BUILD_VERSION}.tgz compiled-release/
 sha1sum compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz
 echo "You can download the compiled-release-allinone-${BUILD_VERSION}.tgz file from SL S3 by using this url after finish:"
-echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-cf-release/compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz"
+echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-release-release/compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz"

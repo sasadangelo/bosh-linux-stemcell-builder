@@ -11,16 +11,10 @@ check_param SL_API_KEY
 check_param SL_DATACENTER
 check_param SL_VLAN_PUBLIC
 check_param SL_VLAN_PRIVATE
-check_param cf_release
-check_param cf_release_version
 SL_VM_PREFIX=${SL_VM_PREFIX}-${BUILD_VERSION}
-
-STEMCELL_VERSION=$(cat stemcell/version)
 
 tar -zxvf director-state/director-state-${BUILD_VERSION}.tgz -C director-state/
 cat director-state/director-hosts >> /etc/hosts
-
-mv compiled-release/cf-compiled-release-${BUILD_VERSION}.tgz compiled-release/${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz
 
 
 BOSH_CLI="$(pwd)/$(echo bosh-cli/bosh-cli-*)"
