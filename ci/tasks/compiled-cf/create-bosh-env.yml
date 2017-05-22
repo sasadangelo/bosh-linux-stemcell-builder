@@ -20,11 +20,13 @@ run:
   path: pipeline-src/ci/tasks/compiled-cf/create-bosh-env.sh
 
 params:
-  BUILD_VERSION:        replace-me
-  SL_VM_PREFIX:         replace-me
-  SL_API_KEY:           replace-me
-  SL_DATACENTER:        replace-me
-  SL_VLAN_PUBLIC:       replace-me
-  SL_VLAN_PRIVATE:      replace-me
-  SL_USERNAME:          replace-me
-  FILE_W3_BOSH_PEM:     replace-me
+  BUILD_VERSION:             replace-me
+  SL_VM_PREFIX:              replace-me
+  SL_API_KEY:                replace-me
+  SL_DATACENTER:             replace-me
+  SL_VLAN_PUBLIC:            replace-me
+  SL_VLAN_PRIVATE:           replace-me
+  SL_USERNAME:               replace-me
+  cf_release:                replace-me
+  cf_release_version:        replace-me
+  stemcell_version:          replace-me
