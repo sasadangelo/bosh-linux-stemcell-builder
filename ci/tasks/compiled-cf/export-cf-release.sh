@@ -79,8 +79,7 @@ do
     sed -i "/(($release))/d" $template_file
     sed -i "/((${release}_version))/d" $template_file
   else
-    release_param=`echo $release | sed "s/_/-/g"`
-    bosh_init_params="${bosh_init_params} -v ${release_param}=${release_name}"
+    bosh_init_params="${bosh_init_params} -v ${release}=${release_name} -v ${release}_version=${release_version}"
     echo "$release_name $release_version exists, keep this release"
     if [ "$release_location" == "" ]; then
        echo "Keep using `cat $template_file | grep "((${release}_version))"`"
