@@ -36,7 +36,7 @@ $BOSH_CLI -e bosh-env login
 
 for release_file in compiled-release/*.tgz; do
   echo "Upload release $release_file"
-  $BOSH_CLI -e bosh-env upload-release compiled-release/$release_file
+  $BOSH_CLI -e bosh-env upload-release $release_file
 done
 
 echo "Deploy release by using compiled-deploy/compiled-deploy-${BUILD_VERSION}.yml"
