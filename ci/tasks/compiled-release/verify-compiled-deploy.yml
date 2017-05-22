@@ -11,6 +11,7 @@ inputs:
   - name: bosh-cli
   - name: director-state
   - name: compiled-release
+  - name: compiled-deploy
 
 run:
   path: pipeline-src/ci/tasks/compiled-release/verify-compiled-deploy.sh
