@@ -62,24 +62,6 @@ $BOSH_CLI int pipeline-src/ci/tasks/templates/bluemix-template.yml \
                                                         -v private_vlan_id=${SL_VLAN_PRIVATE} \
                                                         -v public_vlan_id=${SL_VLAN_PUBLIC} \
                                                         -v stemcell_version=${STEMCELL_VERSION} \
-                                                        -v cf-release=${cf_release} \
-                                                        -v cf-release-version=${cf_release_version} \
-                                                        -v cf-services-release=${cf_services_release} \
-                                                        -v cf-services-release-version=${cf_services_release_version} \
-                                                        -v cf-services-contrib-release=${cf_services_contrib_release} \
-                                                        -v cf-services-contrib-release-version=${cf_services_contrib_release_version} \
-                                                        -v mod_vms_release=${mod_vms_release} \
-                                                        -v mod_vms_release_version=${mod_vms_release_version} \
-                                                        -v security_release=${security_release} \
-                                                        -v security_release_version=${security_release_version} \
-                                                        -v admin_ui_release=${admin_ui_release} \
-                                                        -v admin_ui_release_version=${admin_ui_release_version} \
-                                                        -v habr_release=${habr_release} \
-                                                        -v habr_release_version=${habr_release_version} \
-                                                        -v loginserver_release=${loginserver_release} \
-                                                        -v loginserver_release_version=${loginserver_release_version} \
-                                                        -v marmot_logstash_forwarder_release=${marmot_logstash_forwarder_release} \
-                                                        -v marmot_logstash_forwarder_release_version=${marmot_logstash_forwarder_release_version} \
                                                         -v unbound_release=${unbound_release} \
                                                         -v unbound_release_version=${unbound_release_version} \
                                                         > ${deployment_dir}/${manifest_filename}
@@ -88,7 +70,7 @@ $BOSH_CLI int pipeline-src/ci/tasks/templates/bluemix-template.yml \
 #
 releases=$($BOSH_CLI int ${deployment_dir}/${manifest_filename} --path /releases |grep -Po '(?<=- location: ).*')
 while IFS= read -r line; do
-$BOSH_CLI -e bosh-env upload-release $line
+  $BOSH_CLI -e bosh-env upload-release $line
 done <<< "$releases"
 
 #
@@ -99,8 +81,8 @@ $BOSH_CLI -e bosh-env -d ${deployment_name} deploy ${deployment_dir}/${manifest_
 $BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${cf_release}/${cf_release_version} ubuntu-trusty/${STEMCELL_VERSION}
 
 echo "cp ${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz to folder compiled-release"
-mv ${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz cf-compiled-release-${BUILD_VERSION}.tgz
-mv cf-compiled-release-${BUILD_VERSION}.tgz compiled-release/
+mv ${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz unbound-compiled-release-${BUILD_VERSION}.tgz
+mv unbound-compiled-release-${BUILD_VERSION}.tgz compiled-release/
 
 #
 # currently comment out these releases
