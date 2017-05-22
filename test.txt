@@ -1,7 +1,0 @@
-
-- location: http://10.106.192.96/releases/cf/((cf-release-version))/cf-release.tgz
-  name: ((cf-release))
-  version: ((cf-release-version))
-- location: http://10.106.192.96/releases/cf-services/((cf-services-release-version))/cf-services-release.tgz
-  name: ((cf-services-release))
-  version: ((cf-services-release-version))
