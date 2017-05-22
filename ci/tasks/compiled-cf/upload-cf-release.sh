@@ -15,8 +15,7 @@ pwd
 mkdir -p bosh/publish/${cf_release_version}
 #echo "FILE_W3_BOSH_PEM: ${FILE_W3_BOSH_PEM}"
 echo ${FILE_W3_BOSH_PEM} > bosh/bosh.pem
-mv compiled-release/cf-compiled-release-${BUILD_VERSION}.tgz compiled-release/${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz
-mv compiled-release/${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz bosh/publish/${cf_release_version}/
+mv compiled-release/*-${BUILD_VERSION}.tgz bosh/publish/${cf_release_version}/
 
 cd bosh
 sed -i "s/-----BEGIN RSA PRIVATE KEY----- //g" bosh.pem
