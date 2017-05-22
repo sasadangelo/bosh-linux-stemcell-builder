@@ -127,7 +127,7 @@ $BOSH_CLI -e bosh-env -d ${deployment_name} deploy ${deployment_dir}/${manifest_
 for release_upload in ${release_upload_list[@]}
 do
   release_upload_name=$(eval echo '$'$release)
-  release_upload_version=`echo $(eval echo '$'${release}_version) | sed "s/./_/g"`
+  release_upload_version=`echo $(eval echo '$'${release}_version) | sed "s/\./_/g"`
   $BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${release_upload_name}/${release_upload_version} ubuntu-trusty/${STEMCELL_VERSION}
 
   echo "cp ${release_upload_name}-${release_upload_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz to folder compiled-release"
