@@ -28,7 +28,7 @@ echo "Delete deployment $deployment_name"
 $BOSH_CLI -e bosh-env delete-deployment -d ${deployment_name} -n
 $BOSH_CLI -e bosh-env deployments
 
-release_string=`cat compiled-deploy/compiled-deploy-${BUILD_VERSION}.ym | grep -Po '(?<=- location: ).*' | sed "s/.*releases\///g" | sed "s/\/.*//g"`
+release_string=`cat compiled-deploy/compiled-deploy-${BUILD_VERSION}.yml | grep -Po '(?<=- location: ).*' | sed "s/.*releases\///g" | sed "s/\/.*//g"`
 IFS=', ' read -r -a release_array <<< "$release_string"
 
 for release in "${release_array[@]}"
