@@ -11,11 +11,13 @@ check_param cf_release_version
 check_param stemcell_version
 check_param FILE_W3_BOSH_PEM
 
+STEMCELL_VERSION=$(cat stemcell/version)
+
 pwd
 mkdir -p bosh/publish/${cf_release_version}
 #echo "FILE_W3_BOSH_PEM: ${FILE_W3_BOSH_PEM}"
 echo ${FILE_W3_BOSH_PEM} > bosh/bosh.pem
-mv compiled-release/${cf_release}-${cf_release_version}-ubuntu-trusty-${stemcell_version}-${BUILD_VERSION}.tgz bosh/publish/${cf_release_version}/
+mv compiled-release/${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz bosh/publish/${cf_release_version}/
 
 cd bosh
 sed -i "s/-----BEGIN RSA PRIVATE KEY----- //g" bosh.pem
@@ -27,5 +29,5 @@ cat bosh.pem
 chmod 400 bosh.pem
 scp -i bosh.pem -o "StrictHostKeyChecking no" -r publish/${cf_release_version}/ bosh@file.w3.bluemix.net:~/repo
 
-echo "scp ${cf_release}-${cf_release_version}-ubuntu-trusty-${stemcell_version}-${BUILD_VERSION}.tgz file to file w3:"
-echo "http://file.w3.bluemix.net/releases/bosh/${cf_release_version}/${cf_release}-${cf_release_version}-ubuntu-trusty-${stemcell_version}-${BUILD_VERSION}.tgz"
+echo "scp ${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz file to file w3:"
+echo "http://file.w3.bluemix.net/releases/bosh/${cf_release_version}/${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz"

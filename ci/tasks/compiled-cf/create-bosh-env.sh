@@ -10,10 +10,6 @@ check_param SL_API_KEY
 check_param SL_DATACENTER
 check_param SL_VLAN_PUBLIC
 check_param SL_VLAN_PRIVATE
-check_param cf_release
-check_param cf_release_version
-check_param stemcell_version
-SL_VM_PREFIX=${SL_VM_PREFIX}-${cf_release}-${cf_release_version}-ubuntu-trusty-${stemcell_version}-${BUILD_VERSION}
 
 deployment_dir="${PWD}/deployment"
 mkdir -p $deployment_dir
@@ -40,12 +36,12 @@ chmod +x ${BOSH_CLI}
     echo "Saving config..."
     cp $BOSH_CLI bosh-template.yml bosh-template-state.json ${deployment_dir}/
     pushd ${deployment_dir}
-      tar -zcvf  /tmp/director-state-precompiled-${cf_release}-${cf_release_version}-ubuntu-trusty-${stemcell_version}-${BUILD_VERSION}.tgz ./ >/dev/null 2>&1
+      tar -zcvf  /tmp/director-state-${BUILD_VERSION}.tgz ./ >/dev/null 2>&1
     popd
-    mv /tmp/director-state-precompiled-${cf_release}-${cf_release_version}-ubuntu-trusty-${stemcell_version}-${BUILD_VERSION}.tgz director-state/
+    mv /tmp/director-state-${BUILD_VERSION}.tgz director-state/
 
-    echo "You can download the director-state-precompiled-${cf_release}-${cf_release_version}-ubuntu-trusty-${stemcell_version}-${BUILD_VERSION}.tgz file by using this url after finish:"
-    echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-cf-release/director-state/director-state-precompiled-${cf_release}-${cf_release_version}-ubuntu-trusty-${stemcell_version}-${BUILD_VERSION}.tgz"
+    echo "You can download the director-state-${BUILD_VERSION}.tgz file by using this url after finish:"
+    echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-cf-release/director-state/director-state-${BUILD_VERSION}.tgz"
   }
 
 trap finish ERR
