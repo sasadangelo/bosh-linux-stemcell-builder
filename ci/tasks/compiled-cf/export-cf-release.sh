@@ -126,9 +126,9 @@ $BOSH_CLI -e bosh-env -d ${deployment_name} deploy ${deployment_dir}/${manifest_
 
 for release_upload in ${release_upload_list[@]}
 do
-  release_upload_name=$(eval echo '$'$release)
-  release_upload_version=$(eval echo '$'${release}_version)
-  release_tgz_version=`echo $(eval echo '$'${release}_version) | sed "s/\.//g"`
+  release_upload_name=$(eval echo '$'$release_upload)
+  release_upload_version=$(eval echo '$'${release_upload}_version)
+  release_tgz_version=`echo $(eval echo '$'${release_upload}_version) | sed "s/\.//g"`
   stemcell_tgz_version=`echo ${STEMCELL_VERSION} | sed "s/\.//g"`
   $BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${release_upload_name}/${release_upload_version} ubuntu-trusty/${STEMCELL_VERSION}
 
