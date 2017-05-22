@@ -112,7 +112,7 @@ $BOSH_CLI int $template_file \
 #
 # upload releases
 #
-echo $BOSH_CLI int ${deployment_dir}/${manifest_filename} --path /releases
+echo `$BOSH_CLI int ${deployment_dir}/${manifest_filename} --path /releases`
 echo "***********"
 
 releases=$($BOSH_CLI int ${deployment_dir}/${manifest_filename} --path /releases | grep -Po '(?<=- location: ).*')
