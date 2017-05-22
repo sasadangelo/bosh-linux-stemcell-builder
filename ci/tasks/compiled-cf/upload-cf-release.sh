@@ -4,7 +4,6 @@ set -eux
 
 source pipeline-src/ci/tasks/utils.sh
 
-check_param cf_release_version
 check_param BUILD_VERSION
 check_param cf_release
 check_param cf_release_version
