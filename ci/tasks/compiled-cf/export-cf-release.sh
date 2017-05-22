@@ -69,9 +69,9 @@ unbound_release
 template_file="pipeline-src/ci/tasks/templates/bluemix-template.yml"
 for release in ${release_list[@]}
 do
-  release_name=$(eval echo '$'$name)
-  release_version=$(eval echo '$'${name}_version)
-  release_location=$(eval echo '$'${name}_location)
+  release_name=$(eval echo '$'$release)
+  release_version=$(eval echo '$'${release}_version)
+  release_location=$(eval echo '$'${release}_location)
   echo -e "\nCheck $release information:"
   if [ "$release_name" == "" ] || [ "$release_version" == "" ]; then
     echo "$release_name $release_version does not exist, remove this release information from template.yml"
@@ -79,7 +79,7 @@ do
     sed -i "/((${release}_version))/d" $template_file
   else
     echo "$release_name $release_version exists, keep this release"
-    if [ "$release_location" == "10.106.192.96" ]; then
+    if [ "$release_location" == "" ]; then
        echo "Keep using `cat $template_file | grep "((${release}_version))"`"
     else
        echo "Replace location by using $release_location"
