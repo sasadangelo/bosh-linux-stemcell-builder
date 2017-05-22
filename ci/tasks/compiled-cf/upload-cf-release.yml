@@ -9,6 +9,7 @@ image_resource:
 inputs:
   - name: pipeline-src
   - name: bosh-cli
+  - name: stemcell
   - name: director-state
   - name: compiled-release
 
