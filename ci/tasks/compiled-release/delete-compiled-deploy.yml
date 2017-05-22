@@ -14,7 +14,7 @@ inputs:
   - name: compiled-deploy
 
 run:
-  path: pipeline-src/ci/tasks/compiled-release/verify-compiled-deploy.sh
+  path: pipeline-src/ci/tasks/compiled-release/delete-compiled-deploy.sh
 
 params:
   BUILD_VERSION:          replace-me

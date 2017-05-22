@@ -9,10 +9,6 @@ check_param BUILD_VERSION
 tar -zxvf director-state/director-state-${BUILD_VERSION}.tgz -C director-state/
 cat director-state/director-hosts >> /etc/hosts
 
-tar -xvf compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz
-rm -rf compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz
-
-
 BOSH_CLI="$(pwd)/$(echo bosh-cli/bosh-cli-*)"
 chmod +x ${BOSH_CLI}
 
@@ -27,11 +23,17 @@ export BOSH_CLIENT_SECRET=$(${BOSH_CLI} int director-state/credentials.yml --pat
 
 $BOSH_CLI -e bosh-env login
 
-for release_file in compiled-release/*.tgz; do
-  echo "Upload release $release_file"
-  $BOSH_CLI -e bosh-env upload-release $release_file
-done
-
-echo "Deploy release by using compiled-deploy/compiled-deploy-${BUILD_VERSION}.yml"
 deployment_name=compiled-release
-$BOSH_CLI -e bosh-env -d ${deployment_name} deploy compiled-deploy/compiled-deploy-${BUILD_VERSION}.yml -n
+echo "Delete deployment $deployment_name"
+$BOSH_CLI -e bosh-env delete-deployment -d ${deployment_name} -n
+$BOSH_CLI -e bosh-env deployments
+
+release_string=`cat compiled-deploy/compiled-deploy-${BUILD_VERSION}.ym | grep -Po '(?<=- location: ).*' | sed "s/.*releases\///g" | sed "s/\/.*//g"`
+IFS=', ' read -r -a release_array <<< "$release_string"
+
+for release in "${release_array[@]}"
+do
+    echo "Delete release $release"
+    $BOSH_CLI -e bosh-env delete-release $release -n
+done
+$BOSH_CLI -e bosh-env releases
