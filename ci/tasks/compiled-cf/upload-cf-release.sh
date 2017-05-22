@@ -8,7 +8,6 @@ check_param cf_release_version
 check_param BUILD_VERSION
 check_param cf_release
 check_param cf_release_version
-check_param stemcell_version
 check_param FILE_W3_BOSH_PEM
 
 STEMCELL_VERSION=$(cat stemcell/version)
@@ -17,6 +16,7 @@ pwd
 mkdir -p bosh/publish/${cf_release_version}
 #echo "FILE_W3_BOSH_PEM: ${FILE_W3_BOSH_PEM}"
 echo ${FILE_W3_BOSH_PEM} > bosh/bosh.pem
+mv compiled-release/cf-compiled-release-${BUILD_VERSION}.tgz compiled-release/${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz
 mv compiled-release/${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz bosh/publish/${cf_release_version}/
 
 cd bosh

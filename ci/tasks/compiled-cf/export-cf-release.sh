@@ -99,8 +99,8 @@ $BOSH_CLI -e bosh-env -d ${deployment_name} deploy ${deployment_dir}/${manifest_
 $BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${cf_release}/${cf_release_version} ubuntu-trusty/${STEMCELL_VERSION}
 
 echo "cp ${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz to folder compiled-release"
-mv ${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz ${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz
-mv ${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz compiled-release/
+mv ${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz cf-compiled-release-${BUILD_VERSION}.tgz
+mv cf-compiled-release-${BUILD_VERSION}.tgz compiled-release/
 
 #
 # currently comment out these releases
@@ -115,7 +115,7 @@ mv ${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD
 #$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${marmot_logstash_forwarder_release}/${marmot_logstash_forwarder_release_version} ubuntu-trusty/${STEMCELL_VERSION}
 #$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${unbound_release}/${unbound_release_version} ubuntu-trusty/${STEMCELL_VERSION}
 
-sha1sum compiled-release/${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz
+sha1sum compiled-release/cf-compiled-release-${BUILD_VERSION}.tgz
 
-echo "You can download the ${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz file from SL S3 by using this url after finish:"
-echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-cf-release/compiled-release/${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz"
+echo "You can download the cf-compiled-release-${BUILD_VERSION}.tgz file from SL S3 by using this url after finish:"
+echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-cf-release/compiled-release/cf-compiled-release-${BUILD_VERSION}.tgz"

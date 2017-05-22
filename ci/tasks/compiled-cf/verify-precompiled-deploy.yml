@@ -25,4 +25,3 @@ params:
   SL_VM_PREFIX:           replace-me
   cf_release:             replace-me
   cf_release_version:     replace-me
-  stemcell_version:       replace-me

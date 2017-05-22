@@ -26,7 +26,6 @@ params:
   SL_VLAN_PUBLIC: replace-me
   SL_VLAN_PRIVATE: replace-me
   SL_USERNAME: replace-me
-  stemcell_version: replace-me
   cf_release: replace-me
   cf_release_version: replace-me
   cf_services_release: replace-me
