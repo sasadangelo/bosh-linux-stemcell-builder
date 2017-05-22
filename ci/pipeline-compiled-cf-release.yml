@@ -51,7 +51,7 @@ resources:
       access_key_id: {{stemcell-sl-os-access-key}}
       secret_access_key: {{stemcell-sl-os-secret-key}}
       endpoint: {{stemcell-sl-os-endpoint}}
-      regexp: compiled-release/cf-compiled-release-(.*).tgz
+      regexp: compiled-release/(.*).tgz
 
 jobs:
   - name: prepare-director
@@ -130,7 +130,7 @@ jobs:
           unbound_release_version: {{unbound_release_version}}
           unbound_release_location: {{unbound_release_location}}
       - put: compiled-release
-        params: {file: compiled-release/cf-compiled-release-*.tgz}
+        params: {file: compiled-release/*.tgz}
 
 #        ensure:
 #          do:

@@ -65,6 +65,8 @@ marmot_logstash_forwarder_release
 unbound_release
 )
 
+release_upload_list=()
+
 
 template_file="pipeline-src/ci/tasks/templates/bluemix-template.yml"
 bosh_init_params=""
@@ -80,6 +82,7 @@ do
     sed -i "/((${release}_version))/d" $template_file
   else
     bosh_init_params="${bosh_init_params} -v ${release}=${release_name} -v ${release}_version=${release_version}"
+    release_upload_list+=($release)
     echo "$release_name $release_version exists, keep this release"
     if [ "$release_location" == "" ]; then
        echo "Keep using `cat $template_file | grep "((${release}_version))"`"
@@ -92,6 +95,8 @@ done
 
 echo "This is the release parameter list:"
 echo "$bosh_init_params"
+echo "This is the list which nee to be uploaded:"
+echo $release_upload_list
 
 $BOSH_CLI int $template_file \
                                                         -v director_password=${DIRECTOR_PASSWORD} \
@@ -108,9 +113,6 @@ $BOSH_CLI int $template_file \
 #
 # upload releases
 #
-echo `cat ${deployment_dir}/${manifest_filename}`
-echo "***********"
-
 releases=$($BOSH_CLI int ${deployment_dir}/${manifest_filename} --path /releases | grep -Po '(?<=- location: ).*')
 while IFS= read -r line; do
   $BOSH_CLI -e bosh-env upload-release $line
@@ -121,26 +123,18 @@ done <<< "$releases"
 #
 $BOSH_CLI -e bosh-env -d ${deployment_name} releases
 $BOSH_CLI -e bosh-env -d ${deployment_name} deploy ${deployment_dir}/${manifest_filename} --no-redact -n
-$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${cf_release}/${cf_release_version} ubuntu-trusty/${STEMCELL_VERSION}
 
-echo "cp ${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz to folder compiled-release"
-mv ${cf_release}-${cf_release_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz unbound-compiled-release-${BUILD_VERSION}.tgz
-mv unbound-compiled-release-${BUILD_VERSION}.tgz compiled-release/
+for release_upload in ${release_upload_list[@]}
+do
+  release_upload_name=$(eval echo '$'$release)
+  release_upload_version=$(eval echo '$'${release}_version)
+  $BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${release_upload_name}/${release_upload_version} ubuntu-trusty/${STEMCELL_VERSION}
 
-#
-# currently comment out these releases
-#
-#$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${cf_services_release}/${cf_services_release_version} ubuntu-trusty/${STEMCELL_VERSION}
-#$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${cf_services_contrib_release}/${cf_services_contrib_release_version} ubuntu-trusty/${STEMCELL_VERSION}
-#$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${mod_vms_release}/${mod_vms_release_version} ubuntu-trusty/${STEMCELL_VERSION}
-#$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${security_release}/${security_release_version} ubuntu-trusty/${STEMCELL_VERSION}
-#$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${admin_ui_release}/${admin_ui_release_version} ubuntu-trusty/${STEMCELL_VERSION}
-#$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${habr_release}/${habr_release_version} ubuntu-trusty/${STEMCELL_VERSION}
-#$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${loginserver_release}/${loginserver_release_version} ubuntu-trusty/${STEMCELL_VERSION}
-#$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${marmot_logstash_forwarder_release}/${marmot_logstash_forwarder_release_version} ubuntu-trusty/${STEMCELL_VERSION}
-#$BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${unbound_release}/${unbound_release_version} ubuntu-trusty/${STEMCELL_VERSION}
+  echo "cp ${release_upload_name}-${release_upload_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz to folder compiled-release"
+  mv ${release_upload_name}-${release_upload_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz ${release_upload_name}-release-${BUILD_VERSION}.tgz
+  mv ${release_upload_name}-${release_upload_version}-release-${BUILD_VERSION}.tgz compiled-release/
+  sha1sum ${release_upload_name}-release-${BUILD_VERSION}.tgz
 
-sha1sum compiled-release/cf-compiled-release-${BUILD_VERSION}.tgz
-
-echo "You can download the cf-compiled-release-${BUILD_VERSION}.tgz file from SL S3 by using this url after finish:"
-echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-cf-release/compiled-release/cf-compiled-release-${BUILD_VERSION}.tgz"
+  echo "You can download the ${release_upload_name}-release-${BUILD_VERSION}.tgz file from SL S3 by using this url after finish:"
+  echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-cf-release/compiled-release/${release_upload_name}-release-${BUILD_VERSION}.tgz"
+done
