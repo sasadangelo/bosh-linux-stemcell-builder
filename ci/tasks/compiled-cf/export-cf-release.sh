@@ -94,6 +94,9 @@ done
 echo "This is the release parameter list:"
 echo "$bosh_init_params"
 
+echo "Show $template_file file:"
+cat $template_file
+
 $BOSH_CLI int $template_file \
                                                         -v director_password=${DIRECTOR_PASSWORD} \
                                                         -v director_ip=${DIRECTOR} \
