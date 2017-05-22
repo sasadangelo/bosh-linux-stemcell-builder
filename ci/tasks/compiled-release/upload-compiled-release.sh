@@ -20,7 +20,7 @@ sed -i "1i\-----BEGIN RSA PRIVATE KEY-----" bosh.pem
 sed -i "\$a-----END RSA PRIVATE KEY-----" bosh.pem
 cat bosh.pem
 chmod 400 bosh.pem
-scp -i bosh.pem -o "StrictHostKeyChecking no" -r publish/precompiled/ bosh@file.w3.bluemix.net:~/repo
+scp -i bosh.pem -o "StrictHostKeyChecking no" -r publish/compiled/ bosh@file.w3.bluemix.net:~/repo
 
 echo "scp compiled-release-allinone-${BUILD_VERSION}.tgz file to file w3:"
 echo "http://file.w3.bluemix.net/releases/bosh/compiled/compiled-release-allinone-${BUILD_VERSION}.tgz"
