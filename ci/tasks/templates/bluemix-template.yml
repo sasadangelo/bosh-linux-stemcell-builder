@@ -91,7 +91,7 @@ resource_pools:
   name: coreNode
   network: default
   stemcell:
-    name: bosh-softlayer-xen-ubuntu-trusty-go_agent
+    name: bosh-bluemix-xen-ubuntu-trusty-go_agent
     version: ((stemcell_version))
 - cloud_properties:
     Bosh_ip: ((director_ip))
@@ -113,7 +113,7 @@ resource_pools:
   name: router
   network: default
   stemcell:
-    name: bosh-softlayer-xen-ubuntu-trusty-go_agent
+    name: bosh-bluemix-xen-ubuntu-trusty-go_agent
     version: ((stemcell_version))
 - cloud_properties:
     Bosh_ip: ((director_ip))
@@ -135,7 +135,7 @@ resource_pools:
   name: dea
   network: default
   stemcell:
-    name: bosh-softlayer-xen-ubuntu-trusty-go_agent
+    name: bosh-bluemix-xen-ubuntu-trusty-go_agent
     version: ((stemcell_version))
 - cloud_properties:
     Bosh_ip: ((director_ip))
@@ -157,7 +157,7 @@ resource_pools:
   name: logger
   network: default
   stemcell:
-    name: bosh-softlayer-xen-ubuntu-trusty-go_agent
+    name: bosh-bluemix-xen-ubuntu-trusty-go_agent
     version: ((stemcell_version))
 update:
   canaries: 1
