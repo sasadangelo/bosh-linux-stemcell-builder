@@ -11,6 +11,7 @@ check_param SL_API_KEY
 check_param SL_DATACENTER
 check_param SL_VLAN_PUBLIC
 check_param SL_VLAN_PRIVATE
+SL_VM_PREFIX=${SL_VM_PREFIX}-${BUILD_VERSION}
 
 
 tar -zxvf director-state/director-state-${BUILD_VERSION}.tgz -C director-state/

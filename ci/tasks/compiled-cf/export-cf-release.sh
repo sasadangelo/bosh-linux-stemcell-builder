@@ -13,6 +13,7 @@ check_param SL_VLAN_PUBLIC
 check_param SL_VLAN_PRIVATE
 check_param cf_release
 check_param cf_release_version
+SL_VM_PREFIX=${SL_VM_PREFIX}-${BUILD_VERSION}
 
 #
 # target/authenticate
