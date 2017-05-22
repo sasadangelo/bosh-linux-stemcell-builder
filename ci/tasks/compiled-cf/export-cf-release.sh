@@ -131,9 +131,9 @@ do
   $BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${release_upload_name}/${release_upload_version} ubuntu-trusty/${STEMCELL_VERSION}
 
   echo "cp ${release_upload_name}-${release_upload_version}-ubuntu-trusty-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz to folder compiled-release"
-  mv ${release_upload_name}-${release_upload_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz ${release_upload_name}-release-${BUILD_VERSION}.tgz
-  mv ${release_upload_name}-release-${BUILD_VERSION}.tgz compiled-release/
-  sha1sum ${release_upload_name}-release-${BUILD_VERSION}.tgz
+  mv ${release_upload_name}-${release_upload_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz ${release_upload_name}-${release_upload_version}-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz
+  mv ${release_upload_name}-${release_upload_version}-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz compiled-release/
+  sha1sum compiled-release/${release_upload_name}-${release_upload_version}-${STEMCELL_VERSION}-${BUILD_VERSION}.tgz
 
   echo "You can download the ${release_upload_name}-release-${BUILD_VERSION}.tgz file from SL S3 by using this url after finish:"
   echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-cf-release/compiled-release/${release_upload_name}-release-${BUILD_VERSION}.tgz"
