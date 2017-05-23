@@ -28,7 +28,6 @@ chmod +x ${BOSH_CLI}
 DIRECTOR=$(cat director-state/director-hosts |awk '{print $1}')
 DIRECTOR_UUID=$(cat director-state/bosh-template-state.json |grep director_id| cut -d"\"" -f4)
 DIRECTOR_PASSWORD=$($BOSH_CLI int director-state/credentials.yml --path /DI_ADMIN_PASSWORD)
-STEMCELL_NAME=$($BOSH_CLI -e bosh-env stemcells|grep ubuntu-trusty|awk '{print $1}')
 STEMCELL_VERSION=$(cat stemcell/version)
 SL_VM_DOMAIN=${SL_VM_PREFIX}.softlayer.com
 deployment_name=compiled-release
@@ -59,7 +58,6 @@ $BOSH_CLI int pipeline-src/ci/tasks/templates/cf-template.yml \
                                                         -v data_center_name=${SL_DATACENTER} \
                                                         -v private_vlan_id=${SL_VLAN_PRIVATE} \
                                                         -v public_vlan_id=${SL_VLAN_PUBLIC} \
-                                                        -v stemcell_name=${STEMCELL_NAME}
                                                         -v stemcell_version=${STEMCELL_VERSION} \
                                                         -v cf-release=${cf_release} \
                                                         -v cf-release-version=${cf_release_version} \
