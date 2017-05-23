@@ -169,7 +169,7 @@ jobs:
           BUILD_VERSION: {{build_version}}
           FILE_W3_BOSH_PEM: {{file_w3_bosh_pem}}
 
-  - name: verify-compiled-deploy
+  - name: verify-compiled-cf-deploy
     plan:
       - aggregate:
           - get: pipeline-src
@@ -180,8 +180,8 @@ jobs:
             passed: [export-compiled-release]
           - get: compiled-deploy
             passed: [export-compiled-release]
-      - task: verify-compiled-release
-        file: pipeline-src/ci/tasks/compiled-release/verify-compiled-deploy.yml
+      - task: verify-compiled-cf-release
+        file: pipeline-src/ci/tasks/compiled-release/verify-compiled-cf-deploy.yml
         input_mapping:
           stemcell: light-stemcell
         params:
