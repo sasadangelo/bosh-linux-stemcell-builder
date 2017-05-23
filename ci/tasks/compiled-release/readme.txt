@@ -26,8 +26,8 @@ softlayer_datacenter: lon02
 softlayer_vlan_public: "1292653"
 softlayer_vlan_private: "1292651"
 softlayer_vm_domain: softlayer.com
-softlayer_director_name_prefix: bosh-director-precompiled
-softlayer_vm_name_prefix: sl-stemcell-precompiled-
+oftlayer_director_name_prefix: bosh-director-compiled
+softlayer_vm_name_prefix: sl-stemcell-compiled-
 bat_vcap_password: xxx
 stemcell_aws_access_key: xxx
 stemcell_aws_secret_key: xxx
