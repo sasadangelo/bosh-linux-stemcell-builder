@@ -156,35 +156,8 @@ jobs:
           params:
             acquire: true
 
-      - do:
-        - task: deploy-director
-          tags: [vsphere-v5.1]
-          file: bosh-linux-stemcell-builder/ci/tasks/deploy-director.yml
-          input_mapping:
-            stemcell: vsphere-esxi-ubuntu-trusty
-          params:
-            BOSH_internal_ip:         {{stemcell-test-director-address}}
-            BOSH_internal_cidr:       {{bosh-director-vcenter-cidr}}
-            BOSH_internal_gw:         {{bosh-director-vcenter-gateway}}
-            BOSH_vcenter_ip:          {{vcenter-ip}}
-            BOSH_vcenter_user:        {{vcenter-user}}
-            BOSH_vcenter_password:    {{vcenter-password}}
-            BOSH_vcenter_dc:          {{vcenter-dc}}
-            BOSH_vcenter_cluster:     {{vcenter-cluster}}
-            BOSH_vcenter_ds:          {{vcenter-datastore}}
-            BOSH_network_name:        {{vcenter-vlan}}
-            BOSH_vcenter_vms:         {{vcenter-vm-folder}}
-            BOSH_vcenter_templates:   {{vcenter-template-folder}}
-            BOSH_vcenter_disks:       {{vcenter-disk-path}}
-
-        - task: test-stemcell
-          tags: [vsphere-v5.1]
-          file: bosh-linux-stemcell-builder/ci/tasks/test-stemcell.yml
-          input_mapping:
-            stemcell: vsphere-esxi-ubuntu-trusty
-        ensure:
-          do:
-          - task: teardown
+        - do:
+          - task: deploy-director
             tags: [vsphere-v5.1]
             file: bosh-linux-stemcell-builder/ci/tasks/deploy-director.yml
             input_mapping:
@@ -795,7 +768,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-linux-stemcell-builder
-      branch: {{stemcell-branch}}
+      branch: master
 
   - name: stemcells-index
     type: git
