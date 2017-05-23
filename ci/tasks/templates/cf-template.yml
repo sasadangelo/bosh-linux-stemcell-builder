@@ -41,7 +41,7 @@ jobs:
   - name: unbound
     release: unbound
   - name: nats
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -51,7 +51,7 @@ jobs:
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
 - instances: 1
   name: consul
   networks:
@@ -71,7 +71,7 @@ jobs:
   - name: unbound
     release: unbound
   - name: consul_agent
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -79,7 +79,7 @@ jobs:
   - name: monit-post-deploy
     release: security-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
   update:
     max_in_flight: 1
 - instances: 1
@@ -121,7 +121,7 @@ jobs:
   - name: unbound
     release: unbound
   - name: postgres
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -131,7 +131,7 @@ jobs:
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
 - instances: 1
   name: etcd
   networks:
@@ -147,9 +147,9 @@ jobs:
   - name: unbound
     release: unbound
   - name: etcd
-    release: -((cf_release))
+    release: ((cf_release))
   - name: etcd_metrics_server
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -159,7 +159,7 @@ jobs:
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
 - db_scheme: postgresql
   instances: 1
   name: uaadb
@@ -199,7 +199,7 @@ jobs:
   - name: unbound
     release: unbound
   - name: postgres
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -209,7 +209,7 @@ jobs:
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
 - instances: 1
   name: uaa
   networks:
@@ -246,13 +246,13 @@ jobs:
   - name: unbound
     release: unbound
   - name: consul_agent
-    release: -((cf_release))
+    release: ((cf_release))
   - name: uaa
-    release: -((cf_release))
+    release: ((cf_release))
   - name: route_registrar
-    release: -((cf_release))
+    release: ((cf_release))
   - name: statsd-injector
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -262,7 +262,7 @@ jobs:
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
 - instances: 1
   name: loggregator
   networks:
@@ -280,9 +280,9 @@ jobs:
   - name: unbound
     release: unbound
   - name: doppler
-    release: -((cf_release))
+    release: ((cf_release))
   - name: syslog_drain_binder
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -292,7 +292,7 @@ jobs:
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
 - instances: 1
   name: loggregator_tc
   networks:
@@ -322,9 +322,9 @@ jobs:
   - name: unbound
     release: unbound
   - name: loggregator_trafficcontroller
-    release: -((cf_release))
+    release: ((cf_release))
   - name: route_registrar
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -334,7 +334,7 @@ jobs:
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
 - instances: 1
   name: services_nfs
   networks:
@@ -353,7 +353,7 @@ jobs:
   - name: unbound
     release: unbound
   - name: debian_nfs_server
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -387,31 +387,31 @@ jobs:
   - name: unbound
     release: unbound
   - name: consul_agent
-    release: -((cf_release))
+    release: ((cf_release))
   - name: cloud_controller_ng
-    release: -((cf_release))
+    release: ((cf_release))
   - name: statsd-injector
-    release: -((cf_release))
+    release: ((cf_release))
   - name: route_registrar
-    release: -((cf_release))
+    release: ((cf_release))
   - name: java-buildpack
-    release: -((cf_release))
+    release: ((cf_release))
   - name: go-buildpack
-    release: -((cf_release))
+    release: ((cf_release))
   - name: nodejs-buildpack
-    release: -((cf_release))
+    release: ((cf_release))
   - name: ruby-buildpack
-    release: -((cf_release))
+    release: ((cf_release))
   - name: php-buildpack
-    release: -((cf_release))
+    release: ((cf_release))
   - name: python-buildpack
-    release: -((cf_release))
+    release: ((cf_release))
   - name: binary-buildpack
-    release: -((cf_release))
+    release: ((cf_release))
   - name: staticfile-buildpack
-    release: -((cf_release))
+    release: ((cf_release))
   - name: java-offline-buildpack
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -421,7 +421,7 @@ jobs:
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
 - instances: 1
   name: clock_global
   networks:
@@ -448,13 +448,13 @@ jobs:
   - name: unbound
     release: unbound
   - name: consul_agent
-    release: -((cf_release))
+    release: ((cf_release))
   - name: cloud_controller_ng
-    release: -((cf_release))
+    release: ((cf_release))
   - name: cloud_controller_clock
-    release: -((cf_release))
+    release: ((cf_release))
   - name: route_registrar
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -464,7 +464,7 @@ jobs:
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
 - instances: 1
   name: api_worker
   networks:
@@ -491,13 +491,13 @@ jobs:
   - name: unbound
     release: unbound
   - name: consul_agent
-    release: -((cf_release))
+    release: ((cf_release))
   - name: cloud_controller_ng
-    release: -((cf_release))
+    release: ((cf_release))
   - name: cloud_controller_worker
-    release: -((cf_release))
+    release: ((cf_release))
   - name: route_registrar
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -507,7 +507,7 @@ jobs:
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
 - instances: 1
   name: router
   networks:
@@ -527,9 +527,9 @@ jobs:
   - name: unbound
     release: unbound
   - name: consul_agent
-    release: -((cf_release))
+    release: ((cf_release))
   - name: gorouter
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -539,7 +539,7 @@ jobs:
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
 - instances: 1
   name: ha_proxy
   networks:
@@ -589,9 +589,9 @@ jobs:
   resource_pool: router
   templates:
   - name: consul_agent
-    release: -((cf_release))
+    release: ((cf_release))
   - name: haproxy
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -601,7 +601,7 @@ jobs:
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
   - name: unbound
     release: unbound
 - instances: 1
@@ -635,11 +635,11 @@ jobs:
   - name: unbound
     release: unbound
   - name: consul_agent
-    release: -((cf_release))
+    release: ((cf_release))
   - name: hm9000
-    release: -((cf_release))
+    release: ((cf_release))
   - name: route_registrar
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -649,7 +649,7 @@ jobs:
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
 - instances: 1
   name: dea_next
   networks:
@@ -676,11 +676,11 @@ jobs:
   - name: unbound
     release: unbound
   - name: consul_agent
-    release: -((cf_release))
+    release: ((cf_release))
   - name: dea_next
-    release: -((cf_release))
+    release: ((cf_release))
   - name: dea_logging_agent
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
@@ -690,7 +690,7 @@ jobs:
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
-    release: -((cf_release))
+    release: ((cf_release))
   update:
     max_in_flight: 1
 - instances: 1
@@ -770,7 +770,7 @@ jobs:
     release: unbound
   - name: loginserver
   - name: route_registrar
-    release: -((cf_release))
+    release: ((cf_release))
   - name: mod_vms
     release: mod-vms
   - name: post-deploy
