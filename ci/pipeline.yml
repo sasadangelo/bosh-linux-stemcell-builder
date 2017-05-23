@@ -768,7 +768,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-linux-stemcell-builder
-      branch: master
+      branch: {{stemcell-branch}}
 
   - name: stemcells-index
     type: git
