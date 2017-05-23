@@ -1,0 +1,2060 @@
+compilation:
+  cloud_properties:
+    Datacenter:
+      Name: ((data_center_name))
+    EphemeralDiskSize: 100
+    HourlyBillingFlag: true
+    LocalDiskFlag: true
+    PrimaryBackendNetworkComponent:
+      NetworkVlan:
+        Id: ((private_vlan_id))
+    PrimaryNetworkComponent:
+      NetworkVlan:
+        Id: ((public_vlan_id))
+    VmNamePrefix: ((deploy_name))-worker-
+  network: default
+  reuse_compilation_vms: true
+  workers: 8
+director_uuid: ((director_uuid))
+disk_pools:
+- disk_size: 20480
+  name: dp_20480
+- disk_size: 40960
+  name: dp_40960
+- disk_size: 409600
+  name: dp_409600
+- disk_size: 512000
+  name: dp_512000
+jobs:
+- instances: 1
+  name: nats
+  networks:
+  - default:
+    - dns
+    - gateway
+    name: default
+  properties:
+    metron_agent:
+      zone: z1
+  resource_pool: coreNode
+  templates:
+  - name: unbound
+    release: unbound
+  - name: nats
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  - name: metron_agent
+    release: -((cf_release))
+- instances: 1
+  name: consul
+  networks:
+  - default:
+    - dns
+    - gateway
+    name: default
+  persistent_disk: 20480
+  properties:
+    consul:
+      agent:
+        mode: server
+    metron_agent:
+      zone: z1
+  resource_pool: coreNode
+  templates:
+  - name: unbound
+    release: unbound
+  - name: consul_agent
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: metron_agent
+    release: -((cf_release))
+  update:
+    max_in_flight: 1
+- instances: 1
+  name: ccdb_ng
+  networks:
+  - default:
+    - dns
+    - gateway
+    name: default
+  persistent_disk: 40960
+  properties:
+    databases:
+      address: 0.ccdb-ng.default.((deploy_name)).bosh
+      databases:
+      - citext: true
+        name: appcloud
+        tag: cc
+      - citext: false
+        name: repmgrdb
+        tag: cluster
+      pool_size: 10
+      port: 5524
+      repl_mode: manualcluster
+      roles:
+      - name: ccadmin
+        password: w6gkfUA8uw7sVCG9
+        tag: admin
+      - name: backup_user
+        password: Ckh95Dxn
+        tag: replmgr
+    db: ccdb
+    metron_agent:
+      zone: z1
+    unbound:
+      reverse-dns:
+        stub-addr: ((director_ip))
+  resource_pool: coreNode
+  templates:
+  - name: unbound
+    release: unbound
+  - name: postgres
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  - name: metron_agent
+    release: -((cf_release))
+- instances: 1
+  name: etcd
+  networks:
+  - name: default
+  persistent_disk: 20480
+  properties:
+    metron_agent:
+      zone: z1
+    networks:
+      apps: default
+  resource_pool: coreNode
+  templates:
+  - name: unbound
+    release: unbound
+  - name: etcd
+    release: -((cf_release))
+  - name: etcd_metrics_server
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  - name: metron_agent
+    release: -((cf_release))
+- db_scheme: postgresql
+  instances: 1
+  name: uaadb
+  networks:
+  - default:
+    - dns
+    - gateway
+    name: default
+  persistent_disk: 20480
+  properties:
+    databases:
+      address: 0.uaadb.default.((deploy_name)).bosh
+      databases:
+      - name: uaa
+        tag: uaa
+      - citext: false
+        name: repmgrdb
+        tag: cluster
+      db_scheme: postgresql
+      port: 2544
+      repl_mode: manualcluster
+      roles:
+      - name: root
+        password: A43GyVXYH6T9sS5g
+        tag: admin
+      - name: backup_user
+        password: Ckh95Dxn
+        tag: replmgr
+    db: uaadb
+    metron_agent:
+      zone: z1
+    unbound:
+      reverse-dns:
+        stub-addr: ((director_ip))
+  resource_pool: coreNode
+  templates:
+  - name: unbound
+    release: unbound
+  - name: postgres
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  - name: metron_agent
+    release: -((cf_release))
+- instances: 1
+  name: uaa
+  networks:
+  - name: default
+  properties:
+    consul:
+      agent:
+        services:
+          uaa: {}
+    metron_agent:
+      zone: z1
+    route_registrar:
+      routes:
+      - health_check:
+          name: uaa-healthcheck
+          script_path: /var/vcap/jobs/uaa/bin/health_check
+        name: uaa
+        port: 8080
+        registration_interval: 4s
+        tags:
+          component: uaa
+        uris:
+        - uaa.((deploy_name)).bluemix.net
+        - '*.uaa.((deploy_name)).bluemix.net'
+    uaa:
+      proxy:
+        servers:
+        - 10.112.39.13
+        - 10.112.116.18
+        - 10.112.116.76
+        - 10.112.116.77
+  resource_pool: coreNode
+  templates:
+  - name: unbound
+    release: unbound
+  - name: consul_agent
+    release: -((cf_release))
+  - name: uaa
+    release: -((cf_release))
+  - name: route_registrar
+    release: -((cf_release))
+  - name: statsd-injector
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  - name: metron_agent
+    release: -((cf_release))
+- instances: 1
+  name: loggregator
+  networks:
+  - name: default
+  persistent_disk: 20480
+  properties:
+    doppler:
+      zone: z1
+    metron_agent:
+      zone: z1
+    networks:
+      apps: default
+  resource_pool: logger
+  templates:
+  - name: unbound
+    release: unbound
+  - name: doppler
+    release: -((cf_release))
+  - name: syslog_drain_binder
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  - name: metron_agent
+    release: -((cf_release))
+- instances: 1
+  name: loggregator_tc
+  networks:
+  - name: default
+  properties:
+    metron_agent:
+      zone: z1
+    networks:
+      apps: default
+      management: default
+    route_registrar:
+      routes:
+      - name: doppler
+        port: 8081
+        registration_interval: 20s
+        uris:
+        - doppler.((deploy_name)).bluemix.net
+      - name: loggregator
+        port: 8080
+        registration_interval: 20s
+        uris:
+        - loggregator.((deploy_name)).bluemix.net
+    traffic_controller:
+      zone: z1
+  resource_pool: logger
+  templates:
+  - name: unbound
+    release: unbound
+  - name: loggregator_trafficcontroller
+    release: -((cf_release))
+  - name: route_registrar
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  - name: metron_agent
+    release: -((cf_release))
+- instances: 1
+  name: services_nfs
+  networks:
+  - default:
+    - dns
+    - gateway
+    name: default
+  persistent_disk: 20480
+  properties:
+    nfs_server:
+      allow_from_entries:
+      - 158.0.0.0/8
+      no_root_squash: true
+  resource_pool: coreNode
+  templates:
+  - name: unbound
+    release: unbound
+  - name: debian_nfs_server
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+- instances: 1
+  name: cloud_controller_ng
+  networks:
+  - name: default
+  properties:
+    consul:
+      agent:
+        services:
+          cloud_controller_ng: {}
+    metron_agent:
+      zone: z1
+    route_registrar:
+      routes:
+      - name: api
+        port: 9022
+        registration_interval: 20s
+        tags:
+          component: CloudController
+        uris:
+        - api.((deploy_name)).bluemix.net
+  resource_pool: coreNode
+  templates:
+  - name: unbound
+    release: unbound
+  - name: consul_agent
+    release: -((cf_release))
+  - name: cloud_controller_ng
+    release: -((cf_release))
+  - name: statsd-injector
+    release: -((cf_release))
+  - name: route_registrar
+    release: -((cf_release))
+  - name: java-buildpack
+    release: -((cf_release))
+  - name: go-buildpack
+    release: -((cf_release))
+  - name: nodejs-buildpack
+    release: -((cf_release))
+  - name: ruby-buildpack
+    release: -((cf_release))
+  - name: php-buildpack
+    release: -((cf_release))
+  - name: python-buildpack
+    release: -((cf_release))
+  - name: binary-buildpack
+    release: -((cf_release))
+  - name: staticfile-buildpack
+    release: -((cf_release))
+  - name: java-offline-buildpack
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  - name: metron_agent
+    release: -((cf_release))
+- instances: 1
+  name: clock_global
+  networks:
+  - name: default
+  persistent_disk: 20480
+  properties:
+    consul:
+      agent:
+        services:
+          cloud_controller_ng: {}
+    metron_agent:
+      zone: z1
+    route_registrar:
+      routes:
+      - name: api
+        port: 9022
+        registration_interval: 20s
+        tags:
+          component: CloudController
+        uris:
+        - api.((deploy_name)).bluemix.net
+  resource_pool: coreNode
+  templates:
+  - name: unbound
+    release: unbound
+  - name: consul_agent
+    release: -((cf_release))
+  - name: cloud_controller_ng
+    release: -((cf_release))
+  - name: cloud_controller_clock
+    release: -((cf_release))
+  - name: route_registrar
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  - name: metron_agent
+    release: -((cf_release))
+- instances: 1
+  name: api_worker
+  networks:
+  - name: default
+  persistent_disk: 0
+  properties:
+    consul:
+      agent:
+        services:
+          cloud_controller_ng: {}
+    metron_agent:
+      zone: z1
+    route_registrar:
+      routes:
+      - name: api
+        port: 9022
+        registration_interval: 20s
+        tags:
+          component: CloudController
+        uris:
+        - api.((deploy_name)).bluemix.net
+  resource_pool: coreNode
+  templates:
+  - name: unbound
+    release: unbound
+  - name: consul_agent
+    release: -((cf_release))
+  - name: cloud_controller_ng
+    release: -((cf_release))
+  - name: cloud_controller_worker
+    release: -((cf_release))
+  - name: route_registrar
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  - name: metron_agent
+    release: -((cf_release))
+- instances: 1
+  name: router
+  networks:
+  - default:
+    - dns
+    - gateway
+    name: default
+  properties:
+    consul:
+      agent:
+        services:
+          gorouter: {}
+    metron_agent:
+      zone: z1
+  resource_pool: router
+  templates:
+  - name: unbound
+    release: unbound
+  - name: consul_agent
+    release: -((cf_release))
+  - name: gorouter
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  - name: metron_agent
+    release: -((cf_release))
+- instances: 1
+  name: ha_proxy
+  networks:
+  - default:
+    - dns
+    - gateway
+    name: default
+  properties:
+    ha_proxy:
+      ssl_pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICSTCCAbICCQDMqCP9xn2L8DANBgkqhkiG9w0BAQsFADBpMQswCQYDVQQGEwJB
+        VTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0
+        cyBQdHkgTHRkMSIwIAYDVQQDDBkqLnNsY3BpLmV1LWdiLmJsdWVtaXgubmV0MB4X
+        DTE3MDMwMTA5NTYyOFoXDTE3MDMzMTA5NTYyOFowaTELMAkGA1UEBhMCQVUxEzAR
+        BgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5
+        IEx0ZDEiMCAGA1UEAwwZKi5zbGNwaS5ldS1nYi5ibHVlbWl4Lm5ldDCBnzANBgkq
+        hkiG9w0BAQEFAAOBjQAwgYkCgYEAwJvVGtLhIQfv0vVSoVhv5qnvThX11k1dxDPZ
+        FkhMLU3sSobP2yHUEqNkzVZ1Bhj/QB2Y9LfZUdzTxGQton7km2BBgPDyf/GcyuNd
+        IYcd673vSa7kpjF3OAzRdkLEqzropiTeGPJGRIamTiSQT54OJFUhD7YPdMazYId6
+        r9XYm48CAwEAATANBgkqhkiG9w0BAQsFAAOBgQCjg2LHZ9XGD6AZ7ZfMJX5RubWh
+        nirXCgsZ5hmZcNqaCbkTA9NWrMeEn0rbde384bqJKXwD88ChsksaoftSWLt/WAom
+        Kbj6zDdnfkYe0wGb59HfYftgLWoPY22sUfOoP1wA5kzE6Zy7u9uYpH1zqr/xfvmD
+        kotSozMi53h6Wdx6Lw==
+        -----END CERTIFICATE-----
+        -----BEGIN RSA PRIVATE KEY-----
+        MIICXQIBAAKBgQDAm9Ua0uEhB+/S9VKhWG/mqe9OFfXWTV3EM9kWSEwtTexKhs/b
+        IdQSo2TNVnUGGP9AHZj0t9lR3NPEZC2ifuSbYEGA8PJ/8ZzK410hhx3rve9JruSm
+        MXc4DNF2QsSrOuimJN4Y8kZEhqZOJJBPng4kVSEPtg90xrNgh3qv1dibjwIDAQAB
+        AoGAQ7aFNOjuPK6NoZydcBunO3CCsPEHfE+2p0OTDkJchZDfgVPjvyYlaGgJCCdc
+        /MfM9L1zCJWZ0S3RRTny0S3LMDhlaAL8m7NLA1R0ZwgVjjxCFbVzH2xyg1JlDMpC
+        haRnZWuD5eCqkkvMTv0/37AnCQkai+TVRJdqMA9+sSh48AECQQDnFNDLygc+swaY
+        330otMn4bXhpMyQgCtdXUBsHz0T7f793OQrsbzun/0Dlfc+6MQjX+9adFqBE7pqG
+        42eQksCdAkEA1WDzQHwKp9D7aHMGiomYVEJUNfNo1BGJMBQ1uhPM7SGuSldZtJct
+        9FtgVxW7zQiPk4FvJh1Y/PtyKVDgA2IHGwJAYjyqKwifHduT4WeZWLXK6w720ppI
+        MEsLkvXeF+rYo6aCahfY+fyruta76xQaPEhePxuz+CJHTia1kMSaIY8RzQJBAK7q
+        AZ270RROGLk/iX4pWui/Ur7DIQyur1HtTzmRH6zHrlMcldmXEEG+YhQhKcjimqel
+        M9L/vcHr8WJy/J9pTT8CQQCbxEO7d21g2NI0IZqqiwejjBK8bsrNZdR2SfEB9B2H
+        v53k5Atu+5HlV9g8y84q83OwTMNtekqyx9hBG1wE6wdc
+        -----END RSA PRIVATE KEY-----
+    metron_agent:
+      zone: z1
+    router:
+      servers:
+        z1:
+        - 0.router.default.((deploy_name)).bosh
+  resource_pool: router
+  templates:
+  - name: consul_agent
+    release: -((cf_release))
+  - name: haproxy
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  - name: metron_agent
+    release: -((cf_release))
+  - name: unbound
+    release: unbound
+- instances: 1
+  name: hm9000
+  networks:
+  - default:
+    - dns
+    - gateway
+    name: default
+  properties:
+    consul:
+      agent:
+        services:
+          hm9000: {}
+    etcd:
+      machines:
+      - 0.etcd.default.((deploy_name)).bosh
+    metron_agent:
+      zone: z1
+    route_registrar:
+      routes:
+      - name: hm9000
+        port: 5155
+        registration_interval: 20s
+        tags:
+          component: HM9K
+        uris:
+        - hm9000.((deploy_name)).bluemix.net
+  resource_pool: coreNode
+  templates:
+  - name: unbound
+    release: unbound
+  - name: consul_agent
+    release: -((cf_release))
+  - name: hm9000
+    release: -((cf_release))
+  - name: route_registrar
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  - name: metron_agent
+    release: -((cf_release))
+- instances: 1
+  name: dea_next
+  networks:
+  - name: default
+  properties:
+    consul:
+      agent:
+        services:
+          dea:
+            check:
+              interval: 5m
+              name: dns_health_check
+              script: /var/vcap/jobs/dea_next/bin/dns_health_check
+              status: passing
+    dea_next:
+      mtu: 1400
+      stacks: null
+    metron_agent:
+      zone: z1
+    unbound:
+      is_dea: true
+  resource_pool: dea
+  templates:
+  - name: unbound
+    release: unbound
+  - name: consul_agent
+    release: -((cf_release))
+  - name: dea_next
+    release: -((cf_release))
+  - name: dea_logging_agent
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  - name: metron_agent
+    release: -((cf_release))
+  update:
+    max_in_flight: 1
+- instances: 1
+  name: admin_ui
+  networks:
+  - default:
+    - dns
+    - gateway
+    name: default
+  persistent_disk: 20480
+  resource_pool: logger
+  templates:
+  - name: unbound
+    release: unbound
+  - name: admin_ui_v2
+    release: admin-ui
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+- instances: 1
+  name: nfs_WAL_server
+  networks:
+  - default:
+    - dns
+    - gateway
+    name: default
+  persistent_disk: 102400
+  properties:
+    nfs_server:
+      allow_from_entries:
+      - 158.0.0.0/8
+      no_root_squash: true
+    wal: wal_nfs_server
+  resource_pool: coreNode
+  templates:
+  - name: unbound
+    release: unbound
+  - name: debian_nfs_wal
+    release: habr
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+- instances: 1
+  name: loginserver
+  networks:
+  - default:
+    - dns
+    - gateway
+    name: default
+  properties:
+    route_registrar:
+      routes:
+      - health_check:
+          name: loginserver-healthcheck
+          script_path: /var/vcap/jobs/loginserver/bin/health_check
+        name: loginserver
+        port: 80
+        registration_interval: 4s
+        tags:
+          component: loginserver
+        uris:
+        - login.((deploy_name)).bluemix.net
+  release: loginserver
+  resource_pool: coreNode
+  templates:
+  - name: unbound
+    release: unbound
+  - name: loginserver
+  - name: route_registrar
+    release: -((cf_release))
+  - name: mod_vms
+    release: mod-vms
+  - name: post-deploy
+    release: security-release
+  - name: monit-post-deploy
+    release: security-release
+  - name: logstash-forwarder
+    release: marmot-logstash-forwarder-bosh-release
+  update:
+    canaries: 1
+    max_in_flight: 1
+name: ((deploy_name))
+networks:
+- cloud_properties:
+    security_groups:
+    - default
+    - cf
+  dns:
+  - ((director_ip))
+  - 10.0.80.11
+  - 10.0.80.12
+  name: default
+  type: dynamic
+properties:
+  adminui:
+    ccdb_uri: postgres://ccadmin:w6gkfUA8uw7sVCG9@0.ccdb-ng.default.((deploy_name)).bosh:5524/appcloud
+    log_files:
+    - admin_ui.log
+    uaa_client:
+      id: admin_ui_client
+      secret: Y4wOohLX86RFbdV6
+    uaa_groups_admin:
+    - admin_ui.admin
+    uaa_groups_user:
+    - admin_ui.user
+    uaadb_uri: postgres://root:A43GyVXYH6T9sS5g@0.uaadb.default.((deploy_name)).bosh:2544/uaa
+  app_domains:
+  - ((deploy_name)).mybluemix.net
+  build: 235011
+  cc:
+    admin_bootstrap_email: ibmadmin@us.ibm.com
+    app_events:
+      cutoff_age_in_days: 62
+    app_usage_events:
+      cutoff_age_in_days: 62
+    audit_events:
+      cutoff_age_in_days: 62
+    broker_client_timeout_seconds: 70
+    buildpacks:
+      blobstore_type: fog
+      buildpack_directory_key: cc-buildpacks
+      fog_connection:
+        connection_options:
+          ssl_version: TLSv1
+        openstack_api_key: 7eab8fbfcdda3249e780dce0b10c7e4794e5ccd0fc9af7221b9fa9b40924ba8a
+        openstack_auth_url: https://((data_center_name)).objectstorage.service.networklayer.com/auth/v1.0/
+        openstack_temp_url_key: 4ks3hl3g-342d-g343-22dd-3dfs36sgsvv3
+        openstack_username: IBMOS278444-33:cuixuex@cn.ibm.com
+        provider: OpenStack
+    bulk_api_password: UAMm7BTT6baZbXAb
+    client_max_body_size: 15M
+    db_encryption_key: vSKkXadhjUB33jEc
+    dea_use_https: false
+    default_fog_connection:
+      local_root: /var/vcap/nfs/shared
+    default_health_check_timeout: 60
+    default_quota_definition: q2GB
+    default_running_security_groups:
+    - public_networks
+    - dns
+    default_stack: cflinuxfs2
+    default_staging_security_groups:
+    - public_networks
+    - dns
+    droplets:
+      blobstore_type: fog
+      droplet_directory_key: cc-droplets
+      fog_connection:
+        connection_options:
+          ssl_version: TLSv1
+        openstack_api_key: 7eab8fbfcdda3249e780dce0b10c7e4794e5ccd0fc9af7221b9fa9b40924ba8a
+        openstack_auth_url: https://((data_center_name)).objectstorage.service.networklayer.com/auth/v1.0/
+        openstack_temp_url_key: 4ks3hl3g-342d-g343-22dd-3dfs36sgsvv3
+        openstack_username: IBMOS278444-33:cuixuex@cn.ibm.com
+        provider: OpenStack
+    external_host: api
+    external_port: 9022
+    external_protocol: http
+    failed_jobs:
+      cutoff_age_in_days: 7
+    install_buildpacks:
+    - name: java_buildpack
+      package: buildpack_java
+    - name: ruby_buildpack
+      package: ruby-buildpack
+    - name: nodejs_buildpack
+      package: nodejs-buildpack
+    - name: go_buildpack
+      package: go-buildpack
+    - name: python_buildpack
+      package: python-buildpack
+    - name: php_buildpack
+      package: php-buildpack
+    - name: staticfile_buildpack
+      package: staticfile-buildpack
+    - name: binary_buildpack
+      package: binary-buildpack
+    internal_api_password: DTZdnFRZYpsthYLJ
+    internal_api_user: ccadmin
+    jobs:
+      app_bits_packer:
+        timeout_in_seconds: null
+      app_events_cleanup:
+        timeout_in_seconds: null
+      app_usage_events_cleanup:
+        timeout_in_seconds: null
+      blobstore_delete:
+        timeout_in_seconds: null
+      blobstore_upload:
+        timeout_in_seconds: null
+      droplet_deletion:
+        timeout_in_seconds: null
+      droplet_upload:
+        timeout_in_seconds: null
+      global:
+        timeout_in_seconds: 14400
+      model_deletion:
+        timeout_in_seconds: null
+    logging_level: debug
+    maximum_app_disk_in_mb: 2048
+    maximum_health_check_timeout: 180
+    min_cli_version: null
+    min_recommended_cli_version: null
+    packages:
+      app_package_directory_key: cc-packages
+      blobstore_type: fog
+      fog_connection:
+        connection_options:
+          ssl_version: TLSv1
+        openstack_api_key: 7eab8fbfcdda3249e780dce0b10c7e4794e5ccd0fc9af7221b9fa9b40924ba8a
+        openstack_auth_url: https://((data_center_name)).objectstorage.service.networklayer.com/auth/v1.0/
+        openstack_temp_url_key: 4ks3hl3g-342d-g343-22dd-3dfs36sgsvv3
+        openstack_username: IBMOS278444-33:cuixuex@cn.ibm.com
+        provider: OpenStack
+    quota_definitions:
+      q2GB:
+        instance_memory_limit: 2048
+        memory_limit: 2048
+        non_basic_services_allowed: true
+        total_routes: 500
+        total_services: 10
+        trial_db_allowed: true
+      q4GB:
+        instance_memory_limit: 4096
+        memory_limit: 4096
+        non_basic_services_allowed: true
+        total_routes: 500
+        total_services: 20
+      q8GB:
+        instance_memory_limit: 4096
+        memory_limit: 8192
+        non_basic_services_allowed: true
+        total_routes: 500
+        total_services: 40
+      q16GB:
+        instance_memory_limit: 4096
+        memory_limit: 16384
+        non_basic_services_allowed: true
+        total_routes: 1000
+        total_services: 80
+      q32GB:
+        instance_memory_limit: 4096
+        memory_limit: 32768
+        non_basic_services_allowed: true
+        total_routes: 1000
+        total_services: 160
+      q64GB:
+        instance_memory_limit: 4096
+        memory_limit: 65536
+        non_basic_services_allowed: true
+        total_routes: 1500
+        total_services: 320
+      q128GB:
+        instance_memory_limit: 8192
+        memory_limit: 131072
+        non_basic_services_allowed: true
+        total_routes: 2000
+        total_services: 640
+      q256GB:
+        instance_memory_limit: 8192
+        memory_limit: 262144
+        non_basic_services_allowed: true
+        total_routes: 4000
+        total_services: 1024
+      q512GB:
+        instance_memory_limit: 8192
+        memory_limit: 524288
+        non_basic_services_allowed: true
+        total_routes: 8000
+        total_services: 1500
+    renderer:
+      max_inline_relations_depth: 3
+    resource_pool:
+      blobstore_type: fog
+      fog_connection:
+        connection_options:
+          ssl_version: TLSv1
+        openstack_api_key: 7eab8fbfcdda3249e780dce0b10c7e4794e5ccd0fc9af7221b9fa9b40924ba8a
+        openstack_auth_url: https://((data_center_name)).objectstorage.service.networklayer.com/auth/v1.0/
+        openstack_temp_url_key: 4ks3hl3g-342d-g343-22dd-3dfs36sgsvv3
+        openstack_username: IBMOS278444-33:cuixuex@cn.ibm.com
+        provider: OpenStack
+      resource_directory_key: cc-resources
+    security_event_logging:
+      enabled: null
+    security_group_definitions:
+    - name: public_networks
+      rules:
+      - destination: 0.0.0.0-9.255.255.255
+        protocol: all
+      - destination: 11.0.0.0-169.253.255.255
+        protocol: all
+      - destination: 169.255.0.0-172.15.255.255
+        protocol: all
+      - destination: 172.32.0.0-192.167.255.255
+        protocol: all
+      - destination: 192.169.0.0-255.255.255.255
+        protocol: all
+    - name: dns
+      rules:
+      - destination: 0.0.0.0/0
+        ports: "53"
+        protocol: tcp
+      - destination: 0.0.0.0/0
+        ports: "53"
+        protocol: udp
+    srv_api_uri: http://api.((deploy_name)).bluemix.net
+    stacks:
+    - description: Ubuntu 14.04.2 trusty
+      name: cflinuxfs2
+    staging_upload_password: m0TsXoblVp0gYGkw
+    staging_upload_user: d4xaiUWG
+    uaa_resource_id: cloud_controller
+  ccdb:
+    address: 0.ccdb-ng.default.((deploy_name)).bosh
+    databases:
+    - citext: true
+      name: appcloud
+      tag: cc
+    - citext: false
+      name: repmgrdb
+      tag: cluster
+    db_scheme: postgres
+    pool_size: 10
+    port: 5524
+    repl_mode: manualcluster
+    roles:
+    - name: ccadmin
+      password: w6gkfUA8uw7sVCG9
+      tag: admin
+    - name: backup_user
+      password: Ckh95Dxn
+      tag: replmgr
+  collector: null
+  consul:
+    agent:
+      domain: cf.internal
+      log_level: null
+      servers:
+        lan:
+        - 0.consul.default.((deploy_name)).bosh
+    agent_cert: |
+      -----BEGIN CERTIFICATE-----
+      MIIECjCCAvKgAwIBAgIJAJapS3nprRWQMA0GCSqGSIb3DQEBCwUAMHExCzAJBgNV
+      BAYTAlVTMQswCQYDVQQIEwJUWDEPMA0GA1UEBxMGQXVzdGluMQwwCgYDVQQKEwNJ
+      Qk0xGDAWBgNVBAsTD0Nsb3VkIC0gQmx1ZW1peDEcMBoGA1UEAxMTQk1YIExvZ3N0
+      YXNoIENBIGFhMjAeFw0xNzAyMTMyMTMyMDZaFw0xODAyMTMyMTMyMDZaMGoxCzAJ
+      BgNVBAYTAlVTMQswCQYDVQQIEwJUWDEPMA0GA1UEBxMGQXVzdGluMQwwCgYDVQQK
+      EwNJQk0xGDAWBgNVBAsTD0Nsb3VkIC0gQmx1ZW1peDEVMBMGA1UEAxMMY29uc3Vs
+      IGFnZW50MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7JiRjcTVdTea
+      cRwCgDucgnESUEmW5nYFa6gIeEmLd/zQIzmRWYtcosBCirly5DKZ9ZueQtHtHhir
+      DZMJCy3sZQcQjtQG56XVFk4KRSzOMsEXjCK2QWfnAn9t2nhEE86mzd0Q+37g13E8
+      Qd0EbcrAf8N3Vscqhr2Nm+mOzhAjKRMS0ahN9gaEcqb3EVRv5ILrEDiYwtpeZbCI
+      dY+sgu32qBCIWWPb+Q70jFcC9y9wHcs46XCwAJPz8WQNkZ3ZI8VuvRdww31zYRKb
+      Fbh0FF6xT6yu2IgmlPVSaPN1MyT13pkk2WdpIjS00KeO8kw8nO9Bvm6eTe3Xlu8d
+      dEbqlh416wIDAQABo4GrMIGoMAkGA1UdEwQCMAAwDgYDVR0PAQH/BAQDAgO4MB0G
+      A1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAsBglghkgBhvhCAQ0EHxYdT3Bl
+      blNTTCBHZW5lcmF0ZWQgQ2VydGlmaWNhdGUwHQYDVR0OBBYEFCCjWJGa9N7dkDMr
+      qZXda42DpE3IMB8GA1UdIwQYMBaAFNaXC3N/O28FgxyJlav7xW5EOileMA0GCSqG
+      SIb3DQEBCwUAA4IBAQAUuUj05tQHekIYTdGMsybpwvAHE7vvaIZweqZ7Wbblo7cb
+      n6UA2cWZLA6uR1yuxd3SE4ecaNQwQsSqB8IpffCQLNj+E+aVD9qC7SbHJa6zezbN
+      AfHZrl/Ic3z3k5cXxHfzgH8yCPaWWQTQ+oJ9ng3lI29HLD05Z9L5mmYuwKgO0rvp
+      alp/cgRJSWnl2VeO1UrJpTi0FjRp6a3OsNY/bl/dEXxsjvS/w+aK/SCpn7M6ZMtv
+      rlaJ71rJC+QXmc0A9hfEGRKQiqfoqZATsVNYEAuwjcpVJNzYQ9s2ppxG1ZL1o7iY
+      3QA8qclC0fTaoQGU/Aqlc+V6D3ujE4rE+EibvFt4
+      -----END CERTIFICATE-----
+    agent_key: |
+      -----BEGIN PRIVATE KEY-----
+      MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDsmJGNxNV1N5px
+      HAKAO5yCcRJQSZbmdgVrqAh4SYt3/NAjOZFZi1yiwEKKuXLkMpn1m55C0e0eGKsN
+      kwkLLexlBxCO1AbnpdUWTgpFLM4ywReMIrZBZ+cCf23aeEQTzqbN3RD7fuDXcTxB
+      3QRtysB/w3dWxyqGvY2b6Y7OECMpExLRqE32BoRypvcRVG/kgusQOJjC2l5lsIh1
+      j6yC7faoEIhZY9v5DvSMVwL3L3AdyzjpcLAAk/PxZA2RndkjxW69F3DDfXNhEpsV
+      uHQUXrFPrK7YiCaU9VJo83UzJPXemSTZZ2kiNLTQp47yTDyc70G+bp5N7deW7x10
+      RuqWHjXrAgMBAAECggEAX4wLt/+GHsTaQ5SGtAee4JTOSws0/BQsgzoEVaOJxeac
+      naUZfFqKChXvqXtUGTEQOP5kDuMdSbq3lY9MJy4gGfqc5rlcon83iz7v6di62wdc
+      vZSlGsvdoIYatJA+GeuqNFfzDEXEgmzx4z1hFP+89rvW/X4IQArb3duX9sLQmDyb
+      XfNORbnoP9dkNyx8Ky1dswMFOu+uLgPizIqxTs0rE1BIJI8ziNie35+DSf+YklrZ
+      D7NWLD6/o5NliNOjmPbsRp5S0I9VT7ySYr897rvFsCz3RhuEmj8S++6B9dKQ4tGI
+      69xTRPegmKJC7J7Ybl+yoCByTSBSAjLsSB8gCf3l5QKBgQD6RAsuNsxZ3ZJRNmdX
+      HvdNE6qyxuFVuud8X4Fklu2UbSR72WrRGk49q2kunX0Q73slmSnuRnRJTE7YU1hz
+      lCefFtIog4LTI/GUrWrytKqXejbS//j3oLeQzlEr/bbEJkdYFnv4ebuMgbbHuYUI
+      g/LVWaJvYNoDQPYY7tjMWV+XJwKBgQDyBFfj40P+ctzJvC4KR9DQ7u7iHF4BS3JZ
+      PscMaoO6rThDuOq9mGDVIdaQGbG6V0H5PZhBJzUPBOi0CNBR+47ElWkK4NytC21t
+      gTBrCQLE2wy2lN4a4X+06dzAybYS/IWW6QINqTbXafFoB61pN6lUtknhJx3jPH2s
+      O+yRB9dFnQKBgQCR/hWjnPXyyo2rcJgyO286eGmQpvIWh9S4OiKKYn0vo8evs/Jb
+      DwRrd04Bkn+93GYzVbkfNdxqUeiAy4YCzn+aj76DQcyUjRhFijCkav5FJVdMGWTM
+      V+YdxC2YAwaWQFpIKb2iAqmE2rqcoj3X7NlA2mwmmxIy6bdmbhbshop76wKBgQC9
+      CEFyAVBZjXQAqlg3tXJXz1iNCeUvE7QEGzGz8/piM+xPkT7gygVQU/bYZQlZ58/j
+      EoY61Znu2kG8ZWn5rwgLajw6v/n9u4BEWPTtlYMxKXtbnRmCW4G5WDUR7Dunxs+9
+      WNA+xV3NkbV6MQz0swIy5ZL9JuWEWPo8Li4P9dTiTQKBgQC8klpbVa9gx/mZMya5
+      Vn3e6omdlku8EVAQOhtKmFk4OqlAVB++ed0bDCa7bro128PH9FkzX8EZOZ9BQ6Tv
+      /DsIw2TUZ0PuAtwcL58GFC5RTQx82JdVDRm9wnuhYuuP1YD6rTUsHg0NmI6tITqA
+      GTsV0nDEuzCuklf9rVi4SD3V+w==
+      -----END PRIVATE KEY-----
+    ca_cert: |
+      -----BEGIN CERTIFICATE-----
+      MIIEUzCCAzugAwIBAgIJAJapS3nprRWIMA0GCSqGSIb3DQEBCwUAMHYxCzAJBgNV
+      BAYTAlVTMQswCQYDVQQIDAJUWDEPMA0GA1UEBwwGQXVzdGluMQwwCgYDVQQKDANJ
+      Qk0xGDAWBgNVBAsMD0Nsb3VkIC0gQmx1ZW1peDEhMB8GA1UEAwwYQmx1ZW1peCBM
+      b2dzdGFzaCBSb290IENBMB4XDTE3MDIxMzIxMzE1N1oXDTIzMTIxMTIxMzE1N1ow
+      cTELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAlRYMQ8wDQYDVQQHEwZBdXN0aW4xDDAK
+      BgNVBAoTA0lCTTEYMBYGA1UECxMPQ2xvdWQgLSBCbHVlbWl4MRwwGgYDVQQDExNC
+      TVggTG9nc3Rhc2ggQ0EgYWEyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+      AQEAyrXSBUNYRtCwtoSykDII45/lCayvxem3UU2I/3L/WPaBv7a1Z+ys1VaR6usB
+      wKLVCjQXlowGfem+yLLB14FzkdxvXEtceniFkl4fhmpInIDDHKnJNH8yS+1qaerp
+      xG1zHBA5GGxlCEDsA89INAxavzFFM6ghMv11/8k74R2tGI+PhxVTZOwI3mcI8+B3
+      Bw45e6ZP7qS/gWx0IPvb9jnlgAdGLCYiPjLHgud6tZ5Hm1+XvNzAqhkKuNpcdr6v
+      wXd+ZkHSMaNyX8+O/0g73ULKVi1HU1qXIOWPKjyBild8vdZWVzFlkl8tsi4suLt8
+      BKbR6IRV04UR8/vS46lwkbu+LwIDAQABo4HoMIHlMB0GA1UdDgQWBBTWlwtzfztv
+      BYMciZWr+8VuRDopXjCBqAYDVR0jBIGgMIGdgBSGAzwgtexOtjb4Ayjubq8EYjRC
+      z6F6pHgwdjELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlRYMQ8wDQYDVQQHDAZBdXN0
+      aW4xDDAKBgNVBAoMA0lCTTEYMBYGA1UECwwPQ2xvdWQgLSBCbHVlbWl4MSEwHwYD
+      VQQDDBhCbHVlbWl4IExvZ3N0YXNoIFJvb3QgQ0GCCQDMOZcb23pabzAMBgNVHRME
+      BTADAQH/MAsGA1UdDwQEAwIBBjANBgkqhkiG9w0BAQsFAAOCAQEASHYTTE/W8MrS
+      Pq8+4ZnmsufKhlxxLgc8lJgN2nMeJce+fg/MnbEpf9i4tIH9H80NcqSNNBDZ7a8h
+      mW0ddrMtmCJn+kKwoUniAQFG8ey1nJeCiVknjKZzTk1CoV167sQrDHuTR2LPlLfo
+      2sik6f7pIAwW3bZOCxqLRWqmu7cx8ADMIg/2T0ylCDXRKRjtvCkiamr1fCisa/ot
+      GB1WH3+irTWfUs5Rf5JatzGnxturqX2wJdXav07FbWHL8x+4fPKIQoxk2v/ix1+5
+      uQXy9MnWOG4uHBnrQwH9+uvldTLVM1xKtuJjHaF6SPEgSiqpEe/z+RwnpU9RX2ze
+      xRojfAEBjQ==
+      -----END CERTIFICATE-----
+      -----BEGIN TRUSTED CERTIFICATE-----
+      MIIEWDCCA0CgAwIBAgIJAMw5lxvbelpvMA0GCSqGSIb3DQEBCwUAMHYxCzAJBgNV
+      BAYTAlVTMQswCQYDVQQIDAJUWDEPMA0GA1UEBwwGQXVzdGluMQwwCgYDVQQKDANJ
+      Qk0xGDAWBgNVBAsMD0Nsb3VkIC0gQmx1ZW1peDEhMB8GA1UEAwwYQmx1ZW1peCBM
+      b2dzdGFzaCBSb290IENBMB4XDTE1MDMxNzE3MTYwM1oXDTMwMDMxMzE3MTYwM1ow
+      djELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlRYMQ8wDQYDVQQHDAZBdXN0aW4xDDAK
+      BgNVBAoMA0lCTTEYMBYGA1UECwwPQ2xvdWQgLSBCbHVlbWl4MSEwHwYDVQQDDBhC
+      bHVlbWl4IExvZ3N0YXNoIFJvb3QgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+      ggEKAoIBAQDIRcNYq18hT1VtDMFUf35cb1xW57vQMEE5jirNXbmIctdX7f1G0F8j
+      wjoBbN61dH2GZZK0TbkZlhfR9uo9Lx5buFGQVqKnWy32HCBl9ot4jp6/tsQR3cAD
+      O8XQ6B9jahIpO6ZnPzLo5RB6zP48FQmSRDPVW3GMALm8rF2OO/ZKtf6BYspT2rOD
+      f8W7PNbFuosVzdtx14XlU960IPXtfRaiuB7sn8byauMZQbvs2cV6TWIN1UuAVv55
+      uCYRICQ9rksF4ExBRtudCqMNz78pvB6/+tXzJ4feDXVNolKYm79iRLW0TAU2gcaN
+      9jukWhTGMyws74zfSelAXosO2X1gwJ/ZAgMBAAGjgegwgeUwHQYDVR0OBBYEFIYD
+      PCC17E62NvgDKO5urwRiNELPMIGoBgNVHSMEgaAwgZ2AFIYDPCC17E62NvgDKO5u
+      rwRiNELPoXqkeDB2MQswCQYDVQQGEwJVUzELMAkGA1UECAwCVFgxDzANBgNVBAcM
+      BkF1c3RpbjEMMAoGA1UECgwDSUJNMRgwFgYDVQQLDA9DbG91ZCAtIEJsdWVtaXgx
+      ITAfBgNVBAMMGEJsdWVtaXggTG9nc3Rhc2ggUm9vdCBDQYIJAMw5lxvbelpvMAwG
+      A1UdEwQFMAMBAf8wCwYDVR0PBAQDAgEGMA0GCSqGSIb3DQEBCwUAA4IBAQC2c7/t
+      XHK6D09GApyZUSTuko3J3VfqsSM1OhiYwfBKAn9a9FrymxrpuRXhriDWb6vKk++Y
+      zOgi2ua67Q9/WLWZIhM/jKZkQsa8Zfjcg2MfWXXwf9x9M3prtvhdmcxi2qjMmilN
+      su87jkxsFcJYVCxCwk3xJ0WOzqnz66PhsLrd+i0W+DsFYj6ooq38NrLGXQf9Nq89
+      as9nCNZQ9dgkBzh8wYUwfHxZHQvZHdathhAY3EbxTXmc09878JjHlf9TCe0M9BTy
+      5/AvU6SrddoxDVgwe7M8q/pqqj0gbGBPwUCZxcRbmwxJiu7Qts0j7QSyAdnDG1JB
+      XNrKrknVFG+xJJ9aMBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMB
+      -----END TRUSTED CERTIFICATE-----
+    encrypt_keys:
+    - 52523c724dcfe37a5720f404
+    server_cert: |
+      -----BEGIN CERTIFICATE-----
+      MIIEFDCCAvygAwIBAgIJAJapS3nprRWRMA0GCSqGSIb3DQEBCwUAMHExCzAJBgNV
+      BAYTAlVTMQswCQYDVQQIEwJUWDEPMA0GA1UEBxMGQXVzdGluMQwwCgYDVQQKEwNJ
+      Qk0xGDAWBgNVBAsTD0Nsb3VkIC0gQmx1ZW1peDEcMBoGA1UEAxMTQk1YIExvZ3N0
+      YXNoIENBIGFhMjAeFw0xNzAyMTMyMTMyMDZaFw0xODAyMTMyMTMyMDZaMHQxCzAJ
+      BgNVBAYTAlVTMQswCQYDVQQIEwJUWDEPMA0GA1UEBxMGQXVzdGluMQwwCgYDVQQK
+      EwNJQk0xGDAWBgNVBAsTD0Nsb3VkIC0gQmx1ZW1peDEfMB0GA1UEAxMWc2VydmVy
+      LmRjMS5jZi5pbnRlcm5hbDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
+      ALURBSTMnhYaYz0pK7zRVQPdUXb5nK48Xdq8ALg/riy42hQIwAPC1Cu7E6lmCGaN
+      wiggXk5D6gWpGviS3cUQvjmSQYv3sq/pAhpmlxa2fwBF8BRMVU3tWNd2RwFusPeI
+      LuzM9fIjR38JlWNmQ5E3WLbP9lx8fzDKqFYcwbnLC5Rt+AeZlZyAwCp4QNmc21cu
+      z2yW31kZWHboVJL3p/UqPi+56FtxOfASTEo9TMB0E9DxnC6YD5zRMLbkESgwBVgj
+      uD7glYvTCR86skVbRHpxQ3X6cNBTHqhIuV6TWwfj9fwvXpgEw7TKsN9LyiYiUG36
+      Jm3HrKWgUwSdLopX0htu7HECAwEAAaOBqzCBqDAJBgNVHRMEAjAAMA4GA1UdDwEB
+      /wQEAwIDuDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwLAYJYIZIAYb4
+      QgENBB8WHU9wZW5TU0wgR2VuZXJhdGVkIENlcnRpZmljYXRlMB0GA1UdDgQWBBSV
+      ogGvAVKfp6HjEZg/xj/Op+Z/8DAfBgNVHSMEGDAWgBTWlwtzfztvBYMciZWr+8Vu
+      RDopXjANBgkqhkiG9w0BAQsFAAOCAQEAEC2U8oy6a9S8hBHYYptPj7R+2nHSupVU
+      oRGmGbOvVTW21tPx3ZlLsIYxfcIBU/Tw3w0aIyAxhkS1EimEPMlzBfDyIoB+JeLI
+      7OLm2yk5/Hrv0QFSurwP1FH8g+O4VCrYjDC1kANr6J42MRd28Oo05uBixEBhu1/4
+      i1lG2OPMdmMBE/gJeXIC6KlPD8tFDRNH09T8JuO+YEB2ReZRDQ3SNFWT295BHcjY
+      Vsd3xN72zrUaew5vy1zanya/A+0lCnyLO2Cb7VnH61DCKeDnYpoX0gG+4anPnajD
+      0OY7fp+rUP5JAk0uqhck/cKosBldgAQR2dOQulozbL3O3ZEcuf9WrQ==
+      -----END CERTIFICATE-----
+    server_key: |
+      -----BEGIN PRIVATE KEY-----
+      MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC1EQUkzJ4WGmM9
+      KSu80VUD3VF2+ZyuPF3avAC4P64suNoUCMADwtQruxOpZghmjcIoIF5OQ+oFqRr4
+      kt3FEL45kkGL97Kv6QIaZpcWtn8ARfAUTFVN7VjXdkcBbrD3iC7szPXyI0d/CZVj
+      ZkORN1i2z/ZcfH8wyqhWHMG5ywuUbfgHmZWcgMAqeEDZnNtXLs9slt9ZGVh26FSS
+      96f1Kj4vuehbcTnwEkxKPUzAdBPQ8ZwumA+c0TC25BEoMAVYI7g+4JWL0wkfOrJF
+      W0R6cUN1+nDQUx6oSLlek1sH4/X8L16YBMO0yrDfS8omIlBt+iZtx6yloFMEnS6K
+      V9IbbuxxAgMBAAECggEAF6yBxGm3erLZClhddlrVV4PCoMBqrrJIYC7IFk8HLiQ+
+      KTPqrSM2XABiBfpH+2ap/dablfaVvMc7Nkh3lApIIN1hUhRhCdR4mKyUsRzL1qSO
+      Sw0e8ykm/kbh6ktHepnU7tOujYn00WSWonAuwegfYommz7lcZOv+XgH1B16HpVCS
+      InYHoSjlmHyf6oAuVywY+reDv+ecRdt5vi+zaW1F6QPGP1HRQ85lyJu6lXYfQHHA
+      c1hVkix81ozQxuT+mXGVjBC6fUk4AX9dpdbM77TBb+xPvsCQor5fWMbl4rKcAVHG
+      khqnwZIr5XWSTb8Zr6VPpvL8znTxhaltzK9YUrcAtQKBgQDkEnEj80THl10iJkO6
+      MB+V8Vyc22xxaHvIKRQ+RHE+CkTjoaP5QSQyChCGAYxY1/QW0dWVYwDttd22OUu3
+      ji+u7+67ySSb/d6ewb0cQ2lZjlNkWbiV+yduXXf0WT3zzCN1zArQGG8c7vjJBNsW
+      2fUoCl+oGhTa8Mf+C84HgIB05QKBgQDLPQ6g39qxzy/9wEYros7HCCzeaotDrEQ2
+      gBZ/dWnL86nJXeihqiM6E29qn/ZiuXGm8Kjn9cyOh4eLUYyYdz5YgVRwlst1AO7g
+      BjFCH+5X0DjpylB9VEGUKouSu0VvjvJcdx8sftHq7wxJm23bSiazKu3VCz4H9Qg2
+      GaCy2DKMnQKBgQCeQj3IGHJNnTa/D5ZHiEUios0E+y2QtFPQXNDzNELwLegHnI5P
+      02fuYRV+J2zf6Voyy4BNnNl0GZKzc6aaxEtKNKuQGs8Qf2UO/JjhF9XukthC9g8j
+      45dE+g7Wu2ZF2g1xHBkUtR/FD/4KXxg4Dx4SnsApwY9fLV1ZZ4+bnQuGEQKBgAEO
+      t0XFBGlKb7B9UKAnf7XvZ/RcT48xlUVHU1akcMF76hU/JNe6f+ZsdXbzkB+hYWMB
+      +48Ba2gOcnkaGoYskKl7Oso/Lp3UPGnz/kueyOmyDqnAwLx2NMUll4ZS7SCQeNhc
+      UlAz9LmpNsInSeILN7pU7dne7hqyfrFxXrGviEvNAoGAIpsqIkk1lWpUgbmxNYP8
+      AJJuIwov9rphXWBHRf0s3xNSiGmk1NSfiQbiYOy/zNihF2vUY9wlMqMu0sirsHQS
+      BgQJA5hINnjdAtDlFVzBiT+KEcIiqHYEZQ5LwkswEVVU4aG4UvEl9EIqTH8DWuz9
+      wNli7Ep8DSZU5Y6U/gR0KCU=
+      -----END PRIVATE KEY-----
+  dashboard:
+    uaa:
+      client_id: dashboard
+      client_secret: 4nPcx6hs89D5RRkB
+    users:
+    - - dash-user
+      - dash-password
+  dea:
+    max_memory: 8192
+  dea_next:
+    advertise_interval_in_seconds: 15
+    crash_lifetime_secs: 300
+    default_health_check_timeout: 60
+    directory_server_protocol: https
+    disk_mb: 290000
+    disk_overcommit_factor: 2
+    enable_ssl: false
+    heartbeat_interval_in_seconds: 15
+    instance_disk_inode_limit: 200000
+    logging_level: debug
+    memory_mb: 32768
+    memory_overcommit_factor: 2
+    mtu: 1400
+    num_instances: 256
+    rlimit_core: -1
+    staging_disk_inode_limit: 200000
+    staging_disk_limit_mb: 4096
+  description: IBM Bluemix
+  domain: ((deploy_name)).bluemix.net
+  doppler:
+    maxRetainedLogMessages: 100
+    port: 4443
+    unmarshaller_count: 5
+  doppler_endpoint:
+    shared_secret: l055y9NLqsWlrXvJ
+  dropsonde:
+    enabled: true
+  etcd:
+    advertise_urls_dns_suffix: etcd.service.cf.internal
+    machines:
+    - 0.etcd.default.((deploy_name)).bosh
+    peer_require_ssl: false
+    require_ssl: false
+  etcd_metrics_server:
+    nats:
+      machines:
+      - 0.nats.default.((deploy_name)).bosh
+      password: iaPII4woBswP1qeA
+      username: nats
+  hbase_master:
+    address: 0.hbase-master.default.((deploy_name)).bosh
+    hadoop_namenode:
+      port: 9000
+    hbase_master:
+      heap_size: 1024
+      port: 60000
+      webui_port: 60010
+    hbase_zookeeper:
+      heap_size: 1024
+  hbase_slave:
+    addresses:
+    - 0.hbase-slave.default.((deploy_name)).bosh
+    - 1.hbase-slave.default.((deploy_name)).bosh
+    - 2.hbase-slave.default.((deploy_name)).bosh
+    hbase_regionserver:
+      heap_size: 1024
+      port: 60020
+  health_manager_ccng:
+    cc_partition: ng
+    shadow_mode: disable
+  hm9000:
+    ca_cert: |
+      -----BEGIN CERTIFICATE-----
+      MIIEUzCCAzugAwIBAgIJAJapS3nprRWIMA0GCSqGSIb3DQEBCwUAMHYxCzAJBgNV
+      BAYTAlVTMQswCQYDVQQIDAJUWDEPMA0GA1UEBwwGQXVzdGluMQwwCgYDVQQKDANJ
+      Qk0xGDAWBgNVBAsMD0Nsb3VkIC0gQmx1ZW1peDEhMB8GA1UEAwwYQmx1ZW1peCBM
+      b2dzdGFzaCBSb290IENBMB4XDTE3MDIxMzIxMzE1N1oXDTIzMTIxMTIxMzE1N1ow
+      cTELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAlRYMQ8wDQYDVQQHEwZBdXN0aW4xDDAK
+      BgNVBAoTA0lCTTEYMBYGA1UECxMPQ2xvdWQgLSBCbHVlbWl4MRwwGgYDVQQDExNC
+      TVggTG9nc3Rhc2ggQ0EgYWEyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+      AQEAyrXSBUNYRtCwtoSykDII45/lCayvxem3UU2I/3L/WPaBv7a1Z+ys1VaR6usB
+      wKLVCjQXlowGfem+yLLB14FzkdxvXEtceniFkl4fhmpInIDDHKnJNH8yS+1qaerp
+      xG1zHBA5GGxlCEDsA89INAxavzFFM6ghMv11/8k74R2tGI+PhxVTZOwI3mcI8+B3
+      Bw45e6ZP7qS/gWx0IPvb9jnlgAdGLCYiPjLHgud6tZ5Hm1+XvNzAqhkKuNpcdr6v
+      wXd+ZkHSMaNyX8+O/0g73ULKVi1HU1qXIOWPKjyBild8vdZWVzFlkl8tsi4suLt8
+      BKbR6IRV04UR8/vS46lwkbu+LwIDAQABo4HoMIHlMB0GA1UdDgQWBBTWlwtzfztv
+      BYMciZWr+8VuRDopXjCBqAYDVR0jBIGgMIGdgBSGAzwgtexOtjb4Ayjubq8EYjRC
+      z6F6pHgwdjELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlRYMQ8wDQYDVQQHDAZBdXN0
+      aW4xDDAKBgNVBAoMA0lCTTEYMBYGA1UECwwPQ2xvdWQgLSBCbHVlbWl4MSEwHwYD
+      VQQDDBhCbHVlbWl4IExvZ3N0YXNoIFJvb3QgQ0GCCQDMOZcb23pabzAMBgNVHRME
+      BTADAQH/MAsGA1UdDwQEAwIBBjANBgkqhkiG9w0BAQsFAAOCAQEASHYTTE/W8MrS
+      Pq8+4ZnmsufKhlxxLgc8lJgN2nMeJce+fg/MnbEpf9i4tIH9H80NcqSNNBDZ7a8h
+      mW0ddrMtmCJn+kKwoUniAQFG8ey1nJeCiVknjKZzTk1CoV167sQrDHuTR2LPlLfo
+      2sik6f7pIAwW3bZOCxqLRWqmu7cx8ADMIg/2T0ylCDXRKRjtvCkiamr1fCisa/ot
+      GB1WH3+irTWfUs5Rf5JatzGnxturqX2wJdXav07FbWHL8x+4fPKIQoxk2v/ix1+5
+      uQXy9MnWOG4uHBnrQwH9+uvldTLVM1xKtuJjHaF6SPEgSiqpEe/z+RwnpU9RX2ze
+      xRojfAEBjQ==
+      -----END CERTIFICATE-----
+      -----BEGIN TRUSTED CERTIFICATE-----
+      MIIEWDCCA0CgAwIBAgIJAMw5lxvbelpvMA0GCSqGSIb3DQEBCwUAMHYxCzAJBgNV
+      BAYTAlVTMQswCQYDVQQIDAJUWDEPMA0GA1UEBwwGQXVzdGluMQwwCgYDVQQKDANJ
+      Qk0xGDAWBgNVBAsMD0Nsb3VkIC0gQmx1ZW1peDEhMB8GA1UEAwwYQmx1ZW1peCBM
+      b2dzdGFzaCBSb290IENBMB4XDTE1MDMxNzE3MTYwM1oXDTMwMDMxMzE3MTYwM1ow
+      djELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlRYMQ8wDQYDVQQHDAZBdXN0aW4xDDAK
+      BgNVBAoMA0lCTTEYMBYGA1UECwwPQ2xvdWQgLSBCbHVlbWl4MSEwHwYDVQQDDBhC
+      bHVlbWl4IExvZ3N0YXNoIFJvb3QgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+      ggEKAoIBAQDIRcNYq18hT1VtDMFUf35cb1xW57vQMEE5jirNXbmIctdX7f1G0F8j
+      wjoBbN61dH2GZZK0TbkZlhfR9uo9Lx5buFGQVqKnWy32HCBl9ot4jp6/tsQR3cAD
+      O8XQ6B9jahIpO6ZnPzLo5RB6zP48FQmSRDPVW3GMALm8rF2OO/ZKtf6BYspT2rOD
+      f8W7PNbFuosVzdtx14XlU960IPXtfRaiuB7sn8byauMZQbvs2cV6TWIN1UuAVv55
+      uCYRICQ9rksF4ExBRtudCqMNz78pvB6/+tXzJ4feDXVNolKYm79iRLW0TAU2gcaN
+      9jukWhTGMyws74zfSelAXosO2X1gwJ/ZAgMBAAGjgegwgeUwHQYDVR0OBBYEFIYD
+      PCC17E62NvgDKO5urwRiNELPMIGoBgNVHSMEgaAwgZ2AFIYDPCC17E62NvgDKO5u
+      rwRiNELPoXqkeDB2MQswCQYDVQQGEwJVUzELMAkGA1UECAwCVFgxDzANBgNVBAcM
+      BkF1c3RpbjEMMAoGA1UECgwDSUJNMRgwFgYDVQQLDA9DbG91ZCAtIEJsdWVtaXgx
+      ITAfBgNVBAMMGEJsdWVtaXggTG9nc3Rhc2ggUm9vdCBDQYIJAMw5lxvbelpvMAwG
+      A1UdEwQFMAMBAf8wCwYDVR0PBAQDAgEGMA0GCSqGSIb3DQEBCwUAA4IBAQC2c7/t
+      XHK6D09GApyZUSTuko3J3VfqsSM1OhiYwfBKAn9a9FrymxrpuRXhriDWb6vKk++Y
+      zOgi2ua67Q9/WLWZIhM/jKZkQsa8Zfjcg2MfWXXwf9x9M3prtvhdmcxi2qjMmilN
+      su87jkxsFcJYVCxCwk3xJ0WOzqnz66PhsLrd+i0W+DsFYj6ooq38NrLGXQf9Nq89
+      as9nCNZQ9dgkBzh8wYUwfHxZHQvZHdathhAY3EbxTXmc09878JjHlf9TCe0M9BTy
+      5/AvU6SrddoxDVgwe7M8q/pqqj0gbGBPwUCZxcRbmwxJiu7Qts0j7QSyAdnDG1JB
+      XNrKrknVFG+xJJ9aMBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMB
+      -----END TRUSTED CERTIFICATE-----
+    client_cert: |
+      -----BEGIN CERTIFICATE-----
+      MIIECzCCAvOgAwIBAgIJAJapS3nprRWOMA0GCSqGSIb3DQEBCwUAMHExCzAJBgNV
+      BAYTAlVTMQswCQYDVQQIEwJUWDEPMA0GA1UEBxMGQXVzdGluMQwwCgYDVQQKEwNJ
+      Qk0xGDAWBgNVBAsTD0Nsb3VkIC0gQmx1ZW1peDEcMBoGA1UEAxMTQk1YIExvZ3N0
+      YXNoIENBIGFhMjAeFw0xNzAyMTMyMTMyMDVaFw0xODAyMTMyMTMyMDVaMGsxCzAJ
+      BgNVBAYTAlVTMQswCQYDVQQIEwJUWDEPMA0GA1UEBxMGQXVzdGluMQwwCgYDVQQK
+      EwNJQk0xGDAWBgNVBAsTD0Nsb3VkIC0gQmx1ZW1peDEWMBQGA1UEAxQNaG05MDAw
+      X2NsaWVudDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMPL2ecA8FDD
+      8WjtosFVGu5wjPd+PX0T6D/7vJZ6pXZNs1OSJspEbeTv0zJJOOVUb/N7LYs6c+pf
+      5fD3aSejeaGrCg+dWDjqNqWN17/tfqsFAD/OnIGXRbIJdBlMtdOpsCEA0oFwyEUu
+      p/8PPuKNja1Gx9MKrFp26BzKZxXOpCAuw/bLy3GiHmRkvm+M/1r6ddtZOGfgoM25
+      7t4wtSuiivGIyFbWRi0Fo/c/wNZXBlqVBHZbM04tqMvrvR6CShJueUR0K1t/B/Td
+      lhJ5+vEqDh8wAcy7dM9Wzd2YI1noEueuHKfx6cWEmlfGS8f+B95VG8u7axx00T0t
+      yGT0TFw1tWsCAwEAAaOBqzCBqDAJBgNVHRMEAjAAMA4GA1UdDwEB/wQEAwIDuDAd
+      BgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwLAYJYIZIAYb4QgENBB8WHU9w
+      ZW5TU0wgR2VuZXJhdGVkIENlcnRpZmljYXRlMB0GA1UdDgQWBBQfHBqhlHQ6HCc2
+      so66wA9UPtOUnzAfBgNVHSMEGDAWgBTWlwtzfztvBYMciZWr+8VuRDopXjANBgkq
+      hkiG9w0BAQsFAAOCAQEAQlD2rwY7piog27FfMOa6qbPLT+WjEpn+L7Zqse9r0ejz
+      3SCC79gCNBhL2ff0AepugHUSjlH+O7sZPUv0rFvN78SwwYWoYS41pTQcbYVWbXYc
+      AUNlDoKH08127hk7a9Hld2dQRkAA1q1UJtDYnisFlywC4XgTOCZOtTcC9RqSKibb
+      Mr8BokHMoURGkIZ7M/IZ94YFJt4uEKzpIJo/U6E+aH0v81f8h0QX9+688fl8WwNE
+      iPLkjpVYz2+TKeiwhBfKdlragkZFlQwUUOiSeSZ0wbDNmTlVT+uagSC8iAXI49Ln
+      3VfrAtC4fCCDBgHjqp5FC4f47OdicsXBhsUnOQr8fQ==
+      -----END CERTIFICATE-----
+    client_key: |
+      -----BEGIN PRIVATE KEY-----
+      MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDDy9nnAPBQw/Fo
+      7aLBVRrucIz3fj19E+g/+7yWeqV2TbNTkibKRG3k79MySTjlVG/zey2LOnPqX+Xw
+      92kno3mhqwoPnVg46jaljde/7X6rBQA/zpyBl0WyCXQZTLXTqbAhANKBcMhFLqf/
+      Dz7ijY2tRsfTCqxadugcymcVzqQgLsP2y8txoh5kZL5vjP9a+nXbWThn4KDNue7e
+      MLUroorxiMhW1kYtBaP3P8DWVwZalQR2WzNOLajL670egkoSbnlEdCtbfwf03ZYS
+      efrxKg4fMAHMu3TPVs3dmCNZ6BLnrhyn8enFhJpXxkvH/gfeVRvLu2scdNE9Lchk
+      9ExcNbVrAgMBAAECggEAB2c30AI7E/K0uBD0LHc5U3ax/dGqJYaRK4orMU1l4DlD
+      5I8MJG298gAXbjlSi2lL6lrn9/G33E7P9PKF6VfHC5PaB4kdgtloQ44/cCRcu76u
+      qbr4M/YyTm8JEsPRxDUQUc8kJnzLNcJz27MJ36sWhky81X/70FfaouwMRcjQb98D
+      2d9iI/YzwZWQ2aeU6hXi7McgLt1XHfG97KE/oeGYX+7iIieX7bQtrzgVWfXEMDFZ
+      vTfBiQuVHbCYmE7qYgJE+lifTqCQ/7lG9R2ELRO/YYvHa6peB0h1CBtReqd/38R8
+      jLKv7y9YfFjJZ03MUPQBfPbzME+WjMF+eK3B1Pm8sQKBgQDrtACpavQ/GekasZ2x
+      e/5ktHub8agEdmy31/WdvA2x3E/YHy09x6J78ukyYu6m0GfzCsbRA6ZHQyjuRW08
+      BLaxuH79yXcaHPvDvNeoV5fbs2bH/5GVBr5TzgX7jb2yioOAprZtNHSUEXztZARm
+      uix0d4V6+56opj53713SJOxCRwKBgQDUqB2Sfnt8jKu8nd1FBVU4wP9ltX7c4Tvf
+      YTpx0WREKO2EDIFafv83XnKY+93sdSYM0N/trPhib5VSk7WGn4Xh7iSHhuL7qB/x
+      fkn2l+0PyDst3/zc7VLQXnaC60OHfZF49sYP5g6cuXK32MwBjeoAscN0pZyhOBev
+      R30CtwWBvQKBgQCnwwitjRinSRPnEgCBcRWSK/vG9Ot3saqT97w0NsMwkvSpiRc0
+      X8FAo5ZjbJMcXD2AeW0lG4ngMucRII0tKNW4DO8mR5zkEzkHCoQcp6vIjhpbw4Wl
+      IpWZJIyRjUM1ru0GRqKVe752HTRj6spPK7e0ddWlwS4eL6VKzC5lAi6+xQKBgHvW
+      zynheF4muVglApdQLLnZQqHjWNaeX7SNNXDUxLQgtXiho66kqFGBMfE/M5ShACCU
+      fuM1SIxieK3XEO4t9dSFT0aRWZu946RJrB7riIUZUMU9XE738bMgX5mMEg5UJKQx
+      6VOW4MmKAXFo0hzRnQT8gFtsmlMUjE5prjYniRBtAoGAaHWVFvc2EpVH5hKeAui9
+      SwD1p1v2XJadciGCmWgRGfC9JxQb/3Ycc1NHzRNGq4BiXthOM0gYySMwa/gtlnuh
+      wWU65E4srTBik8+T/VR7/TZJNt6u7/RnhrPKYNOKcnscW4pfLR4cvNtSpd+cOzNf
+      PgKeb5kDoUPlU709MYjQNdY=
+      -----END PRIVATE KEY-----
+    etcd:
+      machines:
+       - 0.etcd.default.((deploy_name)).bosh
+    fetcher_network_timeout_in_seconds: 75
+    port: 5155
+    server_cert: |
+      -----BEGIN CERTIFICATE-----
+      MIIEejCCA2KgAwIBAgIJAJapS3nprRWPMA0GCSqGSIb3DQEBCwUAMHExCzAJBgNV
+      BAYTAlVTMQswCQYDVQQIEwJUWDEPMA0GA1UEBxMGQXVzdGluMQwwCgYDVQQKEwNJ
+      Qk0xGDAWBgNVBAsTD0Nsb3VkIC0gQmx1ZW1peDEcMBoGA1UEAxMTQk1YIExvZ3N0
+      YXNoIENBIGFhMjAeFw0xNzAyMTMyMTMyMDVaFw0xODAyMTMyMTMyMDVaMIGBMQsw
+      CQYDVQQGEwJVUzELMAkGA1UECBMCVFgxDzANBgNVBAcTBkF1c3RpbjEMMAoGA1UE
+      ChMDSUJNMRgwFgYDVQQLEw9DbG91ZCAtIEJsdWVtaXgxLDAqBgNVBAMTI2xpc3Rl
+      bmVyLWhtOTAwMC5zZXJ2aWNlLmNmLmludGVybmFsMIIBIjANBgkqhkiG9w0BAQEF
+      AAOCAQ8AMIIBCgKCAQEAooxTJEGn3k+MZQYpKXXGlBmLVIR+c9UGc43ho2pforkd
+      aZs+sGwW+APlU/O6R5JRoaYYgCEMCxk+KWXNCtvpy9Tm+Iz6C5Qz5PCKGAlnbx90
+      3tui0/80Pn5D/iq84Qbw85jRpMdCBX/00Jwqbz9qoSQVhb1+q678af4iGFcMqWGL
+      XH+Rvj5Ix5Q3VGx0BdhGTcu+Fr/7OmZH5wVJ0IMw2oDuQlGUSaDg/lW8o4u57JqQ
+      gr0/ruoxNXfxagtKY7Q8/LUnt7DC4YadrFJU1A0XX1n7tryUqD/TODU+xiGNnpvJ
+      4+axpUXSi6nZHBhnDEKQnNa+DYwfHixk4yImdUBymwIDAQABo4IBAjCB/zBVBgNV
+      HREETjBMgiUqLmxpc3RlbmVyLWhtOTAwMC5zZXJ2aWNlLmNmLmludGVybmFsgiNs
+      aXN0ZW5lci1obTkwMDAuc2VydmljZS5jZi5pbnRlcm5hbDAJBgNVHRMEAjAAMA4G
+      A1UdDwEB/wQEAwIDuDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwLAYJ
+      YIZIAYb4QgENBB8WHU9wZW5TU0wgR2VuZXJhdGVkIENlcnRpZmljYXRlMB0GA1Ud
+      DgQWBBSyU3lh2VA8M4pvF7p5e3j+DFEJujAfBgNVHSMEGDAWgBTWlwtzfztvBYMc
+      iZWr+8VuRDopXjANBgkqhkiG9w0BAQsFAAOCAQEAf9guaR1Ge7pMQBsRDB73NIJf
+      GF0monQIsAJiSF0Qhs27QX9it/WJLl2bO/NchU1dy+bKknzhFeVEYA9q+ewHeOfl
+      TWPz5IWeOggRYLmt3qB8ubIKV9voBqOaVIUVfEDAHoPZ6ge7IVu2iS9q7MKhT7RT
+      jR7cjpF/q/7W2fqqMX/r3y3eNiRzCJan/pxxtljR3IOD4XTfUVgUIUTymeQF+Z5f
+      zLvDWh0r3o4UAym7UGfha4t/aXgTJGX/lN9TXHJK4owIxzkzahhdKjp6X2XoDk7M
+      oJvSbILMs1ivnu0GDp39JF0K9Ga2d58qxifucSkkwlz1ziwUkFVptZZwHUIElg==
+      -----END CERTIFICATE-----
+    server_key: |
+      -----BEGIN PRIVATE KEY-----
+      MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCijFMkQafeT4xl
+      BikpdcaUGYtUhH5z1QZzjeGjal+iuR1pmz6wbBb4A+VT87pHklGhphiAIQwLGT4p
+      Zc0K2+nL1Ob4jPoLlDPk8IoYCWdvH3Te26LT/zQ+fkP+KrzhBvDzmNGkx0IFf/TQ
+      nCpvP2qhJBWFvX6rrvxp/iIYVwypYYtcf5G+PkjHlDdUbHQF2EZNy74Wv/s6Zkfn
+      BUnQgzDagO5CUZRJoOD+Vbyji7nsmpCCvT+u6jE1d/FqC0pjtDz8tSe3sMLhhp2s
+      UlTUDRdfWfu2vJSoP9M4NT7GIY2em8nj5rGlRdKLqdkcGGcMQpCc1r4NjB8eLGTj
+      IiZ1QHKbAgMBAAECggEAAbKDamfWb+eBaMtQAg3Scq4dmqv+LLQhwB0lflutqfj9
+      iffEB3rpdnzb7SzTWiH4q5PHbQxrSsZgXsr1rCewYPTVK0KVmH9bV12no36dpOG9
+      ileIHhHrzWdAyyujve8g9E+OiNudIIo919vO7vXI5ZaHNFaj4aO5y7A1UkRpGRpW
+      XjzQ0CZH1ti+YG57NPXr2kMgZv/qOhxwOzLVVTokOY/ShI/hIpWk0HgDuTOr42y1
+      PE5c9Fztjr/IsVaPxXcEstawrGN2fPiQLzczH1aUkJMgK2gm7d0Bp6DlenHCj4JK
+      Ipw8iEsV4R3Rx6koAouvfnvAc8tdK/2TfLqp9WTIMQKBgQDh6mMFHuBLuS7W4vS5
+      tzOvwpm9jOwWkW/AcGnknAq9XqY10jqN/3Hr0t9606bfqLiYqcuTK2aDJrRcQreO
+      aXk6id8bZGmKqPXUt7U5Df3aj8SDWqqs4XykHjWVVnl+UR58zh3fugHEOoiRpu5F
+      HJldVmka7IJ+7ZItqdfwTBt0IwKBgQC4MbMpoJQ8OrG7R99cPwIODuGy7jaxJqgX
+      n1u5+a+lmQP3BBRlAnEFlmPa23e10XA/iskM4ZQrX3BevZ1jbwYzwb9pUZsvlFKA
+      9tbXPUFG2mxqkZGXt1MDeE/NGKePI8XB9ljKPTWG0m1h1pNfxaC0xUbBmY/vfQKo
+      FXIbNHbTKQKBgACjQb5M9QMhtbEjmN9BViMD4J05XZ0+sdsQNixQCHO6Zau3OTUX
+      aIHq6XiWSl1NQ6AispFqyPJL1KyB/7SmNZJluzx/jxC2I2ODVT6g/Ht2dm6MffjY
+      9hocf7g5M0SZBAYEKu9rvf+IzsPifb+yMfiies95pXCoSQZZ+WMTQ+yTAoGARVpR
+      P0c7CUKAUSfKrgz7VRe9W4XeCe2oNNzHyMp+nDd1Crj6hN3aeGQbzPf9pvPo88Pp
+      13PIOlyBDusOK7ZN+4bj71/OsqeCORS35+skfO0ZDTcqPpnEI/ZU9cBmtrqdZ16+
+      J8fMM6tfjAsjClh7HhV5gsOzMlU7ftY0VJH4e6ECgYBON6LmbmNwRBH27and7lt7
+      70gxZk1OJNxL1ZHcOx1pwuNv7iFUixLYjP03vkZVkNk02dZ3Ap3BY5xxLa4MBb8j
+      bQPslIoKOMubIGK6kpsHTkVGqHchuqCIGW9luOQuq1AP8UnsX4wKQSHjOhQSxmFy
+      hfF2btk035tfxQzHA0l4Yw==
+      -----END PRIVATE KEY-----
+      url: http://hm9000.((deploy_name)).bluemix.net
+  logger_endpoint: null
+  loggregator:
+    etcd:
+      machines:
+      - 0.etcd.default.((deploy_name)).bosh
+    incoming_port: 3456
+    maxRetainedLogMessages: 100
+    outgoing_dropsonde_port: 8081
+    outgoing_port: 8080
+  loggregator_endpoint:
+    host: 0.loggregator-tc.default.((deploy_name)).bosh
+    port: 3456
+    shared_secret: l055y9NLqsWlrXvJ
+  login:
+    brand: oss
+    protocol: https
+    url: https://login.((deploy_name)).bluemix.net/UAALoginServerWAR
+  loginserver:
+    NG:
+    - UAA:
+        usersList: ibmadmin@us.ibm.com,ibmuser@us.ibm.com,jsondb@us.ibm.com,sqldb@us.ibm.com,tsaas@us.ibm.com,bluacceleration@us.ibm.com,biginsights@us.ibm.com,AceDev1,AceDev2,AceDev3,AceTest1,AceTest2,AceBuild,rtsysusr@cn.ibm.com,ibmadmin_monitor01@us.ibm.com,ibmadmin_monitor02@us.ibm.com,ibmadmin_bmdoctor1@us.ibm.com,ibmadmin_bmdoctor2@us.ibm.com,virtserv@us.ibm.com,vmservice@us.ibm.com
+        usersPattern: (?i).*\.ibm\.com
+      cliSearchOrder: 10
+      default: true
+      group: operators
+      id: UAA
+      type: UAA
+    #auditingHostPort: 1.1.1.1:5517
+    auditingKeystore: |
+      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
+      HJHSl/9iHzKL4x4=
+    auditingKeystoreSecret: 53kyxvpGdu7C
+    #auditingOverSSL: true
+    authMethod: UAA
+    localUAAUsers: ibmadmin@us.ibm.com
+    localUAATestUsers: .*
+    businessAnalyticsDB: https://bmx-analytics.cloudant.com/loginserver_events_dedicated_2016
+    businessAnalyticsPassword: 8047dfc110fc0cd79e81be013405a37b9bb98fec
+    businessAnalyticsUserId: sinandetchericaughteacel
+    clientsForGrantTypeBlueID: null
+    clientsForGrantTypeOnBehalfOf: null
+    clientsThatAcceptNonProvisionedUsers: console
+    failOnInvalidRedirect: true
+    httpsIndicatorHeader: $WSIS
+    myUrl: http://login.((deploy_name)).bluemix.net/UAALoginServerWAR
+    port: 80
+    secureSessionsOnly: false
+    sso:
+      secret: 229522DEE6EC5C902C55486CB7E3DB63
+    theme: light
+    trialURL: http://login.((deploy_name)).bluemix.net/UAALoginServerWAR
+    uaa_login: login
+    uaa_secret: l055y9NLqsWlrXvJ
+    useCfRegistrar: false
+    validRedirectDomains: localhost,((deploy_name)).bluemix.net
+  logstash-forwarder:
+    decryptionCode: YW1lcmljYW5haXJs
+    delThreshold: 30
+    env_name: dedicated_americanairlines_2
+    linkSizeThreshold: 10240
+    marmotResourceEndpoint: https://marmot-resource-service.mybluemix.net
+    space:
+      id: f021638c-8a94-4fc6-abc5-56658519c784
+      password: i09Zz_xye746
+    target_id: logs.ibm.opvis.bluemix.net:9091
+  metron_agent:
+    deployment: cf-warden
+  metron_endpoint:
+    shared_secret: l055y9NLqsWlrXvJ
+  mod_vms:
+    bosh_credential: YWRtaW46YWRtaW4=
+    bosh_director: https://169.50.208.238:25555
+    deployment: la-auto
+    target_env: yellow-staging-lon
+    users:
+    - crypted_password: "$6$F75R8/6F6NU86xfU$lVmDFsY6YrKftx.pBnYAEJsIQmNsBraI7vQiyKfeqrXCwUq4UCsjkypG.31zoHtLUOMf/neYgsIgp1syYZV0z0"
+      description: the monitoring user
+      group: monitor
+      name: monitor
+      public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC40XXrp2Sv/ViKz8VE3tdHb/kjWRlbozP9H5K430PGPWrKGS/2cT+FMKS6L4kpIMtrAGgWPo1ODRaTREjnrfW9lf8X+g7QSSNGnDEYReC5eZjZ1UEM9dCjZacljhUZs5aK+/v/NHkZFpQHlCNEq0DY0wQvC3te1eVm66nA8Dk4DEVjVRiCpL3OgM6Uwt6jPhDKlkQpf/TYk0kdslmwgztfLlOveDNiWRE87fqZNEB7KVV8GnxbgcNx8WmREIkBHTB4qI3il1av8nnqzC6sySIw9SsTa6JXTAyQRDUQiJ+zm/MkbOllv7Vbq27S8zxcUecpBV6cTNl44FazV2ZDVAST
+    - crypted_password: "$6$SQpwo8oippgcK.L$zuDaBDyH963ZPPgydmpdFqxvtuu4jc/E79v8mMfcnG808ZZo1kduvFhq.eYhIRLuCHeoIkxaRGvL5fcPv7.u.1"
+      description: the monitoring user
+      group: monitor
+      name: marmot
+      public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC40XXrp2Sv/ViKz8VE3tdHb/kjWRlbozP9H5K430PGPWrKGS/2cT+FMKS6L4kpIMtrAGgWPo1ODRaTREjnrfW9lf8X+g7QSSNGnDEYReC5eZjZ1UEM9dCjZacljhUZs5aK+/v/NHkZFpQHlCNEq0DY0wQvC3te1eVm66nA8Dk4DEVjVRiCpL3OgM6Uwt6jPhDKlkQpf/TYk0kdslmwgztfLlOveDNiWRE87fqZNEB7KVV8GnxbgcNx8WmREIkBHTB4qI3il1av8nnqzC6sySIw9SsTa6JXTAyQRDUQiJ+zm/MkbOllv7Vbq27S8zxcUecpBV6cTNl44FazV2ZDVAST
+    - crypted_password: "$6$YkveqOrVyQu5C$Ws.3oEc0effngsvSbgYt/VSB39n1muqH4Pl6QyQeG98RXedldLP3mkjsiq.EoFTMmBnsTO0RNyc2BJjQtG9IE/"
+      description: the doctor user
+      group: doctor
+      name: doctor
+      public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoXqxRhUC1g9h0bP0jMb0jUx1zC4heQNXCTHzBV0BfqaHewmkpdSvo/m0CWbKK7mfzffvYjUiyCVSF/Ni0XZR6u4NMwWgMaMFbp9JHs7n+6+E9yGiB/hQkymUjJvujjLt55QdQJsRdZmOgbswTvCh9iD7hPyyt7+HlOhd93w/iJ+BphAiHnlxNcNYLOS7I6Dk8t0hBW4fyB89jg/tGCJu1Dk6WvcCw15t2Uv9h18E065yaQ0yCTdwNoRBeTO7/lAJIdn7dIJmzeNSmlHGdj5UMg93L/0vss7G6PhR6ed6QTuD9FREPRjrf8v8oU2Wgz3F4JBw+ohgWu2u4/6WtZyix
+    - crypted_password: "$6$/5NUaKb1k$2lSk4oLGzrr5Uh26s.O8TRckeCYCcbF9buW.8E9jGIcYaSewWFpVv/1IrPz9u5M9pNX/5cTVPc0iRniQGhCoL0"
+      description: the doctor user
+      group: doctor
+      name: taishan
+      public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoXqxRhUC1g9h0bP0jMb0jUx1zC4heQNXCTHzBV0BfqaHewmkpdSvo/m0CWbKK7mfzffvYjUiyCVSF/Ni0XZR6u4NMwWgMaMFbp9JHs7n+6+E9yGiB/hQkymUjJvujjLt55QdQJsRdZmOgbswTvCh9iD7hPyyt7+HlOhd93w/iJ+BphAiHnlxNcNYLOS7I6Dk8t0hBW4fyB89jg/tGCJu1Dk6WvcCw15t2Uv9h18E065yaQ0yCTdwNoRBeTO7/lAJIdn7dIJmzeNSmlHGdj5UMg93L/0vss7G6PhR6ed6QTuD9FREPRjrf8v8oU2Wgz3F4JBw+ohgWu2u4/6WtZyix
+  name: Bluemix
+  nats:
+    address: 0.nats.default.((deploy_name)).bosh
+    machines:
+    - 0.nats.default.((deploy_name)).bosh
+    - 1.nats.default.((deploy_name)).bosh
+    monitor_port: 0
+    password: iaPII4woBswP1qeA
+    port: 4222
+    prof_port: 0
+    use_gnatsd: true
+    user: nats
+  networks:
+    apps: default
+  opentsdb:
+    address: 0.opentsdb.default.((deploy_name)).bosh
+    port: 4242
+  post-deploy:
+    env: security
+    env_sub_type: staging
+    env_type: dedicated
+    ipa: 10.124.116.124
+    ipb: 10.124.116.119
+    ipl: 1.1.1.1
+    ipq: 1.1.1.1:514
+    ipr: 1.1.1.1
+    mcip: 192.155.234.102
+    ntp: servertime.service.softlayer.com,ntp.ubuntu.com
+    oe: ibm.security
+  postgres:
+    target_env: yellow-staging
+  request_timeout_in_seconds: 900
+  router:
+    endpoint_timeout: 120
+    extra_headers_to_log:
+    - x-global-transaction-id
+    logrotate: null
+    requested_route_registration_interval_in_seconds: 50
+    route_services_recommend_https: false
+    route_services_timeout: null
+    skip_oauth_tls_verification: true
+    ssl_skip_validation: true
+    status:
+      password: T4jM6EQgdgZnJilb
+      port: 8080
+      user: wJIzOHea8Klc3vQ3
+  routing_api:
+    enabled: false
+  serialization_data_server:
+    port: 8080
+    purge_expired_interval: 30
+    upload_file_expire_time: 600
+    upload_timeout: 10
+    upload_token: asdf9asd9asd9ad9ads9ads
+    use_nginx: true
+  service_backup:
+    nfs_server:
+      address: 0.services-nfs.default.((deploy_name)).bosh
+      export_dir: /var/vcap/store/shared
+  service_backup_manager:
+    enable: true
+  service_broker:
+    cc_api_version: v2
+    external_uri: 0.service-broker.default.((deploy_name)).bosh
+    index: 0
+    ip_route: localhost
+    logging:
+      level: info
+    mbus: nats://0.nats.default.((deploy_name)).bosh:4222
+    token: FHBySOFVesVMtLoCzYvGY4jRVNOZbH2A
+  service_job_manager: null
+  service_migration:
+    nfs_server:
+      address: 0.services-nfs.default.((deploy_name)).bosh
+      export_dir: /var/vcap/store/shared
+  service_snapshot_manager:
+    enable: true
+  ssl:
+    skip_cert_verify: true
+  support_address: http://ibm.com
+  syslog_drain_binder:
+    polling_batch_size: 101
+    update_interval_seconds: 15
+  system_domain: ((deploy_name)).bluemix.net
+  system_domain_organization: org
+  traffic_controller:
+    outgoing_port: 8080
+  uaa:
+    admin:
+      client_secret: UgTP7OBpMb5HFM0Y
+    batch:
+      password: 0a1NbYh3fve4UDmh
+      username: DiRu6vLS2Bbn0Pej
+    catalina_opts: -Xmx768m -XX:MaxPermSize=256m
+    cc:
+      client_secret: HB6cIQJHO2KxkSRA
+      token_secret: gmQYhS2myWJLcX7D
+    client:
+      autoapprove:
+      - vmc
+      - my
+      - portal
+      - micro
+      - support-signon
+      - login
+      - cf
+      override: true
+    client_secret: E7XQVS6SWPVo1ieP
+    clients:
+      ace:
+        authorities: cloud_controller.read,cloud_controller.write,cloud_controller.admin,openid,password.write,scim.read,scim.write
+        authorized-grant-types: authorization_code,refresh_token,client_credentials,password
+        autoapprove: true
+        id: ace
+        scope: cloud_controller.read,cloud_controller.write,cloud_controller.admin,openid,password.write,scim.read,scim.write
+        secret: foobar
+      admin:
+        authorities: password.write,clients.write,clients.read,scim.write,scim.read,uaa.admin,clients.secret
+        authorized-grant-types: client_credentials
+        autoapprove: true
+        id: admin
+        scope: uaa.none
+        secret: UgTP7OBpMb5HFM0Y
+      admin_ui_client:
+        authorities: cloud_controller.admin,cloud_controller.read,cloud_controller.write,openid,scim.read
+        authorized-grant-types: authorization_code,client_credentials,refresh_token
+        autoapprove: true
+        id: admin_ui_client
+        scope: admin_ui.admin,admin_ui.user,openid
+        secret: Y4wOohLX86RFbdV6
+      cc-service-dashboards:
+        authorities: clients.read,clients.write,clients.admin
+        authorized-grant-types: client_credentials
+        scope: openid,cloud_controller_service_permissions.read
+        secret: XMuO8okZi57ECvHk
+      cc_routing:
+        authorities: routing.router_groups.read
+        authorized-grant-types: client_credentials
+        secret: WWnhdouSMBBtCslf
+      cf:
+        access-token-validity: 1209600
+        authorities: uaa.none
+        authorized-grant-types: password,refresh_token
+        override: true
+        refresh-token-validity: 2592000
+        scope: cloud_controller.read,cloud_controller.write,openid,password.write,cloud_controller.admin,scim.read,scim.write
+      cloud_controller_username_lookup:
+        authorities: scim.userids
+        authorized-grant-types: client_credentials
+        secret: WWnhdouSMBBtCslf
+      dashboard:
+        authorities: uaa.admin,uaa.resource,tokens.read,scim.read,scim.write
+        authorized-grant-types: client_credentials,authorization_code,refresh_token
+        scope: openid,dashboard.user
+        secret: V4WNQg2HKD72NEev
+      doppler:
+        authorities: uaa.resource
+        override: true
+        secret: ZeTxUAAtlOAt3drU
+      gorouter:
+        authorities: routing.routes.read
+        authorized-grant-types: client_credentials,refresh_token
+        secret: T4jM6EQgdgZnJilb
+      jtace:
+        authorities: cloud_controller.read,cloud_controller.write,cloud_controller.admin,openid,password.write,scim.read,scim.write
+        authorized-grant-types: authorization_code,refresh_token,client_credentials,password
+        autoapprove: true
+        id: jtace
+        scope: cloud_controller.read,cloud_controller.write,cloud_controller.admin,openid,password.write,scim.read,scim.write
+        secret: foobar
+      login:
+        authorities: oauth.login,openid,scim.read,scim.write,scim.admin,cloud_controller.admin,uaa.resource,clients.read,notifications.write,critical_notifications.write,emails.write,scim.userids,password.write,ibmbss
+        authorized-grant-types: authorization_code,client_credentials,refresh_token
+        autoapprove: true
+        id: loginserver
+        override: true
+        scope: openid,scim.read,scim.write,scim.admin,cloud_controller.admin,oauth.approvals
+        secret: l055y9NLqsWlrXvJ
+      notifications:
+        authorities: cloud_controller.admin,scim.read
+        authorized-grant-types: client_credentials
+        secret: V4WNQg2HKD72NEev
+      portal:
+        access-token-validity: 1209600
+        authorities: scim.write,scim.read,openid,cloud_controller.read,cloud_controller.write,password.write,uaa.admin
+        authorized-grant-types: authorization_code,client_credentials,password,implicit
+        id: portal
+        override: true
+        refresh-token-validity: 1209600
+        scope: scim.write,scim.read,openid,cloud_controller.read,cloud_controller.write
+        secret: tl7oMStF7WYcbud5
+      tcp_emitter:
+        authorities: routing.routes.write,routing.routes.read,routing.router_groups.read
+        authorized-grant-types: client_credentials,refresh_token
+        secret: tcp-emitter-secret
+      tcp_router:
+        authorities: routing.routes.read,routing.router_groups.read
+        authorized-grant-types: client_credentials,refresh_token
+        secret: tcp-router-secret
+      vmc:
+        authorities: uaa.none
+        authorized-grant-types: implicit
+        override: true
+        scope: cloud_controller.read,cloud_controller.write,openid,password.write,cloud_controller.admin,scim.read,scim.write
+    issuer: https://uaa.((deploy_name)).bluemix.net
+    jwt:
+      signing_key: gmQYhS2myWJLcX7D
+      verification_key: gmQYhS2myWJLcX7D
+    login:
+      addnew: false
+      client_secret: iRP33XsMLF2SArEq
+    require_https: false
+    resource_id: account_manager
+    scim:
+      external_groups: null
+      userids_enabled: false
+      users:
+      - ibmadmin@us.ibm.com|rnUI7iEfyD80GrY8|scim.write,scim.read,openid,cloud_controller.admin,clients.read,clients.write,doppler.firehose,notification_templates.admin,notification_templates.admin,routing.router_groups.read
+      - dash-user|dash-password|openid,dashboard.user
+    spring_profiles: null
+    ssl:
+      port: 8443
+    sslCertificate: |
+      -----BEGIN CERTIFICATE-----
+      MIID8TCCAtmgAwIBAgIJAJapS3nprRWUMA0GCSqGSIb3DQEBCwUAMHExCzAJBgNV
+      BAYTAlVTMQswCQYDVQQIEwJUWDEPMA0GA1UEBxMGQXVzdGluMQwwCgYDVQQKEwNJ
+      Qk0xGDAWBgNVBAsTD0Nsb3VkIC0gQmx1ZW1peDEcMBoGA1UEAxMTQk1YIExvZ3N0
+      YXNoIENBIGFhMjAeFw0xNzAyMTMyMTMyMDhaFw0xODAyMTMyMTMyMDhaMHMxCzAJ
+      BgNVBAYTAlVTMQswCQYDVQQIEwJUWDEPMA0GA1UEBxMGQXVzdGluMQwwCgYDVQQK
+      EwNJQk0xGDAWBgNVBAsTD0Nsb3VkIC0gQmx1ZW1peDEeMBwGA1UEAxMVQk1YIExv
+      Z3N0YXNoIGFhMiBVQUEgMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+      rC99ZFlgrfdVydRaI0w4OHvWwuTSvKuJCls7byA+wOYNtCqqGrKc1nffePB6/CO6
+      U1rbAFvBcJFL7KnOHVfmdnBBOPt6lkHnXPVJJkMxlAt+Uq8apXSfw8qbDxYfeQ2i
+      eZn29lr13dQIO7Usu/E4SWr8xXoNOVPWnvULOW8YsfW4HATbw6KIl0Vgq70h+0dp
+      6+r6tGCuk20RbV+Z7oBewtTLme04VcnWuOctNODEP404kidF+gVXhWVAqDRqz+Tg
+      C2jtH8u3oVMjuUiWfYQl/BymhMwZaP5I9YXG0Kjz+sgYkQNVL+JvJES0YWpjoktO
+      7xdkmi4OCrLnjAQBTsoggQIDAQABo4GJMIGGMAkGA1UdEwQCMAAwCwYDVR0PBAQD
+      AgXgMCwGCWCGSAGG+EIBDQQfFh1PcGVuU1NMIEdlbmVyYXRlZCBDZXJ0aWZpY2F0
+      ZTAdBgNVHQ4EFgQUNdVvbndddZ6NGTRgf47jN+DGQTIwHwYDVR0jBBgwFoAU1pcL
+      c387bwWDHImVq/vFbkQ6KV4wDQYJKoZIhvcNAQELBQADggEBACyKSBIHXOt0CnpK
+      q/4PYgsWD5APjjvOp3KYpH7mqh+lKBUrjerMgWb8atpvQpumi7Y1B+aa1zWZTxHG
+      pwCWzShj2ab3eyBB8Ec2fR8otqFEDoPkifEvnC2fRYN/rNVQsQBB/ZjEBvX5LZ6V
+      K7rrCGI1KmM2x3jJAJ3Prld8Wo3tuEN3H3EVQZ1cWoOpyyCYnexHdxeM30IqB6Rh
+      R8D5iQrTjt1FZdQ0xDk7OMJAwR35w8idLadEFr7YjUSEIijfgqCWNo+D9AHozB+K
+      QTdKW4pnbqh9PH5/Rh8/flS8HYvWvuqOoawFaCMYGGOWSrUWQnWojFPKUgtuIhnG
+      d1K0CPk=
+      -----END CERTIFICATE-----
+    sslPrivateKey: |
+      -----BEGIN PRIVATE KEY-----
+      MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCsL31kWWCt91XJ
+      1FojTDg4e9bC5NK8q4kKWztvID7A5g20KqoaspzWd9948Hr8I7pTWtsAW8FwkUvs
+      qc4dV+Z2cEE4+3qWQedc9UkmQzGUC35SrxqldJ/DypsPFh95DaJ5mfb2WvXd1Ag7
+      tSy78ThJavzFeg05U9ae9Qs5bxix9bgcBNvDooiXRWCrvSH7R2nr6vq0YK6TbRFt
+      X5nugF7C1MuZ7ThVyda45y004MQ/jTiSJ0X6BVeFZUCoNGrP5OALaO0fy7ehUyO5
+      SJZ9hCX8HKaEzBlo/kj1hcbQqPP6yBiRA1Uv4m8kRLRhamOiS07vF2SaLg4KsueM
+      BAFOyiCBAgMBAAECggEAAyI7IT4qLwhbGJkDifRraoXAdxwUhMgHbreR2Zgn5Dlb
+      ov2KyoEZLyMP32LbDic1TyqOZU+GMf8G93fwryKIKHwrB7c1+DGbXRr+uZJL/vKF
+      mkojDUNV3AmeMFRZ/slDfXySnNGze1XOT43g0kvV1yo6DvsFbhdrRsnVajZuJ+D2
+      BZc8XnIanj9Dhcu6yEdY/C851+bTuogz16quWYgplvMl1SHcrFqAkj4Uft+vIRGF
+      PjbpuApasHUlXrjaX4FrVNeIMgMho+iH2e3Jz8WdOl/X4Adce/M0pfC9E5AeW27P
+      70Q6WqZsbcfJCj4uDDQG8qo8g3Z2tZRC8mjlkLj95QKBgQDtNlcJASmfnQgk7Vsk
+      5tFLTUGlR0nCMCQrkAOPRcpWa4IGMh5cGawTiyAGx5hWwQukeOK4hB9QCURa4pr0
+      ZreTsUdLWrT5IhG6scd+iyFbOcdC8vzl+jjJrWCagapnrSTERuPoYTiMHPxJWlDQ
+      fBnVfTlvaXcyPoa6Bim05dVRjQKBgQC50q6+fedgjvMTDvnSlNYArAfRj+4rW7vb
+      91MhhmvaEHHHOTEKp+4hdMm6bJm33OlJCPngKCITi2cQnm9tpDDtpOfVs2tGkGOk
+      RqETUcBRLHPrkK98jgNX3ajKllEk5Op0Muhmcr4LjLygCQm8tIfUnw+NezIgapNo
+      xxSFsMqbxQKBgQDPeWzMomiug2GBMt06PGwoqazWC7EWmJa6R17lrEwaJDP4iVOG
+      iKm5+kCLzX2Pu48cTuM2MdFVZpWTzIltZH4CPtc1sGODV+ob2ay8IKKPMMz44KCT
+      4bRTqUJKQUkzHvx+c+aY9JfJ7Pw4iDcQ8sqBsOJQcPVhS9D42bUW1MMsbQKBgD5o
+      LVu4eQ6Ks8QA0ZIRflW3cODGj9xr8ImNZJPryyjvQOcBpCDKCUWfLWi4tF91h7uJ
+      kjHgCKG7vZ9tNksCS5RkP6Abo7mNIIm5VrtgR1B7t2qzqtwP7buCq/9twE69uqfP
+      uRE/E+hZGbg9kNGZZ8zWpqiDaXBNmrgjtBa6KzFpAoGAJANQPYXrLzSPoMNGOgKO
+      lsPr+TeqeSbW72KsVv9ibAIF6eeODmwWUl2wMQiw7b3cNKFyJNc5JtEJsRhY3jfL
+      FwwauMTgJwUwEbFOwYtqReqYAZveXQB5KSn0B7nXNJAqFAgux9TNcYkTKSaFRncc
+      DrwwKWi3YnIMwxvqZeZW7Xc=
+      -----END PRIVATE KEY-----
+    url: http://uaa.((deploy_name)).bluemix.net
+  uaadb:
+    address: 0.uaadb.default.((deploy_name)).bosh
+    databases:
+    - name: uaa
+      tag: uaa
+    - citext: false
+      name: repmgrdb
+      tag: cluster
+    db_scheme: postgresql
+    port: 2544
+    repl_mode: manualcluster
+    roles:
+    - name: root
+      password: A43GyVXYH6T9sS5g
+      tag: admin
+    - name: backup_user
+      password: Ckh95Dxn
+      tag: replmgr
+  unbound:
+    forward-zones:
+    - forward-addrs:
+      - 10.0.80.11
+      - 10.0.80.12
+      name: .
+    is_dea: false
+    server:
+      domain-insecure: ((deploy_name)).bosh
+    stub-zones:
+    - name: ((deploy_name)).bluemix.net
+      stub-addr: ((director_ip))
+    - name: ((deploy_name)).mybluemix.net
+      stub-addr: ((director_ip))
+    - name: ((deploy_name)).bosh
+      stub-addr: ((director_ip))
+  wal_nfs_server:
+    address: 0.nfs-WAL-server.default.((deploy_name)).bosh
+    backup_enc_password: wc9FPSIo
+    bosh_ip: ((director_ip))
+    boshbackup: true
+    boshbackuppath: /var/vcap/store/postgres_backup_store/BACKUPDIR/backupDir/director_((director_ip))_bkp/db_dump
+    db_ccdb_port: 5524
+    db_ccdb_vipa: 0.ccdb-ng.default.((deploy_name)).bosh
+    db_uaa_port: 2544
+    db_uaa_vipa: 0.uaadb.default.((deploy_name)).bosh
+    evault_pwd: UEd3nh9D
+    evault_user: IBME278444-23
+    ha_path: /var/vcap/store/HA
+    path: /var/vcap/store/postgres_backup_store
+    pgbouncer_cc: false
+    pgbouncer_uaa: false
+    wal_store: true
+releases:
+- location: http://10.106.192.96/releases/cf/((cf_release_version))/cf-release.tgz
+  name: ((cf_release))
+  version: ((cf_release_version))
+- location: http://10.106.192.96/releases/mod-vms/((mod_vms_release_version))/mod-vms-((mod_vms_release_version)).tgz
+  name: ((mod_vms_release))
+  version: ((mod_vms_release_version))
+- location: http://10.106.192.96/releases/security-release/((security_release_version))/security-release.tgz
+  name: ((security_release))
+  version: ((security_release_version))
+- location: http://10.106.192.96/releases/admin-ui/((admin_ui_release_version))/admin-ui.tgz
+  name: ((admin_ui_release))
+  version: ((admin_ui_release_version))
+- location: http://10.106.192.96/releases/cf_backup_ha/((habr_release))/((habr_release_version))/habr-release.tgz
+  name: ((habr_release))
+  version: ((habr_release_version))
+- location: http://10.106.192.96/releases/loginserver/((loginserver_release_version))/loginserver.tgz
+  name: ((loginserver_release))
+  version: ((loginserver_release_version))
+- location: http://10.106.192.96/releases/marmot/marmot-logstash-forwarder/((marmot_logstash_forwarder_release_version))/marmot-logstash-forwarder-bosh-release-((marmot_logstash_forwarder_release_version)).tgz
+  name: ((marmot_logstash_forwarder_release))
+  version: ((marmot_logstash_forwarder_release_version))
+- location: http://10.106.192.96/releases/unbound/((unbound_release_version))/unbound-((unbound_release_version)).tgz
+  name: ((unbound_release))
+  version: ((unbound_release_version))
+resource_pools:
+- cloud_properties:
+    Datacenter:
+      Name: ((data_center_name))
+    DedicatedAccountHostOnlyFlag: false
+    EphemeralDiskSize: 100
+    HourlyBillingFlag: true
+    LocalDiskFlag: true
+    MaxMemory: 8192
+    PrimaryBackendNetworkComponent:
+      NetworkVlan:
+        Id: ((private_vlan_id))
+    PrimaryNetworkComponent:
+      NetworkVlan:
+        Id: ((public_vlan_id))
+    StartCpus: 4
+    VmNamePrefix: ((deploy_name))-core-
+  name: coreNode
+  network: default
+  stemcell:
+    name: ((stemcell_name))
+    version: ((stemcell_version))
+  env:
+    bosh:
+      keep_root_password: true
+- cloud_properties:
+    Datacenter:
+      Name: ((data_center_name))
+    DedicatedAccountHostOnlyFlag: false
+    EphemeralDiskSize: 100
+    HourlyBillingFlag: true
+    LocalDiskFlag: true
+    MaxMemory: 8192
+    PrimaryBackendNetworkComponent:
+      NetworkVlan:
+        Id: ((private_vlan_id))
+    PrimaryNetworkComponent:
+      NetworkVlan:
+        Id: ((public_vlan_id))
+    StartCpus: 4
+    VmNamePrefix: ((deploy_name))-router-
+  name: router
+  network: default
+  stemcell:
+    name: ((stemcell_name))
+    version: ((stemcell_version))
+  env:
+    bosh:
+      keep_root_password: true
+- cloud_properties:
+    Datacenter:
+      Name: ((data_center_name))
+    DedicatedAccountHostOnlyFlag: false
+    EphemeralDiskSize: 300
+    HourlyBillingFlag: true
+    LocalDiskFlag: true
+    MaxMemory: 32768
+    PrimaryBackendNetworkComponent:
+      NetworkVlan:
+        Id: ((private_vlan_id))
+    PrimaryNetworkComponent:
+      NetworkVlan:
+        Id: ((public_vlan_id))
+    StartCpus: 4
+    VmNamePrefix: ((deploy_name))-dea-
+  name: dea
+  network: default
+  stemcell:
+    name: ((stemcell_name))
+    version: ((stemcell_version))
+  env:
+    bosh:
+      keep_root_password: true
+- cloud_properties:
+    Datacenter:
+      Name: ((data_center_name))
+    DedicatedAccountHostOnlyFlag: false
+    EphemeralDiskSize: 100
+    HourlyBillingFlag: true
+    LocalDiskFlag: true
+    MaxMemory: 8192
+    PrimaryBackendNetworkComponent:
+      NetworkVlan:
+        Id: ((private_vlan_id))
+    PrimaryNetworkComponent:
+      NetworkVlan:
+        Id: ((public_vlan_id))
+    StartCpus: 4
+    VmNamePrefix: ((deploy_name))-log-
+  name: logger
+  network: default
+  stemcell:
+    name: ((stemcell_name))
+    version: ((stemcell_version))
+  env:
+    bosh:
+      keep_root_password: true
+stemcell_location: ((stemcell_location))
+update:
+  canaries: 1
+  canary_watch_time: 30000-360000
+  max_errors: 1
+  max_in_flight: 1
+  serial: true
+  update_watch_time: 30000-360000
