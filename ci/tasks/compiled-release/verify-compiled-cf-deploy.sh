@@ -59,8 +59,8 @@ $BOSH_CLI int pipeline-src/ci/tasks/templates/cf-template.yml \
                                                         -v private_vlan_id=${SL_VLAN_PRIVATE} \
                                                         -v public_vlan_id=${SL_VLAN_PUBLIC} \
                                                         -v stemcell_version=${STEMCELL_VERSION} \
-                                                        -v cf-release=${cf_release} \
-                                                        -v cf-release-version=${cf_release_version} \
+                                                        -v cf_release=${cf_release} \
+                                                        -v cf_release_version=${cf_release_version} \
                                                         -v mod_vms_release=${mod_vms_release} \
                                                         -v mod_vms_release_version=${mod_vms_release_version} \
                                                         -v security_release=${security_release} \
