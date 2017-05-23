@@ -79,4 +79,4 @@ $BOSH_CLI int pipeline-src/ci/tasks/templates/cf-template.yml \
 
 
 echo "Deploy release by using compiled-deploy/cf-compiled-deploy-${BUILD_VERSION}.yml"
-$BOSH_CLI -e bosh-env -d ${deployment_name} deploy compiled-deploy/compiled-deploy-${BUILD_VERSION}.yml -n
+$BOSH_CLI -e bosh-env -d ${deployment_name} deploy compiled-deploy/cf-compiled-deploy-${BUILD_VERSION}.yml -n
