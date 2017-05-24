@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e -x
+set -e
 
 echo -e "Set up softlayer cli login"
 cat <<EOF > ~/.softlayer
@@ -48,5 +48,9 @@ stemcell_filename=light-bosh-stemcell-${stemcell_version}-${IAAS}-${HYPERVISOR}-
 tar zcvf $stemcell_filename image stemcell.MF
 checksum="$(sha1sum "${stemcell_filename}" | awk '{print $1}')"
 
-echo "$stemcell_filename sha1=$checksum"
+fileUrl=https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-custom-bluemix-stemcell-candidate/${stemcell_filename}
+echo -e "Stemcell Download URL -> ${fileUrl}"
+sha1=`curl -L ${fileUrl} | sha1sum | cut -d " " -f 1`
+echo -e "Sha1 hashcode -> $checksum"
+
 popd

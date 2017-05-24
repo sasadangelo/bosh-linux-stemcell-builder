@@ -23,4 +23,9 @@ for file in $COPY_KEYS ; do
 
 done
 
+fileUrl=https://s3-api.us-geo.objectstorage.softlayer.net/${PUBLISHED_BUCKET_NAME}/${file}
+echo -e "Stemcell Download URL -> ${fileUrl}"
+checksum=`curl -L ${fileUrl} | sha1sum | cut -d " " -f 1`
+echo -e "Sha1 hashcode -> $checksum"
+
 echo "Done"

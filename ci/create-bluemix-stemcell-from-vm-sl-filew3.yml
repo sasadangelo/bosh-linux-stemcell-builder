@@ -8,6 +8,7 @@ groups:
       - bats-ubuntu
       - test-stemcells
       - promote-stemcell
+      - upload-stemcell-filew3
   - name: bluemix
     jobs:
       - capture-stemcell
@@ -211,6 +212,27 @@ jobs:
           COPY_KEYS: |
             light-bosh-stemcell-%s-bluemix-xen-ubuntu-trusty-go_agent.tgz
 
+  - name: upload-stemcell-filew3
+    serial: true
+    plan:
+      - aggregate:
+        - get: version
+          passed:
+            - promote-stemcell
+        - get: bosh-linux-stemcell-builder
+          passed:
+            - promote-stemcell
+        - get: stemcell
+          resource: light-bluemix-stemcell-prod
+      - task: upload-filew3
+        file: bosh-linux-stemcell-builder/ci/tasks/upload-filew3.yml
+        params:
+          AWS_ACCESS_KEY_ID: {{stemcell-sl-os-access-key}}
+          AWS_SECRET_ACCESS_KEY: {{stemcell-sl-os-secret-key}}
+          AWS_ENDPOINT: {{stemcell-sl-os-endpoint}}
+          PUBLISHED_BUCKET_NAME: {{custom-bluemix-stemcell-bucket}}
+          FILE_W3_STEMCELL_PEM: {{light-bosh-stemcell_filew3_key}}
+
 resources:
   - name: bosh-linux-stemcell-builder
     type: git
@@ -231,6 +253,15 @@ resources:
     type: s3
     source:
       bucket: {{candidate-custom-bluemix-stemcell-bucket}}
+      regexp: light-bosh-stemcell-(.*)-bluemix-(.*).tgz
+      access_key_id: {{stemcell-sl-os-access-key}}
+      secret_access_key: {{stemcell-sl-os-secret-key}}
+      endpoint: {{stemcell-sl-os-endpoint}}
+
+  - name: light-bluemix-stemcell-prod
+    type: s3
+    source:
+      bucket: {{custom-bluemix-stemcell-bucket}}
       regexp: light-bosh-stemcell-(.*)-bluemix-(.*).tgz
       access_key_id: {{stemcell-sl-os-access-key}}
       secret_access_key: {{stemcell-sl-os-secret-key}}
