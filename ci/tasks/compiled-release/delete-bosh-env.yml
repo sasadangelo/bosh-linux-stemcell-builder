@@ -10,7 +10,6 @@ inputs:
   - name: pipeline-src
   - name: director-state
   - name: bosh-cli
-  - name: bosh-softlayer-cpi-release
 
 run:
   path: pipeline-src/ci/tasks/compiled-release/delete-bosh-env.sh
