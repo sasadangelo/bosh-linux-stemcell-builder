@@ -229,8 +229,6 @@ jobs:
           - get: pipeline-src
           - get: bosh-cli
           - get: director-state
-          - get: compiled-release
-            passed: [export-compiled-release]
           - get: compiled-deploy
             passed: [export-compiled-release]
       - task: teardown

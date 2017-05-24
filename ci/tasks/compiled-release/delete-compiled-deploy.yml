@@ -10,7 +10,6 @@ inputs:
   - name: pipeline-src
   - name: bosh-cli
   - name: director-state
-  - name: compiled-release
   - name: compiled-deploy
 
 run:
