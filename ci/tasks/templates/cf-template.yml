@@ -650,7 +650,7 @@ jobs:
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
     release: ((cf_release))
-- instances: 1
+- instances: 0
   name: dea_next
   networks:
   - name: default
