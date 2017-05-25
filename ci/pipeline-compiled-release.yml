@@ -68,10 +68,8 @@ jobs:
       - aggregate:
           - get: pipeline-src
           - get: bosh-release
-            trigger: true
           - get: bosh-softlayer-cpi-release
           - get: light-stemcell
-            trigger: true
           - get: bosh-cli
       - task: deploy-director
         file: pipeline-src/ci/tasks/compiled-release/create-bosh-env.yml
@@ -94,9 +92,13 @@ jobs:
     plan:
       - aggregate:
           - get: pipeline-src
+            trigger: true
           - get: light-stemcell
+            trigger: true
           - get: bosh-cli
+            trigger: true
           - get: director-state
+            trigger: true
             passed: [prepare-director]
       - task: export-compiled-release
         file: pipeline-src/ci/tasks/compiled-release/export-compiled-release.yml
@@ -183,8 +185,10 @@ jobs:
           - get: light-stemcell
           - get: director-state
           - get: compiled-release
+            trigger: true
             passed: [export-compiled-release]
           - get: compiled-deploy
+            trigger: true
             passed: [export-compiled-release]
       - task: verify-compiled-cf-release
         file: pipeline-src/ci/tasks/compiled-release/verify-compiled-cf-deploy.yml
@@ -236,7 +240,8 @@ jobs:
           - get: bosh-cli
           - get: director-state
           - get: compiled-deploy
-            passed: [export-compiled-release]
+            trigger: true
+            passed: [verify-compiled-cf-deploy]
       - task: teardown
         file: pipeline-src/ci/tasks/compiled-release/delete-compiled-deploy.yml
         params:
@@ -248,7 +253,7 @@ jobs:
           - get: pipeline-src
           - get: bosh-cli
           - get: director-state
-            passed: [prepare-director]
+            passed: [delete-compiled-deploy]
       - task: teardown
         file: pipeline-src/ci/tasks/compiled-release/delete-bosh-env.yml
         params:
