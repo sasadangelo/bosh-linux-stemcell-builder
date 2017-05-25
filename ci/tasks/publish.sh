@@ -16,7 +16,7 @@ for file in $COPY_KEYS ; do
 
   # occasionally this fails for unexpected reasons; retry a few times
   for i in {1..4}; do
-    aws --endpoint-url "https://${AWS_ENDPOINT}" s3 cp "s3://${CANDIDATE_BUCKET_NAME}/$file" "s3://${PUBLISHED_BUCKET_NAME}/$file" \
+    aws --endpoint-url "https://${AWS_ENDPOINT}" s3 cp --acl public-read "s3://${CANDIDATE_BUCKET_NAME}/$file" "s3://${PUBLISHED_BUCKET_NAME}/$file" \
       && break \
       || sleep 5
   done

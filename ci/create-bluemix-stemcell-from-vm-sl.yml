@@ -195,8 +195,8 @@ jobs:
           passed:
             - bats-ubuntu
         - get: bosh-linux-stemcell-builder
-          passed:
-            - bats-ubuntu
+          #passed:
+          #  - bats-ubuntu
         - get: stemcell
           trigger: true
           resource: light-bluemix-stemcell
