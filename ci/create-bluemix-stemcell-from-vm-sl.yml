@@ -107,7 +107,9 @@ jobs:
           SL_USERNAME: {{softlayer-username}}
           SL_API_KEY: {{softlayer-api-key}}
       - put: light-bluemix-stemcell
-        params: {file: light-stemcell/*.tgz}
+        params:
+          file: light-stemcell/*.tgz
+          acl: public-read
 
   - name: bats-ubuntu
     serial: false
@@ -115,6 +117,7 @@ jobs:
     - do:
       - aggregate:
         - get: bosh-release
+          version: { version: "261.4" }
         - get: cpi-release
         - get: stemcell
           trigger: true
@@ -197,9 +200,8 @@ jobs:
         - get: bosh-linux-stemcell-builder
           #passed:
           #  - bats-ubuntu
-        - get: stemcell
+        - get: light-bluemix-stemcell
           trigger: true
-          resource: light-bluemix-stemcell
       - task: copy-artifacts
         file: bosh-linux-stemcell-builder/ci/tasks/publish.yml
         params:
@@ -210,6 +212,10 @@ jobs:
           PUBLISHED_BUCKET_NAME: {{custom-bluemix-stemcell-bucket}}
           COPY_KEYS: |
             light-bosh-stemcell-%s-bluemix-xen-ubuntu-trusty-go_agent.tgz
+      - put: light-bluemix-stemcell-prod
+        params:
+          file: light-bluemix-stemcell-prod/*.tgz
+          acl: public-read
 
 resources:
   - name: bosh-linux-stemcell-builder
@@ -231,6 +237,15 @@ resources:
     type: s3
     source:
       bucket: {{candidate-custom-bluemix-stemcell-bucket}}
+      regexp: light-bosh-stemcell-(.*)-bluemix-(.*).tgz
+      access_key_id: {{stemcell-sl-os-access-key}}
+      secret_access_key: {{stemcell-sl-os-secret-key}}
+      endpoint: {{stemcell-sl-os-endpoint}}
+
+  - name: light-bluemix-stemcell-prod
+    type: s3
+    source:
+      bucket: {{custom-bluemix-stemcell-bucket}}
       regexp: light-bosh-stemcell-(.*)-bluemix-(.*).tgz
       access_key_id: {{stemcell-sl-os-access-key}}
       secret_access_key: {{stemcell-sl-os-secret-key}}
