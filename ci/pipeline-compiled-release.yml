@@ -195,7 +195,6 @@ jobs:
           - get: version
           - get: pipeline-src
           - get: bosh-cli
-          - get: director-state
           - get: compiled-release
             passed: [export-compiled-release]
       - task: upload-compiled-release

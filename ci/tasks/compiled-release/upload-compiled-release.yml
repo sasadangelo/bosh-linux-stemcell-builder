@@ -7,9 +7,9 @@ image_resource:
     repository: bosh/compiled-release
 
 inputs:
+  - name: version
   - name: pipeline-src
   - name: bosh-cli
-  - name: director-state
   - name: compiled-release
 
 run:

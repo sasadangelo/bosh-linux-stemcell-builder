@@ -26,7 +26,7 @@ disk_pools:
 - disk_size: 512000
   name: dp_512000
 jobs:
-- instances: 1
+- instances: 0
   name: nats
   networks:
   - default:
@@ -52,7 +52,7 @@ jobs:
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
     release: ((cf_release))
-- instances: 1
+- instances: 0
   name: consul
   networks:
   - default:
@@ -82,7 +82,7 @@ jobs:
     release: ((cf_release))
   update:
     max_in_flight: 1
-- instances: 1
+- instances: 0
   name: ccdb_ng
   networks:
   - default:
@@ -132,7 +132,7 @@ jobs:
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
     release: ((cf_release))
-- instances: 1
+- instances: 0
   name: etcd
   networks:
   - name: default
@@ -161,7 +161,7 @@ jobs:
   - name: metron_agent
     release: ((cf_release))
 - db_scheme: postgresql
-  instances: 1
+  instances: 0
   name: uaadb
   networks:
   - default:
@@ -210,7 +210,7 @@ jobs:
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
     release: ((cf_release))
-- instances: 1
+- instances: 0
   name: uaa
   networks:
   - name: default
@@ -263,7 +263,7 @@ jobs:
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
     release: ((cf_release))
-- instances: 1
+- instances: 0
   name: loggregator
   networks:
   - name: default
@@ -293,7 +293,7 @@ jobs:
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
     release: ((cf_release))
-- instances: 1
+- instances: 0
   name: loggregator_tc
   networks:
   - name: default
@@ -335,7 +335,7 @@ jobs:
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
     release: ((cf_release))
-- instances: 1
+- instances: 0
   name: services_nfs
   networks:
   - default:
@@ -422,7 +422,7 @@ jobs:
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
     release: ((cf_release))
-- instances: 1
+- instances: 0
   name: clock_global
   networks:
   - name: default
@@ -540,7 +540,7 @@ jobs:
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
     release: ((cf_release))
-- instances: 1
+- instances: 0
   name: ha_proxy
   networks:
   - default:
@@ -604,7 +604,7 @@ jobs:
     release: ((cf_release))
   - name: unbound
     release: unbound
-- instances: 1
+- instances: 0
   name: hm9000
   networks:
   - default:
@@ -693,7 +693,7 @@ jobs:
     release: ((cf_release))
   update:
     max_in_flight: 1
-- instances: 1
+- instances: 0
   name: admin_ui
   networks:
   - default:
@@ -743,7 +743,7 @@ jobs:
     release: security-release
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
-- instances: 1
+- instances: 0
   name: loginserver
   networks:
   - default:
