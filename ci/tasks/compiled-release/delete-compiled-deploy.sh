@@ -4,7 +4,7 @@ set -eux
 
 source pipeline-src/ci/tasks/utils.sh
 
-check_param BUILD_VERSION
+BUILD_VERSION=`cat version/number | cut -d "." -f 3`
 
 tar -zxvf director-state/director-state-${BUILD_VERSION}.tgz -C director-state/
 cat director-state/director-hosts >> /etc/hosts

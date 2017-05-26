@@ -4,7 +4,6 @@ set -eux
 
 source pipeline-src/ci/tasks/utils.sh
 
-check_param BUILD_VERSION
 check_param SL_VM_PREFIX
 check_param SL_USERNAME
 check_param SL_API_KEY
@@ -13,6 +12,8 @@ check_param SL_VLAN_PUBLIC
 check_param SL_VLAN_PRIVATE
 check_param cf_release
 check_param cf_release_version
+
+BUILD_VERSION=`cat version/number | cut -d "." -f 3`
 SL_VM_PREFIX=${SL_VM_PREFIX}-${BUILD_VERSION}
 
 #

@@ -79,7 +79,7 @@ jobs:
       - aggregate:
           - get: version
             params:
-            bump: minor
+              bump: minor
           - get: pipeline-src
           - get: bosh-release
           - get: bosh-softlayer-cpi-release
@@ -90,7 +90,6 @@ jobs:
         input_mapping:
           stemcell: light-stemcell
         params:
-          BUILD_VERSION: {{build_version}}
           SL_USERNAME: {{softlayer_username}}
           SL_API_KEY: {{softlayer_api_key}}
           SL_DATACENTER: {{softlayer_datacenter}}
@@ -108,6 +107,8 @@ jobs:
   - name: export-compiled-release
     plan:
       - aggregate:
+          - get: version
+            passed: [prepare-director]
           - get: pipeline-src
           - get: light-stemcell
           - get: bosh-cli
@@ -119,7 +120,6 @@ jobs:
         input_mapping:
           stemcell: light-stemcell
         params:
-          BUILD_VERSION: {{build_version}}
           SL_USERNAME: {{softlayer_username}}
           SL_API_KEY: {{softlayer_api_key}}
           SL_DATACENTER: {{softlayer_datacenter}}
@@ -180,6 +180,7 @@ jobs:
   - name: clean-deploy
     plan:
       - aggregate:
+          - get: version
           - get: pipeline-src
           - get: bosh-cli
           - get: director-state
@@ -187,12 +188,11 @@ jobs:
             passed: [export-compiled-release]
       - task: teardown
         file: pipeline-src/ci/tasks/compiled-release/delete-compiled-deploy.yml
-        params:
-          BUILD_VERSION: {{build_version}}
 
   - name: upload-compiled-release
     plan:
       - aggregate:
+          - get: version
           - get: pipeline-src
           - get: bosh-cli
           - get: director-state
@@ -201,12 +201,12 @@ jobs:
       - task: upload-compiled-release
         file: pipeline-src/ci/tasks/compiled-release/upload-compiled-release.yml
         params:
-          BUILD_VERSION: {{build_version}}
           FILE_W3_BOSH_PEM: {{file_w3_bosh_pem}}
 
   - name: verify-compiled-cf-deploy
     plan:
       - aggregate:
+          - get: version
           - get: pipeline-src
           - get: bosh-cli
           - get: light-stemcell
@@ -214,16 +214,13 @@ jobs:
             passed: [clean-deploy]
           - get: compiled-release
             trigger: true
-            passed: [export-compiled-release]
           - get: compiled-deploy
             trigger: true
-            passed: [export-compiled-release]
       - task: verify-compiled-cf-release
         file: pipeline-src/ci/tasks/compiled-release/verify-compiled-cf-deploy.yml
         input_mapping:
           stemcell: light-stemcell
         params:
-          BUILD_VERSION: {{build_version}}
           SL_USERNAME: {{softlayer_username}}
           SL_API_KEY: {{softlayer_api_key}}
           SL_DATACENTER: {{softlayer_datacenter}}
@@ -264,6 +261,7 @@ jobs:
   - name: delete-compiled-deploy
     plan:
       - aggregate:
+          - get: version
           - get: pipeline-src
           - get: bosh-cli
           - get: director-state
@@ -272,12 +270,11 @@ jobs:
             passed: [verify-compiled-cf-deploy]
       - task: teardown
         file: pipeline-src/ci/tasks/compiled-release/delete-compiled-deploy.yml
-        params:
-          BUILD_VERSION: {{build_version}}
 
   - name: delete-bosh-env
     plan:
       - aggregate:
+          - get: version
           - get: pipeline-src
           - get: bosh-cli
           - get: director-state
@@ -285,7 +282,6 @@ jobs:
       - task: teardown
         file: pipeline-src/ci/tasks/compiled-release/delete-bosh-env.yml
         params:
-          BUILD_VERSION: {{build_version}}
           SL_USERNAME: {{softlayer_username}}
           SL_API_KEY: {{softlayer_api_key}}
           SL_DATACENTER: {{softlayer_datacenter}}

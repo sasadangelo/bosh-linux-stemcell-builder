@@ -4,8 +4,9 @@ set -eux
 
 source pipeline-src/ci/tasks/utils.sh
 
-check_param BUILD_VERSION
 check_param FILE_W3_BOSH_PEM
+
+BUILD_VERSION=`cat version/number | cut -d "." -f 3`
 
 mkdir -p bosh/publish/compiled
 #echo "FILE_W3_BOSH_PEM: ${FILE_W3_BOSH_PEM}"

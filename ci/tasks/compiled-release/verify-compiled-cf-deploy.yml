@@ -18,7 +18,6 @@ run:
   path: pipeline-src/ci/tasks/compiled-release/verify-compiled-cf-deploy.sh
 
 params:
-  BUILD_VERSION: replace-me
   SL_VM_PREFIX: replace-me
   SL_API_KEY: replace-me
   SL_DATACENTER: replace-me
