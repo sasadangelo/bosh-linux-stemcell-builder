@@ -275,8 +275,8 @@ HERE
   } do
     describe file('/var/vcap/bosh/agent.json') do
       it { should be_valid_json_file }
-      its(:content) { should match('"Type": "File"') }
-      its(:content) { should match('"SettingsPath": "/var/vcap/bosh/user_data.json"') }
+      its(:content) { should match('"Type": "HTTP"') }
+      its(:content) { should match('"UserDataPath": "/rest/v3.1/SoftLayer_Resource_Metadata/getUserMetadata.json"') }
       its(:content) { should match('"UseRegistry": true') }
     end
   end

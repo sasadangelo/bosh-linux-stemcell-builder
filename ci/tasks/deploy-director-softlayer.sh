@@ -65,3 +65,6 @@ $bosh_cli -n update-cloud-config bosh-deployment/softlayer/cloud-config.yml \
           -v sl_vlan_public_id=$SL_VLAN_PUBLIC \
           -v sl_vlan_private_id=$SL_VLAN_PRIVATE \
           --vars-env "BOSH"
+
+mv $HOME/.bosh director-state/
+mv director.yml director-creds.yml director-state.json director-state/
