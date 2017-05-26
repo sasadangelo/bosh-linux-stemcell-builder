@@ -693,7 +693,7 @@ jobs:
     release: ((cf_release))
   update:
     max_in_flight: 1
-- instances: 0
+- instances: 1
   name: admin_ui
   networks:
   - default:
@@ -715,7 +715,7 @@ jobs:
     release: security-release
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
-- instances: 1
+- instances: 0
   name: nfs_WAL_server
   networks:
   - default:
