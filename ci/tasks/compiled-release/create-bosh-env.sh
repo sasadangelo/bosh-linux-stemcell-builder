@@ -11,7 +11,8 @@ check_param SL_DATACENTER
 check_param SL_VLAN_PUBLIC
 check_param SL_VLAN_PRIVATE
 
-SL_VM_PREFIX=${SL_VM_PREFIX}-${version}
+BUILD_VERSION=`echo $version | cut -d "." -f 3`
+SL_VM_PREFIX=${SL_VM_PREFIX}-${BUILD_VERSION}
 
 deployment_dir="${PWD}/deployment"
 mkdir -p $deployment_dir
