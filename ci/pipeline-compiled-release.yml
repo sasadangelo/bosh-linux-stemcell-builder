@@ -53,7 +53,7 @@ resources:
       access_key_id: {{stemcell-sl-os-access-key}}
       secret_access_key: {{stemcell-sl-os-secret-key}}
       endpoint: {{stemcell-sl-os-endpoint}}
-      regexp: director-state/director-state-(.*).tgz
+      regexp: director-state/director-state-([0-9]+).tgz
 
   - name: compiled-release
     type: s3
@@ -62,7 +62,7 @@ resources:
       access_key_id: {{stemcell-sl-os-access-key}}
       secret_access_key: {{stemcell-sl-os-secret-key}}
       endpoint: {{stemcell-sl-os-endpoint}}
-      regexp: compiled-release/compiled-release-allinone-(.*).tgz
+      regexp: compiled-release/compiled-release-allinone-([0-9]+).tgz
 
   - name: compiled-deploy
     type: s3
@@ -71,7 +71,7 @@ resources:
       access_key_id: {{stemcell-sl-os-access-key}}
       secret_access_key: {{stemcell-sl-os-secret-key}}
       endpoint: {{stemcell-sl-os-endpoint}}
-      regexp: compiled-deploy/compiled-deploy-(.*).yml
+      regexp: compiled-deploy/compiled-deploy-([0-9]+).yml
 
 jobs:
   - name: prepare-director
@@ -184,6 +184,7 @@ jobs:
           - get: pipeline-src
           - get: bosh-cli
           - get: director-state
+            trigger: true
             passed: [export-compiled-release]
       - task: teardown
         file: pipeline-src/ci/tasks/compiled-release/delete-compiled-deploy.yml
