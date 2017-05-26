@@ -108,11 +108,8 @@ jobs:
     plan:
       - aggregate:
           - get: pipeline-src
-            trigger: true
           - get: light-stemcell
-            trigger: true
           - get: bosh-cli
-            trigger: true
           - get: director-state
             trigger: true
             passed: [prepare-director]
