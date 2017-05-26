@@ -10,7 +10,8 @@ check_param SL_API_KEY
 check_param SL_DATACENTER
 check_param SL_VLAN_PUBLIC
 check_param SL_VLAN_PRIVATE
-SL_VM_PREFIX=${SL_VM_PREFIX}-${BUILD_VERSION}
+
+SL_VM_PREFIX=${SL_VM_PREFIX}-${version}
 
 deployment_dir="${PWD}/deployment"
 mkdir -p $deployment_dir

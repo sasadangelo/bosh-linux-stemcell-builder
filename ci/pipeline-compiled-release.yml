@@ -35,6 +35,16 @@ resources:
       regexp: light-bosh-stemcell-(\d+\.\d+\.\d+)-bluemix-xen-ubuntu-trusty-go_agent\.tgz
       bucket: bosh-softlayer-stemcells-bluemix
 
+  - name: version
+    type: semver
+    source:
+      driver: s3
+      key: {{build_version}}
+      bucket: {{candidate-custom-bluemix-stemcell-bucket}}
+      access_key_id: {{stemcell-sl-os-access-key}}
+      secret_access_key: {{stemcell-sl-os-secret-key}}
+      endpoint: {{stemcell-sl-os-endpoint}}
+
   - name: director-state
     type: s3
     source:
@@ -66,6 +76,9 @@ jobs:
   - name: prepare-director
     plan:
       - aggregate:
+          - get: version
+            params:
+            bump: minor
           - get: pipeline-src
           - get: bosh-release
           - get: bosh-softlayer-cpi-release
@@ -87,6 +100,9 @@ jobs:
         params:
           file: director-state/director-state-*.tgz
           acl: public-read
+      - put: version
+        params:
+          file: version/number
 
   - name: export-compiled-release
     plan:
@@ -163,6 +179,19 @@ jobs:
 #              SL_VLAN_PRIVATE: {{softlayer_vlan_private}}
 #              SL_VM_PREFIX: {{softlayer_director_name_prefix}}
 
+  - name: clean-deploy
+    plan:
+      - aggregate:
+          - get: pipeline-src
+          - get: bosh-cli
+          - get: director-state
+            trigger: true
+            passed: [export-compiled-release]
+      - task: teardown
+        file: pipeline-src/ci/tasks/compiled-release/delete-compiled-deploy.yml
+        params:
+          BUILD_VERSION: {{build_version}}
+
   - name: upload-compiled-release
     plan:
       - aggregate:
@@ -184,6 +213,7 @@ jobs:
           - get: bosh-cli
           - get: light-stemcell
           - get: director-state
+            passed: [clean-deploy]
           - get: compiled-release
             trigger: true
             passed: [export-compiled-release]

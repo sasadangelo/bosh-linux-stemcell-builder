@@ -7,6 +7,7 @@ image_resource:
     repository: bosh/compiled-release
 
 inputs:
+  - name: version
   - name: pipeline-src
   - name: bosh-release
   - name: bosh-softlayer-cpi-release
