@@ -26,7 +26,7 @@ disk_pools:
 - disk_size: 512000
   name: dp_512000
 jobs:
-- instances: 0
+- instances: 1
   name: nats
   networks:
   - default:
@@ -82,7 +82,7 @@ jobs:
     release: ((cf_release))
   update:
     max_in_flight: 1
-- instances: 0
+- instances: 1
   name: ccdb_ng
   networks:
   - default:
@@ -362,7 +362,7 @@ jobs:
     release: security-release
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
-- instances: 1
+- instances: 0
   name: cloud_controller_ng
   networks:
   - name: default
@@ -465,7 +465,7 @@ jobs:
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
     release: ((cf_release))
-- instances: 1
+- instances: 0
   name: api_worker
   networks:
   - name: default
@@ -508,7 +508,7 @@ jobs:
     release: marmot-logstash-forwarder-bosh-release
   - name: metron_agent
     release: ((cf_release))
-- instances: 1
+- instances: 0
   name: router
   networks:
   - default:
@@ -715,7 +715,7 @@ jobs:
     release: security-release
   - name: logstash-forwarder
     release: marmot-logstash-forwarder-bosh-release
-- instances: 0
+- instances: 1
   name: nfs_WAL_server
   networks:
   - default:
