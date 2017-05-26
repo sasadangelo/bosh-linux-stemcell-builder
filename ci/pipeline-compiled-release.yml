@@ -40,6 +40,7 @@ resources:
     source:
       driver: s3
       key: {{build_version}}
+      initial_version: {{build_version}}
       bucket: {{candidate-custom-bluemix-stemcell-bucket}}
       access_key_id: {{stemcell-sl-os-access-key}}
       secret_access_key: {{stemcell-sl-os-secret-key}}
