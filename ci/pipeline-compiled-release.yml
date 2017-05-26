@@ -184,7 +184,6 @@ jobs:
           - get: pipeline-src
           - get: bosh-cli
           - get: director-state
-            trigger: true
             passed: [export-compiled-release]
       - task: teardown
         file: pipeline-src/ci/tasks/compiled-release/delete-compiled-deploy.yml
