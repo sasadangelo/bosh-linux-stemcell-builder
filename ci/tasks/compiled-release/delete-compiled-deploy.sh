@@ -31,11 +31,14 @@ $BOSH_CLI -e bosh-env deployments
 # release_string=`cat compiled-deploy/compiled-deploy-${BUILD_VERSION}.yml | grep -Po '(?<=- location: ).*' | sed "s/.*releases\///g" | sed "s/\/.*//g"`
 # Check which release is installed directly
 release_string=`$BOSH_CLI -e bosh-env releases | awk -F ' ' '{print $1}'`
-release_array=($release_string)
 
+if [ "$release_string" != "" ]; then
+release_array=($release_string)
 for release in "${release_array[@]}"
 do
     echo "Delete release $release"
     $BOSH_CLI -e bosh-env delete-release $release -n
 done
+fi
+
 $BOSH_CLI -e bosh-env releases
