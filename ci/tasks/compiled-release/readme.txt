@@ -100,3 +100,47 @@ The default release download address is:
 http://10.106.192.96/releases/
 You can also replace by using other location like this:
 cf_release_location: http://xxx/release/xxx/xxx-version.tgz
+
+
+
+
+
+
+
+Hi Steve and Richard,
+
+In order to speed up release deploy verification, we created a new pre-compiled pipeline to compile special release and upload to s3.
+If you want to verify you release, you can download the compiled release tgz file and deploy by using this compiled file.
+Then we can skip the compile process during deployment and reduce deployment time.
+
+Hope this new pipeline is helpful and please let me know if you have any suggestion or requirement.
+
+Here is the information if you want to have a try:
+
+1, The example cf compiled deploy pipeline is at:
+https://bosh-sl-ci.bluemix.net/teams/ibm-bmx/pipelines/compile-release-jordan
+You can login by using your github.com account (Please contact Matt, he can help add your permission)
+
+
+2, The pipeline process:
+  Step 1, Create a new BOSH Director
+  Step 2, Export release which you need to tgz file then upload to Softlayer Object Store
+  Step 3, Clean the releases info on the new BOSH Director
+  Step 4, Deploy your release and verify
+  Step 5, Delete BOSH deployments and releases by using the new BOSH Director
+  Step 6, Delete the new BOSH Director
+
+After this pipeline is finished, you can download the compiled release tgz file from Softlayer Object Store, like this:
+https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-release-release/compiled-release/compiled-release-allinone-20170524.tgz
+
+Then you can use this compiled release anywhere or deploy it to other environment.
+You can also use this pipeline to upload the release tgz file to file w3, then share to other people.
+
+
+3, How to use it:
+  Step 1, you need a credential.yml to input some credential info and which release and version you would like to compile
+  Step 2, Then you need to login and create a special pipeline for your component by using:
+    fly -t sl login -c 'https://bosh-sl-ci.bluemix.net' -n ibm-bmx
+    fly -t bosh-test set-pipeline -p compile-release-jordan --config ci/pipeline-compiled-release.yml --load-vars-from ~/Work/workspace/credential.yml
+    (Please see the attachment file)
+  Step 3, Login pipeline portal and kick off your pipeline
