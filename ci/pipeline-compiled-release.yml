@@ -210,11 +210,10 @@ jobs:
           - get: bosh-cli
           - get: light-stemcell
           - get: director-state
+            trigger: true
             passed: [clean-deploy]
           - get: compiled-release
-            trigger: true
           - get: compiled-deploy
-            trigger: true
       - task: verify-compiled-cf-release
         file: pipeline-src/ci/tasks/compiled-release/verify-compiled-cf-deploy.yml
         input_mapping:

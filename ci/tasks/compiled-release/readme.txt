@@ -138,8 +138,9 @@ You can also use this pipeline to upload the release tgz file to file w3, then s
 
 
 3, How to use it:
-  Step 1, you need a credential.yml to input some credential info and which release and version you would like to compile
-  Step 2, Then you need to login and create a special pipeline for your component by using:
+  Step 1, you need a credential.yml to input some credential info and which release and version you would like to compile (Pls see attachment)
+  Step 2, Then you need to login by your git account and create a special pipeline for your component by using:
+    browse website https://bosh-sl-ci.bluemix.net and install fly from the right bottom button
     fly -t sl login -c 'https://bosh-sl-ci.bluemix.net' -n ibm-bmx
     fly -t bosh-test set-pipeline -p compile-release-jordan --config ci/pipeline-compiled-release.yml --load-vars-from ~/Work/workspace/credential.yml
     (Please see the attachment file)
