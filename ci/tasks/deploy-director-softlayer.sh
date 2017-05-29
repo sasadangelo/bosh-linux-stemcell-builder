@@ -24,10 +24,7 @@ export BOSH_internal_ip=$(fromEnvironment '.network1.softlayerDirector')
 export BOSH_sl_vlan_public=$(fromEnvironment '.network1.softlayerPublicVLAN')
 export BOSH_sl_vlan_private=$(fromEnvironment '.network1.softlayerPrivateVLAN')
 export BOSH_reserved_range="[$(fromEnvironment '.network1.reservedRange')]"
-
-cat > director-creds.yml <<EOF
-internal_ip: $BOSH_internal_ip
-EOF
+export BOSH_internal_static_ips="[$(fromEnvironment '.network1.softlayerStaticIPs')]"
 
 export bosh_cli=$(realpath bosh-cli/bosh-cli-*)
 chmod +x $bosh_cli
@@ -58,6 +55,9 @@ $bosh_cli -n update-cloud-config bosh-deployment/softlayer/cloud-config.yml \
           --ops-file bosh-linux-stemcell-builder/ci/assets/reserve-ips.yml \
           -v sl_vm_name_prefix=$SL_VM_NAME_PREFIX_2 \
           -v sl_vm_domain=$SL_VM_DOMAIN \
+          -v powerdns_ip=$BOSH_ENVIRONMENT \
+          -v sl_vlan_public_id=$SL_VLAN_PUBLIC \
+          -v sl_vlan_private_id=$SL_VLAN_PRIVATE \
           --vars-env "BOSH"
 
 mv $HOME/.bosh director-state/
