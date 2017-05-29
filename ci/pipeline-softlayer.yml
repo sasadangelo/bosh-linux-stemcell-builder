@@ -117,8 +117,8 @@ jobs:
           params:
             SL_API_KEY: {{softlayer-api-key}}
             SL_USERNAME:  {{softlayer-username}}
-            SL_VLAN_PRIVATE: {{softlayer-vlan-private-old}}
-            SL_VLAN_PUBLIC: {{softlayer-vlan-public-old}}
+            SL_VLAN_PRIVATE: {{softlayer-vlan-private}}
+            SL_VLAN_PUBLIC: {{softlayer-vlan-public}}
             SL_VM_DOMAIN: softlayer.com
             SL_VM_NAME_PREFIX: {{softlayer-director-name-prefix}}
             SL_VM_NAME_PREFIX_2: {{softlayer-vm-name-prefix}}
