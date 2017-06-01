@@ -24,7 +24,8 @@ instance_groups:
   vm_type: default
   instances: 1
   networks:
-  - {name: default}
+  - { name: dynamic_public,  default: [dns, gateway] }
+  - { name: dynamic_private }
   azs: [z1]
   jobs:
   - name: auditd
