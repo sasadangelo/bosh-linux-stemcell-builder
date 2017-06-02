@@ -567,7 +567,6 @@ Ubuntu 14.04 images have filename `bosh-ubuntu-trusty-os-image.tgz`
   - Ubuntu 14.04
   (e448b0e8b0967288488c929fbbf953b22a046d1d)
 
-
 ## CentOS 6.6
 
 CentOS 6.6 images have filename `bosh-centos-6-os-image.tgz`
