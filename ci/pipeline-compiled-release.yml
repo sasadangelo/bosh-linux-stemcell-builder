@@ -278,6 +278,7 @@ jobs:
       plan:
         - aggregate:
             - get: version
+              passed: [delete-bosh-env]
             - get: pipeline-src
         - task: cleanup
           file: pipeline-src/ci/tasks/compiled-release/clean-s3-files.yml
