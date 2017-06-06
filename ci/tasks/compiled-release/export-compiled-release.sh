@@ -13,7 +13,7 @@ check_param SL_VLAN_PRIVATE
 check_param cf_release
 check_param cf_release_version
 
-BUILD_VERSION=`cat version/number | cut -d "." -f 3`
+BUILD_VERSION=`cat version/version | cut -d "." -f 3`
 SL_VM_PREFIX=${SL_VM_PREFIX}-${BUILD_VERSION}
 
 #

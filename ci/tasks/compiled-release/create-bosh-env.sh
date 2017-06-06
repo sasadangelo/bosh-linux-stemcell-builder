@@ -10,7 +10,7 @@ check_param SL_DATACENTER
 check_param SL_VLAN_PUBLIC
 check_param SL_VLAN_PRIVATE
 
-BUILD_VERSION=`cat version/number | cut -d "." -f 3`
+BUILD_VERSION=`cat version/version | cut -d "." -f 3`
 SL_VM_PREFIX=${SL_VM_PREFIX}-${BUILD_VERSION}
 
 deployment_dir="${PWD}/deployment"

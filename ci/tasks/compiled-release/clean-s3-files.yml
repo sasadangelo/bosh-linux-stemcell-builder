@@ -1,0 +1,21 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: bosh/compiled-release
+
+inputs:
+  - name: version
+  - name: pipeline-src
+
+run:
+  path: pipeline-src/ci/tasks/compiled-release/clean-s3-files.sh
+
+params:
+  AWS_ACCESS_KEY_ID: replace-me
+  AWS_SECRET_ACCESS_KEY: replace-me
+  AWS_ENDPOINT: replace-me
+  AWS_DEFAULT_REGION: replace-me
+  AWS_BUCKET: replace-me
