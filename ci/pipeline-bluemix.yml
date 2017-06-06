@@ -144,6 +144,8 @@ jobs:
         - get: stemcell
           trigger: true
           resource: light-bluemix-stemcell
+          passed:
+            - bats-ubuntu
       - task: copy-artifacts
         file: bosh-linux-stemcell-builder/ci/tasks/publish.yml
         params:
