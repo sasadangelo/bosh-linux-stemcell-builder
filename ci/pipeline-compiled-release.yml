@@ -273,9 +273,9 @@ jobs:
       - aggregate:
           - get: version
           - get: pipeline-src
+          - get: bosh-softlayer-cpi-release
           - get: bosh-cli
           - get: director-state
-            passed: [delete-compiled-deploy]
       - task: teardown
         file: pipeline-src/ci/tasks/compiled-release/delete-bosh-env.yml
         params:
