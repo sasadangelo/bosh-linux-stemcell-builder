@@ -25,8 +25,8 @@ export AWS_ENDPOINT=${AWS_ENDPOINT}
 export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
 export AWS_BUCKET=${AWS_BUCKET}
 
-echo "List all s3 buckets"
-aws --endpoint-url "https://${AWS_ENDPOINT}" s3 ls
+echo "List bucket ${AWS_BUCKET}"
+aws --endpoint-url "https://${AWS_ENDPOINT}" s3 ls ${AWS_BUCKET}
 
 echo "Remove director-state/director-state-${BUILD_VERSION}.tgz"
 aws --endpoint-url "https://${AWS_ENDPOINT}" s3 rm "s3://${AWS_BUCKET}/director-state/director-state-${BUILD_VERSION}.tgz"
@@ -37,9 +37,5 @@ aws --endpoint-url "https://${AWS_ENDPOINT}" s3 rm "s3://${AWS_BUCKET}/compiled-
 echo "Remove compiled-deploy/compiled-deploy-${BUILD_VERSION}.yml"
 aws --endpoint-url "https://${AWS_ENDPOINT}" s3 rm "s3://${AWS_BUCKET}/compiled-deploy/compiled-deploy-${BUILD_VERSION}.yml"
 
-echo "List ${AWS_BUCKET}/director-state after remove"
-aws --endpoint-url "https://${AWS_ENDPOINT}" s3 ls ${AWS_BUCKET}/director-state
-echo "List ${AWS_BUCKET}/compiled-release after remove"
-aws --endpoint-url "https://${AWS_ENDPOINT}" s3 ls ${AWS_BUCKET}/compiled-release
-echo "List ${AWS_BUCKET}/compiled-deploy after remove"
-aws --endpoint-url "https://${AWS_ENDPOINT}" s3 ls ${AWS_BUCKET}/compiled-deploy
+echo "List bucket ${AWS_BUCKET} after remove"
+aws --endpoint-url "https://${AWS_ENDPOINT}" s3 ls ${AWS_BUCKET}
