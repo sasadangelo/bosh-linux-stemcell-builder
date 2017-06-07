@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -eux
-
 source pipeline-src/ci/tasks/utils.sh
 
 check_param AWS_ACCESS_KEY_ID
