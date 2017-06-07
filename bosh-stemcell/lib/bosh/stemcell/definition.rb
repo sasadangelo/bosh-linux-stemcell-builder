@@ -21,6 +21,7 @@ module Bosh::Stemcell
 
     def stemcell_name(disk_format)
       stemcell_name_parts = [
+        'umask',
         infrastructure.name,
         hypervisor_name,
         operating_system.name,

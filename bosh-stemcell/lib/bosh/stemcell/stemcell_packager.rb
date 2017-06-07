@@ -39,7 +39,7 @@ module Bosh
         stemcell_name = "bosh-#{definition.stemcell_name(disk_format)}"
         {
           'name' => stemcell_name,
-          'version' => version.to_s,
+          'version' => "#{version.to_s}+umask",
           'bosh_protocol' => 1,
           'sha1' => image_checksum,
           'operating_system' => "#{definition.operating_system.name}-#{definition.operating_system.version}",
@@ -56,7 +56,7 @@ module Bosh
 
         {
             'name' => stemcell_name,
-            'version' => version.to_s,
+            'version' => "#{version.to_s}+umask",
             'infrastructure' => infrastructure.name,
             'hypervisor' => infrastructure.hypervisor,
             'disk' => disk_size,
