@@ -9,7 +9,8 @@ cat > $chroot/var/vcap/bosh/agent.json <<JSON
   "Platform": {
     "Linux": {
       "CreatePartitionIfNoEphemeralDisk": true,
-      "ScrubEphemeralDisk": true
+      "ScrubEphemeralDisk": true,
+      "DevicePathResolutionType": "iscsi"
     }
   },
   "Infrastructure": {
