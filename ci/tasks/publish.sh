@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -e -x
 set -u
 
 export VERSION=$( cat version/number | sed 's/\.0$//;s/\.0$//' )
@@ -35,7 +35,7 @@ for file in $COPY_KEYS ; do
 
   echo "$file"
   
-  checksum="$(sha1sum ${file})"
+  checksum="$(sha1sum stemcell/${file} | awk '{print $1}')"
   echo "${file} sha1=${checksum}"
   if [ -n "${BOSHIO_TOKEN}" ]; then
     curl -X POST \
