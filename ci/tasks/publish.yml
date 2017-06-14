@@ -9,6 +9,7 @@ image_resource:
 inputs:
   - name: bosh-linux-stemcell-builder
   - name: version
+  - name: stemcell
 outputs:
   - name: version-tag
 
