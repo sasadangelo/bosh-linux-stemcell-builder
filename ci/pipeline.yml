@@ -2,6 +2,7 @@
 groups:
   - name: all
     jobs:
+      - test-unit
       - build-stemcell
       - publish-stemcells
       - test-stemcells
@@ -63,11 +64,12 @@ groups:
       - bats-ubuntu
 
 shared:
-  - &prepare-director
-    task: prepare-director
+  - &deploy-director
+    task: deploy-director
     tags: [vsphere-v5.1]
-    file: pipelines/vsphere/tasks/prepare-director.yml
-    params: &prepare-director-params
+    file: bosh-linux-stemcell-builder/ci/bats/tasks/deploy-director.yml
+    params:
+      BAT_INFRASTRUCTURE: vsphere
       BOSH_CLIENT:                          {{stemcell-test-director-username}}
       BOSH_CLIENT_SECRET:                   {{stemcell-test-director-password}}
       BOSH_VSPHERE_VCENTER:                 {{vcenter-ip}}
@@ -81,42 +83,38 @@ shared:
       BOSH_VSPHERE_VCENTER_VM_FOLDER:       {{vcenter-vm-folder}}
       BOSH_VSPHERE_VCENTER_TEMPLATE_FOLDER: {{vcenter-template-folder}}
       BOSH_VSPHERE_VCENTER_DISK_PATH:       {{vcenter-disk-path}}
-      SSLIP_IO_KEY:                         {{sslip_io_key}}
 
-
-  - &deploy-director
-    task: deploy-director
-    tags: [vsphere-v5.1]
-    file: pipelines/shared/tasks/deploy-director.yml
-
-  - &prepare-bats
+  - &prepare-bats-config
     task: prepare-bats
     tags: [vsphere-v5.1]
-    file: pipelines/vsphere/tasks/prepare-bats.yml
-    params: &prepare-bats-params
-      BAT_VCAP_PASSWORD:      {{bat-vcap-password}}
-      BOSH_CLIENT:            {{stemcell-test-director-username}}
-      BOSH_CLIENT_SECRET:     {{stemcell-test-director-password}}
+    file: bosh-linux-stemcell-builder/ci/bats/iaas/vsphere/prepare-bats-config.yml
 
   - &run-bats
     task: run-bats
     tags: [vsphere-v5.1]
-    file: pipelines/shared/tasks/run-bats.yml
+    file: bats/ci/tasks/run-bats.yml
 
   - &teardown
     task: teardown
     tags: [vsphere-v5.1]
-    file: pipelines/shared/tasks/teardown.yml
-    params:
-      DEPLOYMENT_NAME: certification
+    file: bosh-linux-stemcell-builder/ci/bats/tasks/destroy-director.yml
 
 jobs:
+  - name: test-unit
+    serial: true
+    plan:
+      - get: bosh-linux-stemcell-builder
+        trigger: true
+      - task: test-unit
+        file: bosh-linux-stemcell-builder/ci/tasks/test-unit.yml
+
   - name: build-stemcell
     serial: true
     plan:
-      - get: bosh-src
-        trigger: true
       - get: bosh-linux-stemcell-builder
+        trigger: true
+        passed:
+          - test-unit
       - get: version
         params:
           bump: minor
@@ -163,18 +161,18 @@ jobs:
           input_mapping:
             stemcell: vsphere-esxi-ubuntu-trusty
           params:
-            BOSH_internal_ip:                          {{stemcell-test-director-address}}
-            BOSH_internal_cidr:            {{bosh-director-vcenter-cidr}}
+            BOSH_internal_ip:         {{stemcell-test-director-address}}
+            BOSH_internal_cidr:       {{bosh-director-vcenter-cidr}}
             BOSH_internal_gw:         {{bosh-director-vcenter-gateway}}
-            BOSH_vcenter_ip:                 {{vcenter-ip}}
-            BOSH_vcenter_user:            {{vcenter-user}}
-            BOSH_vcenter_password:        {{vcenter-password}}
-            BOSH_vcenter_dc:              {{vcenter-dc}}
-            BOSH_vcenter_cluster:         {{vcenter-cluster}}
-            BOSH_vcenter_ds:       {{vcenter-datastore}}
-            BOSH_network_name:            {{vcenter-vlan}}
-            BOSH_vcenter_vms:       {{vcenter-vm-folder}}
-            BOSH_vcenter_templates: {{vcenter-template-folder}}
+            BOSH_vcenter_ip:          {{vcenter-ip}}
+            BOSH_vcenter_user:        {{vcenter-user}}
+            BOSH_vcenter_password:    {{vcenter-password}}
+            BOSH_vcenter_dc:          {{vcenter-dc}}
+            BOSH_vcenter_cluster:     {{vcenter-cluster}}
+            BOSH_vcenter_ds:          {{vcenter-datastore}}
+            BOSH_network_name:        {{vcenter-vlan}}
+            BOSH_vcenter_vms:         {{vcenter-vm-folder}}
+            BOSH_vcenter_templates:   {{vcenter-template-folder}}
             BOSH_vcenter_disks:       {{vcenter-disk-path}}
 
         - task: test-stemcell
@@ -201,7 +199,6 @@ jobs:
             - bats-centos
             - bats-ubuntu
         - get: bosh-linux-stemcell-builder
-        - get: bosh-src
           passed:
             - bats-centos
             - bats-ubuntu
@@ -228,9 +225,9 @@ jobs:
             vcloud/bosh-stemcell-%s-vcloud-esxi-ubuntu-trusty-go_agent.tgz
             azure/bosh-stemcell-%s-azure-hyperv-centos-7-go_agent.tgz
             azure/bosh-stemcell-%s-azure-hyperv-ubuntu-trusty-go_agent.tgz
-      - put: bosh-src-push
+      - put: bosh-linux-stemcell-builder-push
         params:
-          repository: bosh-src
+          repository: bosh-linux-stemcell-builder
           tag: version-tag/tag
           only_tag: true
 
@@ -244,9 +241,8 @@ jobs:
           - get: version
             trigger: true
             passed: [build-stemcell]
-          - get: bosh-src
-            passed: [build-stemcell]
           - get: bosh-linux-stemcell-builder
+            passed: [build-stemcell]
       - task: create-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/build.yml
         privileged: true
@@ -267,9 +263,8 @@ jobs:
           - get: version
             trigger: true
             passed: [build-stemcell]
-          - get: bosh-src
-            passed: [build-stemcell]
           - get: bosh-linux-stemcell-builder
+            passed: [build-stemcell]
       - task: create-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/build.yml
         privileged: true
@@ -294,9 +289,8 @@ jobs:
           - get: version
             trigger: true
             passed: [build-stemcell]
-          - get: bosh-src
-            passed: [build-stemcell]
           - get: bosh-linux-stemcell-builder
+            passed: [build-stemcell]
       - task: create-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/build.yml
         privileged: true
@@ -317,9 +311,8 @@ jobs:
           - get: version
             trigger: true
             passed: [build-stemcell]
-          - get: bosh-src
-            passed: [build-stemcell]
           - get: bosh-linux-stemcell-builder
+            passed: [build-stemcell]
       - task: create-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/build.yml
         privileged: true
@@ -344,9 +337,8 @@ jobs:
           - get: version
             trigger: true
             passed: [build-stemcell]
-          - get: bosh-src
-            passed: [build-stemcell]
           - get: bosh-linux-stemcell-builder
+            passed: [build-stemcell]
       - task: create-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/build.yml
         privileged: true
@@ -367,9 +359,8 @@ jobs:
           - get: version
             trigger: true
             passed: [build-stemcell]
-          - get: bosh-src
-            passed: [build-stemcell]
           - get: bosh-linux-stemcell-builder
+            passed: [build-stemcell]
       - task: create-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/build.yml
         privileged: true
@@ -394,9 +385,8 @@ jobs:
           - get: version
             trigger: true
             passed: [build-stemcell]
-          - get: bosh-src
-            passed: [build-stemcell]
           - get: bosh-linux-stemcell-builder
+            passed: [build-stemcell]
       - task: create-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/build.yml
         privileged: true
@@ -417,9 +407,8 @@ jobs:
           - get: version
             trigger: true
             passed: [build-stemcell]
-          - get: bosh-src
-            passed: [build-stemcell]
           - get: bosh-linux-stemcell-builder
+            passed: [build-stemcell]
       - task: create-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/build.yml
         privileged: true
@@ -444,9 +433,8 @@ jobs:
           - get: version
             trigger: true
             passed: [build-stemcell]
-          - get: bosh-src
-            passed: [build-stemcell]
           - get: bosh-linux-stemcell-builder
+            passed: [build-stemcell]
       - task: create-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/build.yml
         privileged: true
@@ -470,9 +458,8 @@ jobs:
           - get: version
             trigger: true
             passed: [build-stemcell]
-          - get: bosh-src
-            passed: [build-stemcell]
           - get: bosh-linux-stemcell-builder
+            passed: [build-stemcell]
       - task: create-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/build.yml
         privileged: true
@@ -500,9 +487,8 @@ jobs:
           - get: version
             trigger: true
             passed: [build-stemcell]
-          - get: bosh-src
-            passed: [build-stemcell]
           - get: bosh-linux-stemcell-builder
+            passed: [build-stemcell]
       - task: create-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/build.yml
         privileged: true
@@ -523,9 +509,8 @@ jobs:
           - get: version
             trigger: true
             passed: [build-stemcell]
-          - get: bosh-src
-            passed: [build-stemcell]
           - get: bosh-linux-stemcell-builder
+            passed: [build-stemcell]
       - task: create-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/build.yml
         privileged: true
@@ -550,9 +535,8 @@ jobs:
           - get: version
             trigger: true
             passed: [build-stemcell]
-          - get: bosh-src
-            passed: [build-stemcell]
           - get: bosh-linux-stemcell-builder
+            passed: [build-stemcell]
       - task: create-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/build.yml
         privileged: true
@@ -568,7 +552,7 @@ jobs:
             file: stemcell/*.tgz
 
   - name: bats-centos
-    serial: false
+    serial: true
     plan:
     - do:
       - aggregate:
@@ -581,10 +565,9 @@ jobs:
           resource: vsphere-esxi-centos-7
           passed:
           - build-vsphere-esxi-centos-7
-        - get: pipelines
         - get: bosh-cli
         - get: bats
-        - get: bosh-src
+        - get: bosh-deployment
         - get: bosh-linux-stemcell-builder
           passed:
             - build-warden-boshlite-centos-7
@@ -618,14 +601,11 @@ jobs:
 
       - {put: environment, params: {acquire: true}}
 
-      - <<: *prepare-director
-
       - do:
         - <<: *deploy-director
 
-        - <<: *prepare-bats
+        - <<: *prepare-bats-config
           params:
-            <<: *prepare-bats-params
             STEMCELL_NAME: bosh-vsphere-esxi-centos-7-go_agent
 
         - <<: *run-bats
@@ -638,7 +618,7 @@ jobs:
 
 
   - name: bats-ubuntu
-    serial: false
+    serial: true
     plan:
     - do:
       - aggregate:
@@ -651,10 +631,9 @@ jobs:
           resource: vsphere-esxi-ubuntu-trusty
           passed:
             - build-vsphere-esxi-ubuntu-trusty
-        - get: pipelines
         - get: bosh-cli
         - get: bats
-        - get: bosh-src
+        - get: bosh-deployment
         - get: bosh-linux-stemcell-builder
           passed:
             - build-warden-boshlite-centos-7
@@ -688,14 +667,11 @@ jobs:
 
       - {put: environment, params: {acquire: true}}
 
-      - <<: *prepare-director
-
       - do:
         - <<: *deploy-director
 
-        - <<: *prepare-bats
+        - <<: *prepare-bats-config
           params:
-            <<: *prepare-bats-params
             STEMCELL_NAME: bosh-vsphere-esxi-ubuntu-trusty-go_agent
 
         - <<: *run-bats
@@ -707,15 +683,18 @@ jobs:
         - {put: environment, params: {release: environment}}
 
 resources:
-  - name: bosh-src
+  - name: bosh-linux-stemcell-builder-push
     type: git
     source:
-      uri: {{bosh_src_url}}
-      branch: 3363.x
-      paths:
-        - "src/bosh-stemcell"
-        - "src/stemcell_builder"
-        - "src/go/src/github.com/cloudfoundry/bosh-agent"
+      uri: git@github.com:cloudfoundry/bosh-linux-stemcell-builder
+      branch: {{stemcell-branch}}
+      private_key: {{bosh_src_key}}
+
+  - name: bosh-linux-stemcell-builder
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry/bosh-linux-stemcell-builder
+      branch: master
 
   - name: version
     type: semver
@@ -888,33 +867,11 @@ resources:
       access_key_id: {{stemcell_aws_access_key}}
       secret_access_key: {{stemcell_aws_secret_key}}
 
-  #
-  # Test Stemcells
-  #
-
-  - name: bosh-linux-stemcell-builder
-    type: git
-    source:
-      uri: https://github.com/cloudfoundry/bosh-linux-stemcell-builder
-      branch: 3363.x
-
-  - name: bosh-src-push
-    type: git
-    source:
-      uri: {{bosh_src_push_url}}
-      branch: 3363.x
-      private_key: {{bosh_src_key}}
-
   - name: bosh-deployment
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-deployment
       branch: master
-
-
-  #
-  # BATs
-  #
 
   - name: bosh-cli
     type: s3
@@ -923,17 +880,11 @@ resources:
       bucket: bosh-cli-artifacts
       region_name: us-east-1
 
-  - name: pipelines
-    type: git
-    source:
-      uri: https://github.com/cloudfoundry-incubator/bosh-cpi-certification
-      branch: master
-
   - name: bats
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
-      branch: master
+      branch: gocli-bats
 
   - name: environment
     type: pool

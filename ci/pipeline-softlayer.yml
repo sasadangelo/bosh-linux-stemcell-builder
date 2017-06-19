@@ -2,6 +2,7 @@
 groups:
   - name: all
     jobs:
+      - test-unit
       - build-stemcell
       - new-stemcell-version
       - convert-softlayer-stemcell
@@ -25,50 +26,50 @@ groups:
       - bats-ubuntu
 
 shared:
-  - &prepare-director
-    task: prepare-director
-    file: pipelines/softlayer/tasks/prepare-director.yml
-    params: &prepare-director-params
-      BOSH_CLIENT:                          {{stemcell-test-director-username}}
-      BOSH_CLIENT_SECRET:                   {{stemcell-test-director-password}}
-      SL_USERNAME:                          {{softlayer-username}}
-      SL_API_KEY:                           {{softlayer-api-key}}
-      SL_DATACENTER:                        {{softlayer-datacenter}}
-      SL_VLAN_PUBLIC:                       {{softlayer-vlan-public}}
-      SL_VLAN_PRIVATE:                      {{softlayer-vlan-private}}
-      SL_VM_DOMAIN:                         {{softlayer-vm-domain}}
-      SL_VM_NAME_PREFIX:                    {{softlayer-director-name-prefix}}
-
   - &deploy-director
     task: deploy-director
-    file: pipelines/shared/tasks/deploy-director.yml
-    params: *prepare-director-params
+    file: bosh-linux-stemcell-builder/ci/bats/tasks/deploy-director-softlayer.yml
+    params:
+      BAT_INFRASTRUCTURE: softlayer
+      BOSH_CLIENT:                          {{stemcell-test-director-username}}
+      BOSH_CLIENT_SECRET:                   {{stemcell-test-director-password}}
+      BOSH_SL_USERNAME:                          {{softlayer-username}}
+      BOSH_SL_API_KEY:                           {{softlayer-api-key}}
+      BOSH_SL_DATACENTER:                        {{softlayer-datacenter}}
+      BOSH_SL_VLAN_PUBLIC:                       {{softlayer-vlan-public}}
+      BOSH_SL_VLAN_PRIVATE:                      {{softlayer-vlan-private}}
+      BOSH_SL_VM_DOMAIN:                         {{softlayer-vm-domain}}
+      BOSH_SL_VM_NAME_PREFIX:                    {{softlayer-director-name-prefix}}
 
-  - &prepare-bats
+  - &prepare-bats-config
     task: prepare-bats
-    file: pipelines/softlayer/tasks/prepare-bats.yml
+    file: bosh-linux-stemcell-builder/ci/bats/iaas/softlayer/prepare-bats-config.yml
     params: &prepare-bats-params
       BAT_VCAP_PASSWORD:      {{bat-vcap-password}}
-      BOSH_CLIENT:            {{stemcell-test-director-username}}
-      BOSH_CLIENT_SECRET:     {{stemcell-test-director-password}}
       SL_DATACENTER:          {{softlayer-datacenter}}
       SL_VLAN_PRIVATE:        {{softlayer-vlan-private}}
       SL_VLAN_PUBLIC:         {{softlayer-vlan-public}}
       SL_VM_DOMAIN:           {{softlayer-vm-domain}}
-      SL_VM_NAME_PREFIX:      bats-experimental-
+      SL_VM_NAME_PREFIX:      bats-experimental
       STEMCELL_NAME:          bosh-softlayer-xen-ubuntu-trusty-go_agent
 
   - &run-bats
     task: run-bats
-    file: pipelines/shared/tasks/run-bats.yml
+    file: bats/ci/tasks/run-bats.yml
 
   - &teardown
     task: teardown
-    file: pipelines/shared/tasks/teardown.yml
-    params:
-      DEPLOYMENT_NAME: certification
+    file: bosh-linux-stemcell-builder/ci/bats/tasks/destroy-director.yml
 
 jobs:
+  - name: test-unit
+    serial: true
+    plan:
+      - get: bosh-linux-stemcell-builder
+        trigger: true
+      - task: test-unit
+        file: bosh-linux-stemcell-builder/ci/tasks/test-unit.yml
+
   - name: new-stemcell-version
     plan:
       - get: published-stemcell
@@ -119,6 +120,7 @@ jobs:
             SL_VM_DOMAIN: softlayer.com
             SL_VM_NAME_PREFIX: {{softlayer-director-name-prefix}}
             SL_VM_NAME_PREFIX_2: {{softlayer-vm-name-prefix}}
+            SL_PUBLIC_SSH_KEY: {{softlayer-public-ssh-key}}
 
         - task: test-stemcell
           file: bosh-linux-stemcell-builder/ci/tasks/test-stemcell.yml
@@ -140,11 +142,11 @@ jobs:
           passed:
             - bats-ubuntu
         - get: bosh-linux-stemcell-builder
-          passed:
-            - bats-ubuntu
         - get: stemcell
           trigger: true
           resource: light-softlayer-stemcell
+          passed:
+            - bats-ubuntu
       - task: copy-artifacts
         file: bosh-linux-stemcell-builder/ci/tasks/publish.yml
         params:
@@ -156,7 +158,6 @@ jobs:
             light-bosh-stemcell-%s-softlayer-xen-ubuntu-trusty-go_agent.tgz
           BOSHIO_TOKEN: ec74e6889e4686117d8248af1716d9443df8104cac89f719e58c17534b57704897dd37716724854c
 
-
   #
   # SoftLayer
   #
@@ -167,7 +168,6 @@ jobs:
           - get: version
             trigger: true
           - get: bosh-linux-stemcell-builder
-          - get: bosh-src
       - task: create-stemcell
         file: bosh-linux-stemcell-builder/ci/tasks/build-softlayer.yml
         privileged: true
@@ -251,7 +251,7 @@ jobs:
         params: {file: light-stemcell/*.tgz}
 
   - name: bats-ubuntu
-    serial: false
+    serial: true
     plan:
     - do:
       - aggregate:
@@ -262,45 +262,34 @@ jobs:
           resource: light-softlayer-stemcell
           passed:
             - create-softlayer-light-stemcell
-        - get: pipelines
         - get: bosh-cli
         - get: bats
+        - get: bosh-deployment
         - get: bosh-linux-stemcell-builder
         - get: version
           passed:
             - create-softlayer-light-stemcell
 
-      - <<: *prepare-director
-
+      - {put: environment, params: {acquire: true}}
       - do:
         - <<: *deploy-director
-
-        - <<: *prepare-bats
+        - <<: *prepare-bats-config
           params:
             <<: *prepare-bats-params
-            STEMCELL_NAME: bosh-softlayer-xen-ubuntu-trusty-go_agent
-
         - <<: *run-bats
         ensure:
           do:
           - <<: *teardown
+      ensure:
+        do:
+        - {put: environment, params: {release: environment}}
 
 resources:
   - name: bosh-linux-stemcell-builder
     type: git
     source:
-      uri: https://github.com/jianqiu/bosh-linux-stemcell-builder
-      branch: 3363.x
-
-  - name: bosh-src
-    type: git
-    source:
-      uri: {{bosh_src_url}}
-      branch: 3363.x
-      paths:
-        - "src/bosh-stemcell"
-        - "src/stemcell_builder"
-        - "src/go/src/github.com/cloudfoundry/bosh-agent"
+      uri: https://github.com/bluebosh/bosh-linux-stemcell-builder
+      branch: master
 
   - name: version
     type: semver
@@ -324,7 +313,7 @@ resources:
     type: git
     source:
       branch: container_based_stemcell_pipeline
-      uri: https://github.com/mattcui/bosh-softlayer-tools
+      uri: https://github.com/bluebosh/bosh-softlayer-tools
 
   - name: light-softlayer-stemcell
     type: s3
@@ -345,9 +334,12 @@ resources:
       repository: cloudfoundry/bosh
 
   - name: cpi-release
-    type: bosh-io-release
+    type: s3
     source:
-      repository: cloudfoundry/bosh-softlayer-cpi-release
+      regexp: bosh-softlayer-cpi-(\d+\.\d+\.\d+)\.tgz
+      bucket: {{s3_pipeline_bucket_lite}}
+      access_key_id: {{stemcell-aws-access-key}}
+      secret_access_key: {{stemcell-aws-secret-key}}
 
   #
   # SoftLayer
@@ -361,19 +353,11 @@ resources:
       access_key_id: {{stemcell-aws-access-key}}
       secret_access_key: {{stemcell-aws-secret-key}}
 
-  #
-  # Test Stemcells
-  #
-
   - name: bosh-deployment
     type: git
     source:
-      uri: https://github.com/mattcui/bosh-deployment
-      branch: softlayer
-
-  #
-  # BATs
-  #
+      uri: https://github.com/bluebosh/bosh-deployment
+      branch: new_softlayer_cpi
 
   - name: bosh-cli
     type: s3
@@ -382,23 +366,17 @@ resources:
       bucket: bosh-cli-artifacts
       region_name: us-east-1
 
-  - name: pipelines
-    type: git
-    source:
-      uri: https://github.com/jianqiu/bosh-cpi-certification
-      branch: master
-
   - name: bats
     type: git
     source:
-      uri: https://github.com/mattcui/bosh-acceptance-tests.git
-      branch: master
+      uri: https://github.com/bluebosh/bosh-acceptance-tests.git
+      branch: gocli-bats
 
   - name: environment
     type: pool
     source:
       pool: softlayer
-      uri: git@github.com:jianqiu/bats-concourse-pool.git
+      uri: git@github.com:bluebosh/bats-concourse-pool.git
       branch: master
       private_key: {{bosh-src-key}}
 

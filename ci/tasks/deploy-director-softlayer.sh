@@ -13,7 +13,7 @@ function fromEnvironment() {
 
 function cp_artifacts {
    mv $HOME/.bosh director-state/
-   mv director.yml director-creds.yml director-state.json director-state/
+   cp director.yml director-creds.yml director-state.json director-state/
 }
 trap cp_artifacts EXIT
 
@@ -24,6 +24,7 @@ export BOSH_internal_ip=$(fromEnvironment '.network1.softlayerDirector')
 export BOSH_sl_vlan_public=$(fromEnvironment '.network1.softlayerPublicVLAN')
 export BOSH_sl_vlan_private=$(fromEnvironment '.network1.softlayerPrivateVLAN')
 export BOSH_reserved_range="[$(fromEnvironment '.network1.reservedRange')]"
+export BOSH_internal_static_ips="[$(fromEnvironment '.network1.softlayerStaticIPs')]"
 
 cat > director-creds.yml <<EOF
 internal_ip: $BOSH_internal_ip
@@ -38,6 +39,7 @@ $bosh_cli interpolate bosh-deployment/bosh.yml \
   -v director_name=stemcell-smoke-tests-director \
   -v sl_vm_name_prefix=$SL_VM_NAME_PREFIX \
   -v sl_vm_domain=$SL_VM_DOMAIN \
+  -v sl_director_fqn=$SL_VM_NAME_PREFIX.$SL_VM_DOMAIN \
   -v sl_username=$SL_USERNAME \
   -v sl_api_key=$SL_API_KEY \
   --vars-env "BOSH" > director.yml
@@ -57,4 +59,8 @@ $bosh_cli -n update-cloud-config bosh-deployment/softlayer/cloud-config.yml \
           --ops-file bosh-linux-stemcell-builder/ci/assets/reserve-ips.yml \
           -v sl_vm_name_prefix=$SL_VM_NAME_PREFIX_2 \
           -v sl_vm_domain=$SL_VM_DOMAIN \
+          -v sl_public_ssh_key=$SL_PUBLIC_SSH_KEY \
+          -v powerdns_ip=$BOSH_ENVIRONMENT \
+          -v sl_vlan_public_id=$SL_VLAN_PUBLIC \
+          -v sl_vlan_private_id=$SL_VLAN_PRIVATE \
           --vars-env "BOSH"

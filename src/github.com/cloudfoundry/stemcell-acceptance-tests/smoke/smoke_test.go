@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
@@ -14,17 +15,17 @@ import (
 )
 
 var _ = Describe("Stemcell", func() {
-	Context("When syslog release has been deployed", func() {
-		cmdRunner := system.NewExecCmdRunner(boshlog.NewLogger(boshlog.LevelNone))
-		boshBinaryPath := os.Getenv("BOSH_BINARY_PATH")
+	cmdRunner := system.NewExecCmdRunner(boshlog.NewLogger(boshlog.LevelNone))
+	boshBinaryPath := os.Getenv("BOSH_BINARY_PATH")
 
+	Context("When syslog release has been deployed", func() {
 		Context("when auditd is monitoring access to modprobe", func() {
 			It("gets forwarded to the syslog storer", func() {
 				_, _, exitStatus, err := cmdRunner.RunCommand(boshBinaryPath, "-d", "bosh-stemcell-smoke-tests", "ssh", "syslog_forwarder/0", "sudo modprobe -r floppy")
 				Expect(err).ToNot(HaveOccurred())
 				Expect(exitStatus).To(Equal(0))
 
-				stdOut, _, exitStatus, err = cmdRunner.RunCommand(boshBinaryPath, "-d", "bosh-stemcell-smoke-tests", "ssh", "syslog_storer/0", `cat /var/vcap/store/syslog_storer/syslog.log`)
+				_, _, exitStatus, err = cmdRunner.RunCommand(boshBinaryPath, "-d", "bosh-stemcell-smoke-tests", "ssh", "syslog_storer/0", `cat /var/vcap/store/syslog_storer/syslog.log`)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(exitStatus).To(Equal(0))
 				//Expect(stdOut).To(ContainSubstring("COMMAND=/sbin/modprobe -r floppy"))
@@ -90,24 +91,13 @@ var _ = Describe("Stemcell", func() {
 		})
 
 		It("#133776519: forwards deeply nested logs", func() {
-			tempFile, err := ioutil.TempFile(os.TempDir(), "logfile")
-			Expect(err).ToNot(HaveOccurred())
-			_, err = tempFile.Write([]byte(``))
-			Expect(err).ToNot(HaveOccurred())
-			logFilePath, err := filepath.Abs(tempFile.Name())
-			Expect(err).ToNot(HaveOccurred())
-
-			stdOut, stdErr, exitStatus, err := cmdRunner.RunCommand(boshBinaryPath, "-d", "bosh-stemcell-smoke-tests", "ssh", "syslog_forwarder/0", `sudo mkdir -p /var/vcap/sys/log/deep/path && sudo chmod 777 /var/vcap/sys/log/deep/path`)
+			stdOut, stdErr, exitStatus, err := cmdRunner.RunCommand(boshBinaryPath, "-d", "bosh-stemcell-smoke-tests", "ssh", "syslog_forwarder/0", `sudo mkdir -p /var/vcap/sys/log/deep/path && sudo chmod 777 /var/vcap/sys/log/deep/path && touch /var/vcap/sys/log/deep/path/deepfile.log`)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(exitStatus).To(Equal(0), fmt.Sprintf("Could not create nested log path! \n stdOut: %s \n stdErr: %s", stdOut, stdErr))
 
-			_, _, exitStatus, err = cmdRunner.RunCommand(boshBinaryPath, "-d", "bosh-stemcell-smoke-tests", "scp", logFilePath, "syslog_forwarder/0:/var/vcap/sys/log/deep/path/deepfile.log")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(exitStatus).To(Equal(0))
+			time.Sleep(10 * time.Second)
 
-			time.Sleep(5 * time.Second)
-
-			_, _, exitStatus, err = cmdRunner.RunCommand(boshBinaryPath, "-d", "bosh-stemcell-smoke-tests",  "ssh", "syslog_forwarder/0", "echo 'test-blackbox-message' >> /var/vcap/sys/log/deep/path/deepfile.log")
+			_, _, exitStatus, err = cmdRunner.RunCommand(boshBinaryPath, "-d", "bosh-stemcell-smoke-tests", "ssh", "syslog_forwarder/0", "echo 'test-blackbox-message' >> /var/vcap/sys/log/deep/path/deepfile.log")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(exitStatus).To(Equal(0))
 
@@ -136,5 +126,48 @@ var _ = Describe("Stemcell", func() {
 			Expect(exitStatus).To(Equal(0), fmt.Sprintf("Could not read from syslog stdOut: %s \n stdErr: %s", stdOut, stdErr))
 			//Expect(stdOut).To(ContainSubstring(`exe="/usr/bin/chage"`))
 		})
+	})
+
+	It("#141987897: disables ipv6 in the kernel", func() {
+		stdOut, _, exitStatus, err := cmdRunner.RunCommand(boshBinaryPath, "-d", "bosh-stemcell-smoke-tests", "--column=stdout", "ssh", "syslog_forwarder/0", "-r", "-c", `sudo netstat -lnp | grep sshd | awk '{ print $4 }'`)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(exitStatus).To(Equal(0))
+		Expect(strings.Split(strings.TrimSpace(stdOut), "\n")).To(Equal([]string{"0.0.0.0:22"}))
+	})
+
+	It("#140456537: enables sysstat", func() {
+		_, _, exitStatus, err := cmdRunner.RunCommand(boshBinaryPath,
+			"-d", "bosh-stemcell-smoke-tests",
+			"--column=stdout",
+			"ssh", "syslog_forwarder/0", "-r", "-c",
+			// sleep to ensure we have multiple samples so average can be verified
+			`sudo /usr/lib/sysstat/debian-sa1 && sudo /usr/lib/sysstat/debian-sa1 1 1 && sleep 2 && sudo /usr/lib/sysstat/debian-sa1 1 1`,
+		)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(exitStatus).To(Equal(0))
+
+		stdOut, _, exitStatus, err := cmdRunner.RunCommand(boshBinaryPath,
+			"-d", "bosh-stemcell-smoke-tests",
+			"--column=stdout",
+			"ssh", "syslog_forwarder/0", "-r", "-c",
+			`sudo sar`,
+		)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(exitStatus).To(Equal(0))
+		Expect(stdOut).To(MatchRegexp(`^Linux`))
+		Expect(stdOut).To(MatchRegexp(`\nAverage:\s+`))
+	})
+
+	It("#146390925: rsyslog logs with precision timestamps", func() {
+		stdout, _, exitStatus, err := cmdRunner.RunCommand(boshBinaryPath,
+			"-d", "bosh-stemcell-smoke-tests",
+			"--column=stdout",
+			"ssh", "syslog_forwarder/0", "-r",
+			"-c", `logger story146390925 && sleep 1 && sudo grep story146390925 /var/log/messages`,
+		)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(exitStatus).To(Equal(0))
+
+		Expect(stdout).To(MatchRegexp(`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{1,6}\+00:00 localhost bosh_[^ ]+: story146390925`))
 	})
 })

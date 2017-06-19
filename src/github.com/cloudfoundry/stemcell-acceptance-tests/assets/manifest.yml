@@ -22,7 +22,9 @@ instance_groups:
   vm_type: default
   instances: 1
   networks:
-  - {name: dynamic}
+  - { name: dynamic_public,  default: [dns, gateway] }
+  - { name: dynamic_private }
+  azs: [z1]
   jobs:
   - name: syslog_storer
     release: syslog
@@ -35,12 +37,10 @@ instance_groups:
   vm_type: default
   instances: 1
   networks:
-  - {name: dynamic}
+  - { name: dynamic_public, default: [dns, gateway] }
+  - { name: dynamic_private }
   jobs:
   - name: syslog_forwarder
     release: syslog
-    properties:
-      syslog:
-        forward_files: true
     consumes:
       syslog_storer: { from: syslog_storer }

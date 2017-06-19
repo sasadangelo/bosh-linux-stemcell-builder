@@ -7,7 +7,10 @@ image_resource:
     repository: bosh/os-image-stemcell-builder
 
 inputs:
+<<<<<<< HEAD
   - name: bosh-src
+=======
+>>>>>>> a08b526bd138f39e3aee76c58d31cb394301dc8b
   - name: bosh-linux-stemcell-builder
   - name: version
 
