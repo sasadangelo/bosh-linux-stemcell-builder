@@ -245,7 +245,7 @@ jobs:
           OS_VERSION: trusty
           SL_USERNAME: {{softlayer-username}}
           SL_API_KEY: {{softlayer-api-key}}
-          BOSHIO_TOKEN: ec74e6889e4686117d8248af1716d9443df8104cac89f719e58c17534b57704897dd37716724854c
+          BOSHIO_TOKEN: {{boshio_token}}
         input_mapping:
           stemcell: bluemix-xen-ubuntu-trusty
       - put: light-bluemix-stemcell
