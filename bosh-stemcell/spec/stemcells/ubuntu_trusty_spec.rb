@@ -10,7 +10,7 @@ describe 'Ubuntu 14.04 stemcell image', stemcell_image: true do
       its(:content) { should match 'timeout=1' }
       its(:content) { should match %r{^title Ubuntu 14\.04.* LTS \(.*\)$} }
       its(:content) { should match /^  root \(hd0,0\)$/ }
-      its(:content) { should match %r{kernel /boot/vmlinuz-\S+-generic ro root=UUID=} }
+      its(:content) { should match %r{kernel /boot/vmlinuz-\S+-generic ro root=} }
       its(:content) { should match ' selinux=0' }
       its(:content) { should match ' cgroup_enable=memory swapaccount=1' }
       its(:content) { should match ' console=tty0 console=ttyS0,115200n8' }
@@ -275,8 +275,8 @@ HERE
   } do
     describe file('/var/vcap/bosh/agent.json') do
       it { should be_valid_json_file }
-      its(:content) { should match('"Type": "HTTP"') }
-      its(:content) { should match('"UserDataPath": "/rest/v3.1/SoftLayer_Resource_Metadata/getUserMetadata.json"') }
+      its(:content) { should match('"Type": "File"') }
+      its(:content) { should match('"SettingsPath": "/var/vcap/bosh/user_data.json"') }
       its(:content) { should match('"UseRegistry": true') }
     end
   end

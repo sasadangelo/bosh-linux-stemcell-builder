@@ -73,7 +73,8 @@ sudo --preserve-env --set-home --user ubuntu -- /bin/bash --login -i <<SUDO
   rm -f ./tmp/base_os_image.tgz
 SUDO
 
-stemcell_name="bosh-stemcell-$CANDIDATE_BUILD_NUMBER-$IAAS-esxi-$OS_NAME-$OS_VERSION-go_agent"
+generated_stemcell_name="bosh-stemcell-$CANDIDATE_BUILD_NUMBER-$IAAS-esxi-$OS_NAME-$OS_VERSION-go_agent"
+stemcell_name="bosh-stemcell-$CANDIDATE_BUILD_NUMBER-bluemix-esxi-$OS_NAME-$OS_VERSION-go_agent"
 
 if [ -e bosh-linux-stemcell-builder/tmp/*-raw.tgz ] ; then
   # openstack currently publishes raw files
@@ -91,8 +92,9 @@ if [ -e bosh-linux-stemcell-builder/tmp/*-raw.tgz ] ; then
   fi
 fi
 
+generated_stemcell_filename="${generated_stemcell_name}.tgz"
 stemcell_filename="${stemcell_name}.tgz"
-mv "bosh-linux-stemcell-builder/tmp/${stemcell_filename}" "${output_dir}/${stemcell_filename}"
+mv "bosh-linux-stemcell-builder/tmp/${generated_stemcell_filename}" "${output_dir}/${stemcell_filename}"
 
 #checksum="$(sha1sum "${output_dir}/${stemcell_filename}" | awk '{print $1}')"
 #echo "$stemcell_filename sha1=$checksum"

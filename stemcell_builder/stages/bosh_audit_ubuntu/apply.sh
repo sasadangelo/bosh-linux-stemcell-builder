@@ -17,4 +17,7 @@ write_shared_audit_rules
 
 record_use_of_privileged_binaries
 
+echo 'Run here -> make_audit_rules_immutable'
+# make_audit_rules_immutable
+
 override_default_audit_variables

@@ -26,11 +26,11 @@ cp -a $assets_dir/alerts.monitrc $chroot/var/vcap/monit/alerts.monitrc
 
 cd $assets_dir
 if is_ppc64le; then
-  curl -L -o bosh-agent "https://s3.amazonaws.com/bosh-agent-binaries/bosh-agent-2.30.2-linux-ppc64le?versionId=BYHDmiSttpCtd_CanK2bPd77mPPWKrnr"
-  echo "34705d808e93b0f9a1cae7da68d94a7fadb09b420eff7092e7aa89e4397349a5  bosh-agent" | shasum -a 256 -c -
+  curl -L -o bosh-agent "https://s3.amazonaws.com/bosh-agent-binaries/bosh-agent-0.0.35-linux-ppc64le?versionId=fIi1ZsA_Y6aZwOfnBuVpwtbi6QYvJLOU"
+  echo "e1177c15c00b89ef761c00705a7b041a25515b863052765b455e60f0ca504940  bosh-agent" | shasum -a 256 -c -
 else
-  curl -L -o bosh-agent "https://s3.amazonaws.com/bosh-agent-binaries/bosh-agent-2.30.2-linux-amd64?versionId=fHekeJG71MM7A68EWO_CzPuOv2PKs3QZ"
-  echo "1cb6c17854757b97fdb546ecc3b8f9d674d2f7b457cf9758b5b17ab9ecdba4f6  bosh-agent" | shasum -a 256 -c -
+  curl -L -o bosh-agent "https://s3.amazonaws.com/bosh-softlayer-agent/bosh-agent-0.0.38-linux-amd64-bluemix"
+#  echo "18526758d2e47a262a2f6bb88e3891221b0fe2d5a2257f39f725c304b50cc369  bosh-agent" | shasum -a 256 -c -
 fi
 mv bosh-agent $chroot/var/vcap/bosh/bin/
 
@@ -41,9 +41,9 @@ cp $assets_dir/mbus/agent.{cert,key} $chroot/var/vcap/bosh/
 cd $assets_dir
 rm -rf davcli
 mkdir davcli
-current_version=0.0.23
+current_version=0.0.19
 curl -L -o davcli/davcli https://s3.amazonaws.com/davcli/davcli-${current_version}-linux-amd64
-echo "bd8c1f02061ca5c5774f1a5eb75b11362b2c1d84 davcli/davcli" | sha1sum -c -
+echo "ee6163803fc6c3a2a8fa2be04d6800d796a21dfd davcli/davcli" | sha1sum -c -
 mv davcli/davcli $chroot/var/vcap/bosh/bin/bosh-blobstore-dav
 chmod +x $chroot/var/vcap/bosh/bin/bosh-blobstore-dav
 
