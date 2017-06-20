@@ -185,6 +185,7 @@ module Bosh::Stemcell
 
     def softlayer_stages
       [
+          :system_openssl_fips,
           :system_network,
           :system_softlayer_open_iscsi,
           :system_softlayer_multipath_tools,
@@ -197,6 +198,8 @@ module Bosh::Stemcell
           :bosh_clean_ssh,
           :image_create,
           :image_install_grub,
+          :bosh_audit_bluemix,
+          :xen_enable_hvm
       ]
     end
 
