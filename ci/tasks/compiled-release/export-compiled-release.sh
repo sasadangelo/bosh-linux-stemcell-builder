@@ -88,7 +88,7 @@ do
     if [ "$release_location" == "" ]; then
        echo "Keep using `cat $template_file | grep "((${release}_version))"`"
     else
-        release_location_tmp=`echo $release_location | sed 's/\//\\\//g'`
+       release_location_tmp=`echo $release_location | sed 's/\//\\\//g'`
        echo "Replace location by using - location: release_location"
        sed -i "s/^- location:.*((${release}_version)).*$/- location: $release_location_tmp/g" $template_file
     fi
