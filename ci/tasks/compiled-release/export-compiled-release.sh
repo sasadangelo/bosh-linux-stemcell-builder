@@ -138,7 +138,7 @@ do
   sha1sum compiled-release/${release_upload_name}-${release_upload_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz
 done
 
-tar -cvf compiled-release-allinone-${BUILD_VERSION}.tgz compiled-release/
+tar -zcvf compiled-release-allinone-${BUILD_VERSION}.tgz compiled-release/
 rm -rf compiled-release/*
 mv compiled-release-allinone-${BUILD_VERSION}.tgz compiled-release/
 sha1sum compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz
