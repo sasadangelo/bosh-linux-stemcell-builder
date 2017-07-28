@@ -90,6 +90,7 @@ klibc-utils
 kmod
 kpartx
 krb5-multidev
+ldap-utils
 less
 libacl1:amd64
 libaio1:amd64
@@ -221,6 +222,7 @@ libnih-dbus1:amd64
 libnih1:amd64
 libnl-3-200:amd64
 libnl-genl-3-200:amd64
+libnl-route-3-200:amd64
 libp11-kit-dev
 libp11-kit0:amd64
 libpam-cap:amd64
