@@ -12,6 +12,7 @@ check_param SL_VLAN_PUBLIC
 check_param SL_VLAN_PRIVATE
 check_param cf_release
 check_param cf_release_version
+check_param STEMCELL_VERSION
 
 BUILD_VERSION=`cat version/version | cut -d "." -f 3`
 SL_VM_PREFIX=${SL_VM_PREFIX}-${BUILD_VERSION}
@@ -46,7 +47,6 @@ DIRECTOR=$(cat director-state/director-hosts |awk '{print $1}')
 DIRECTOR_UUID=$(cat director-state/bosh-template-state.json |grep director_id| cut -d"\"" -f4)
 DIRECTOR_PASSWORD=$($BOSH_CLI int director-state/credentials.yml --path /DI_ADMIN_PASSWORD)
 STEMCELL_NAME=$($BOSH_CLI -e bosh-env stemcells|grep ubuntu-trusty|awk '{print $1}')
-STEMCELL_VERSION=$(cat stemcell/version)
 SL_VM_DOMAIN=${SL_VM_PREFIX}.softlayer.com
 deployment_dir="compiled-deploy"
 manifest_filename="compiled-deploy-${BUILD_VERSION}.yml"

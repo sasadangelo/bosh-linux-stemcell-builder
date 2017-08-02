@@ -9,6 +9,8 @@ check_param SL_API_KEY
 check_param SL_DATACENTER
 check_param SL_VLAN_PUBLIC
 check_param SL_VLAN_PRIVATE
+check_param DIRECTOR_URL
+check_param STEMCELL_URL
 
 BUILD_VERSION=`cat version/version | cut -d "." -f 3`
 SL_VM_PREFIX=${SL_VM_PREFIX}-${BUILD_VERSION}
@@ -16,12 +18,12 @@ SL_VM_PREFIX=${SL_VM_PREFIX}-${BUILD_VERSION}
 deployment_dir="${PWD}/deployment"
 mkdir -p $deployment_dir
 
-SL_VM_DOMAIN=${SL_VM_PREFIX}.softlayer.com
+mkdir bosh-release
+wget ${DIRECTOR_URL} -P bosh-release
+mv bosh-release/bosh* bosh-release/release.tgz
 
-STEMCELL_NAME="$(ls stemcell|grep tgz)"
-ORG_STEMCELL_NAME="light-bosh-stemcell-3363.12.3-bluemix-xen-ubuntu-trusty-go_agent.tgz"
-cp pipeline-src/ci/tasks/templates/bosh-template.yml bosh-template.yml
-sed -i 's/'"$ORG_STEMCELL_NAME"'/'"$STEMCELL_NAME"'/g' bosh-template.yml
+wget --content-disposition ${STEMCELL_URL} -P stemcell
+mv stemcell/light-bosh-stemcell-* stemcell/bosh-softlayer-xen-ubuntu-trusty-go_agent.tgz
 
 BOSH_CLI="$(pwd)/$(echo bosh-cli/bosh-cli-*)"
 chmod +x ${BOSH_CLI}
