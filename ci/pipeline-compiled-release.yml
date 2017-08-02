@@ -133,6 +133,7 @@ jobs:
           unbound_release_version: {{unbound_release_version}}
           unbound_release_location: {{unbound_release_location}}
           STEMCELL_VERSION: {{stemcell_version}}
+          STEMCELL_URL: {{stemcell_url}}
       - put: compiled-release
         params:
           file: compiled-release/compiled-release-allinone-*.tgz
