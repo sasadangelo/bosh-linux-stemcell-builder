@@ -13,6 +13,7 @@ check_param SL_VLAN_PRIVATE
 check_param cf_release
 check_param cf_release_version
 check_param STEMCELL_VERSION
+check_param STEMCELL_NAME
 check_param STEMCELL_URL
 
 BUILD_VERSION=`cat version/version | cut -d "." -f 3`
@@ -43,7 +44,7 @@ ls -al
 
 mkdir stemcell
 wget --content-disposition ${STEMCELL_URL} -P stemcell
-mv stemcell/light-bosh-stemcell-* stemcell/bosh-softlayer-xen-ubuntu-trusty-go_agent.tgz
+mv stemcell/*.tgz stemcell/${STEMCELL_NAME}.tgz
 ls -al stemcell
 
 $BOSH_CLI -e bosh-env upload-stemcell stemcell/bosh-softlayer-xen-ubuntu-trusty-go_agent.tgz
@@ -51,7 +52,6 @@ $BOSH_CLI -e bosh-env upload-stemcell stemcell/bosh-softlayer-xen-ubuntu-trusty-
 DIRECTOR=$(cat director-state/director-hosts |awk '{print $1}')
 DIRECTOR_UUID=$(cat director-state/bosh-template-state.json |grep director_id| cut -d"\"" -f4)
 DIRECTOR_PASSWORD=$($BOSH_CLI int director-state/credentials.yml --path /DI_ADMIN_PASSWORD)
-STEMCELL_NAME=$($BOSH_CLI -e bosh-env stemcells|grep ubuntu-trusty|awk '{print $1}')
 SL_VM_DOMAIN=${SL_VM_PREFIX}.softlayer.com
 deployment_dir="compiled-deploy"
 manifest_filename="compiled-deploy-${BUILD_VERSION}.yml"
@@ -114,6 +114,7 @@ $BOSH_CLI int $template_file \
                                                         -v data_center_name=${SL_DATACENTER} \
                                                         -v private_vlan_id=${SL_VLAN_PRIVATE} \
                                                         -v public_vlan_id=${SL_VLAN_PUBLIC} \
+                                                        -v stemcell_name=${STEMCELL_NAME} \
                                                         -v stemcell_version=${STEMCELL_VERSION} \
                                                         $bosh_init_params \
                                                         > ${deployment_dir}/${manifest_filename}
@@ -140,14 +141,17 @@ do
   $BOSH_CLI -e bosh-env -d ${deployment_name} export-release ${release_upload_name}/${release_upload_version} ubuntu-trusty/${STEMCELL_VERSION}
 
   echo "cp ${release_upload_name}-${release_tgz_version}-ubuntu-trusty-${stemcell_tgz_version}-${BUILD_VERSION}.tgz to folder compiled-release"
-  mv ${release_upload_name}-${release_upload_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz compiled-release/
-  sha1sum compiled-release/${release_upload_name}-${release_upload_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz
+  new_name="cf-compiled-release-`echo ${release_upload_version} | sed 's/\.//g'`-ubuntu-trusty-`echo ${STEMCELL_VERSION} | sed 's/\.//g'`.tgz"
+  mv ${release_upload_name}-${release_upload_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz compiled-release/${new_name}
+  sha1sum compiled-release/${new_name}
+  echo "You can download the ${new_name} file from SL S3 by using this url after finish:"
+  echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-release-release/compiled-release/${new_name}"
 done
 
-cf_release_version=`echo ${cf_release_version} sed "s/\.//g"`
-tar -cvf cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz compiled-release/
-rm -rf compiled-release/*
-mv cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz compiled-release/
-sha1sum cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz
-echo "You can download the cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz file from SL S3 by using this url after finish:"
-echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-release-release/compiled-release/cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz"
+#cf_release_version=`echo ${cf_release_version} sed "s/\.//g"`
+#tar -cvf cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz compiled-release/
+#rm -rf compiled-release/*
+#mv cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz compiled-release/
+#sha1sum cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz
+#echo "You can download the cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz file from SL S3 by using this url after finish:"
+#echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-release-release/compiled-release/cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz"

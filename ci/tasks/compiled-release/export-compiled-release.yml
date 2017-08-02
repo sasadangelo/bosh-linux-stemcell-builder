@@ -46,4 +46,5 @@ params:
   marmot_logstash_forwarder_release_version: replace-me
   unbound_release: replace-me
   unbound_release_version: replace-me
+  STEMCELL_NAME: replace-me
   STEMCELL_URL: replace-me

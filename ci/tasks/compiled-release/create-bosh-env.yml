@@ -26,4 +26,5 @@ params:
   SL_VLAN_PRIVATE:           replace-me
   SL_USERNAME:               replace-me
   DIRECTOR_URL:              replace-me
+  STEMCELL_NAME:             replace-me
   STEMCELL_URL:              replace-me

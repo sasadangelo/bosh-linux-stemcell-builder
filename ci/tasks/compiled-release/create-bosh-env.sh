@@ -10,6 +10,7 @@ check_param SL_DATACENTER
 check_param SL_VLAN_PUBLIC
 check_param SL_VLAN_PRIVATE
 check_param DIRECTOR_URL
+check_param STEMCELL_NAME
 check_param STEMCELL_URL
 
 BUILD_VERSION=`cat version/version | cut -d "." -f 3`
@@ -22,11 +23,11 @@ SL_VM_DOMAIN=${SL_VM_PREFIX}.softlayer.com
 
 mkdir bosh-release
 wget ${DIRECTOR_URL} -P bosh-release
-mv bosh-release/bosh* bosh-release/release.tgz
+mv bosh-release/*.tgz bosh-release/release.tgz
 
 mkdir stemcell
 wget --content-disposition ${STEMCELL_URL} -P stemcell
-mv stemcell/light-bosh-stemcell-* stemcell/bosh-softlayer-xen-ubuntu-trusty-go_agent.tgz
+mv stemcell/*.tgz stemcell/${STEMCELL_NAME}.tgz
 
 BOSH_CLI="$(pwd)/$(echo bosh-cli/bosh-cli-*)"
 chmod +x ${BOSH_CLI}
