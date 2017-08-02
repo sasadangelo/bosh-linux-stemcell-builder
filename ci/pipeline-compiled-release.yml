@@ -142,17 +142,17 @@ jobs:
           file: compiled-deploy/compiled-deploy-*.yml
           acl: public-read
 
-  - name: clean-deploy
-    plan:
-      - aggregate:
-          - get: version
-          - get: pipeline-src
-          - get: bosh-cli
-          - get: director-state
-            trigger: true
-            passed: [export-compiled-release]
-      - task: teardown
-        file: pipeline-src/ci/tasks/compiled-release/delete-compiled-deploy.yml
+#  - name: clean-deploy
+#    plan:
+#      - aggregate:
+#          - get: version
+#          - get: pipeline-src
+#          - get: bosh-cli
+#          - get: director-state
+#            trigger: true
+#            passed: [export-compiled-release]
+#      - task: teardown
+#        file: pipeline-src/ci/tasks/compiled-release/delete-compiled-deploy.yml
 
   - name: upload-compiled-release
     plan:
@@ -227,7 +227,7 @@ jobs:
           - get: director-state
           - get: compiled-deploy
             trigger: true
-            passed: [verify-compiled-cf-deploy]
+            passed: [export-compiled-release]
       - task: teardown
         file: pipeline-src/ci/tasks/compiled-release/delete-compiled-deploy.yml
 

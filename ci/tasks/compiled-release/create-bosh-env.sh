@@ -17,6 +17,7 @@ SL_VM_PREFIX=${SL_VM_PREFIX}-${BUILD_VERSION}
 
 deployment_dir="${PWD}/deployment"
 mkdir -p $deployment_dir
+cp pipeline-src/ci/tasks/templates/bosh-template.yml bosh-template.yml
 
 mkdir bosh-release
 wget ${DIRECTOR_URL} -P bosh-release
