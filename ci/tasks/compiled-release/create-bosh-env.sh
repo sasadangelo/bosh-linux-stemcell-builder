@@ -24,6 +24,7 @@ mkdir bosh-release
 wget ${DIRECTOR_URL} -P bosh-release
 mv bosh-release/bosh* bosh-release/release.tgz
 
+mkdir stemcell
 wget --content-disposition ${STEMCELL_URL} -P stemcell
 mv stemcell/light-bosh-stemcell-* stemcell/bosh-softlayer-xen-ubuntu-trusty-go_agent.tgz
 

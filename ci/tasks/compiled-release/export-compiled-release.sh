@@ -13,6 +13,7 @@ check_param SL_VLAN_PRIVATE
 check_param cf_release
 check_param cf_release_version
 check_param STEMCELL_VERSION
+check_param STEMCELL_URL
 
 BUILD_VERSION=`cat version/version | cut -d "." -f 3`
 SL_VM_PREFIX=${SL_VM_PREFIX}-${BUILD_VERSION}
@@ -39,9 +40,13 @@ export BOSH_CLIENT_SECRET=$(${BOSH_CLI} int director-state/credentials.yml --pat
 $BOSH_CLI -e bosh-env login
 
 ls -al
+
+mkdir stemcell
+wget --content-disposition ${STEMCELL_URL} -P stemcell
+mv stemcell/light-bosh-stemcell-* stemcell/bosh-softlayer-xen-ubuntu-trusty-go_agent.tgz
 ls -al stemcell
 
-$BOSH_CLI -e bosh-env upload-stemcell stemcell/light-bosh-stemcell-*.tgz
+$BOSH_CLI -e bosh-env upload-stemcell stemcell/bosh-softlayer-xen-ubuntu-trusty-go_agent.tgz
 
 DIRECTOR=$(cat director-state/director-hosts |awk '{print $1}')
 DIRECTOR_UUID=$(cat director-state/bosh-template-state.json |grep director_id| cut -d"\"" -f4)
@@ -76,6 +81,7 @@ do
   release_name=$(eval echo '$'$release)
   release_version=$(eval echo '$'${release}_version)
   release_location=$(eval echo '$'${release}_location)
+  release_location_sed=`echo $release_location | sed 's/\//\\\\\//g'`
   echo -e "\nCheck $release information: name: $release_name; version: $release_version; location: $release_location"
   if [ "$release_name" == "" ] || [ "$release_version" == "" ]; then
     echo "name: $release_name or version: $release_version does not exist, remove this release information from template.yml"
@@ -89,7 +95,7 @@ do
        echo "Keep using `cat $template_file | grep "((${release}_version))"`"
     else
        echo "Replace location by using - location: release_location"
-       sed -i "s/^- location:.*((${release}_version)).*$/- location: $release_location/g" $template_file
+       sed -i "s/^- location:.*((${release}_version)).*$/- location: $release_location_sed/g" $template_file
     fi
   fi
 done
