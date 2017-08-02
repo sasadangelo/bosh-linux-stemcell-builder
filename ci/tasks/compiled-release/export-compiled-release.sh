@@ -144,9 +144,10 @@ do
   sha1sum compiled-release/${release_upload_name}-${release_upload_version}-ubuntu-trusty-${STEMCELL_VERSION}-*.tgz
 done
 
-tar -cvf compiled-release-allinone-${BUILD_VERSION}.tgz compiled-release/
+cf_release_version=`echo ${cf_release_version} sed "s/\.//g"`
+tar -cvf cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz compiled-release/
 rm -rf compiled-release/*
-mv compiled-release-allinone-${BUILD_VERSION}.tgz compiled-release/
-sha1sum compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz
-echo "You can download the compiled-release-allinone-${BUILD_VERSION}.tgz file from SL S3 by using this url after finish:"
-echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-release-release/compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz"
+mv cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz compiled-release/
+sha1sum cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz
+echo "You can download the cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz file from SL S3 by using this url after finish:"
+echo "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-compiled-release-release/compiled-release/cf-compiled-release-allinone-${cf_release_version}-${BUILD_VERSION}.tgz"
