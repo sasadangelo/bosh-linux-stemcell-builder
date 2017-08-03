@@ -138,7 +138,7 @@ jobs:
           STEMCELL_URL: {{stemcell_url}}
       - put: compiled-release
         params:
-          file: compiled-release/compiled-release-allinone-*.tgz
+          file: compiled-release/cf-compiled-release-*.tgz
           acl: public-read
       - put: compiled-deploy
         params:
@@ -156,22 +156,22 @@ jobs:
 #            passed: [export-compiled-release]
 #      - task: teardown
 #        file: pipeline-src/ci/tasks/compiled-release/delete-compiled-deploy.yml
-
-  - name: upload-compiled-release
-    plan:
-      - aggregate:
-          - get: version
-          - get: pipeline-src
-          - get: bosh-cli
-          - get: compiled-release
-            passed: [export-compiled-release]
-      - task: upload-compiled-release
-        file: pipeline-src/ci/tasks/compiled-release/upload-compiled-release.yml
-        params:
-          cf_release: {{cf_release}}
-          cf_release_version: {{cf_release_version}}
-          FILE_W3_BOSH_PEM: {{file_w3_bosh_pem}}
-
+#
+#  - name: upload-compiled-release
+#    plan:
+#      - aggregate:
+#          - get: version
+#          - get: pipeline-src
+#          - get: bosh-cli
+#          - get: compiled-release
+#            passed: [export-compiled-release]
+#      - task: upload-compiled-release
+#        file: pipeline-src/ci/tasks/compiled-release/upload-compiled-release.yml
+#        params:
+#          cf_release: {{cf_release}}
+#          cf_release_version: {{cf_release_version}}
+#          FILE_W3_BOSH_PEM: {{file_w3_bosh_pem}}
+#
 #  - name: verify-compiled-cf-deploy
 #    plan:
 #      - aggregate:
@@ -222,19 +222,19 @@ jobs:
 #          unbound_release: {{unbound_release}}
 #          unbound_release_version: {{unbound_release_version}}
 #          unbound_release_location: {{unbound_release_location}}
-
-  - name: delete-compiled-deploy
-    plan:
-      - aggregate:
-          - get: version
-          - get: pipeline-src
-          - get: bosh-cli
-          - get: director-state
-          - get: compiled-deploy
-            trigger: true
-            passed: [export-compiled-release]
-      - task: teardown
-        file: pipeline-src/ci/tasks/compiled-release/delete-compiled-deploy.yml
+#
+#  - name: delete-compiled-deploy
+#    plan:
+#      - aggregate:
+#          - get: version
+#          - get: pipeline-src
+#          - get: bosh-cli
+#          - get: director-state
+#          - get: compiled-deploy
+#            trigger: true
+#            passed: [export-compiled-release]
+#      - task: teardown
+#        file: pipeline-src/ci/tasks/compiled-release/delete-compiled-deploy.yml
 
   - name: delete-bosh-env
     plan:
@@ -269,3 +269,4 @@ jobs:
           AWS_ENDPOINT: {{stemcell-sl-os-endpoint}}
           AWS_DEFAULT_REGION: {{stemcell-sl-os-default-region}}
           AWS_BUCKET: {{candidate-custom-bluemix-stemcell-bucket}}
+          STEMCELL_VERSION: {{stemcell_version}}

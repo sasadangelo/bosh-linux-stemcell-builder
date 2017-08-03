@@ -19,3 +19,4 @@ params:
   AWS_ENDPOINT: replace-me
   AWS_DEFAULT_REGION: replace-me
   AWS_BUCKET: replace-me
+  STEMCELL_VERSION: replace-me

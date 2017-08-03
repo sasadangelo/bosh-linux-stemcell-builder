@@ -7,6 +7,7 @@ check_param AWS_SECRET_ACCESS_KEY
 check_param AWS_ENDPOINT
 check_param AWS_DEFAULT_REGION
 check_param AWS_BUCKET
+check_param STEMCELL_VERSION
 
 BUILD_VERSION=`cat version/version | cut -d "." -f 3`
 
@@ -30,7 +31,8 @@ echo "Remove director-state/director-state-${BUILD_VERSION}.tgz"
 aws --endpoint-url "https://${AWS_ENDPOINT}" s3 rm "s3://${AWS_BUCKET}/director-state/director-state-${BUILD_VERSION}.tgz"
 
 echo "Remove compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz"
-aws --endpoint-url "https://${AWS_ENDPOINT}" s3 rm "s3://${AWS_BUCKET}/compiled-release/compiled-release-allinone-${BUILD_VERSION}.tgz"
+new_name="cf-compiled-release-`echo ${release_upload_version} | sed 's/\.//g'`-ubuntu-trusty-`echo ${STEMCELL_VERSION} | sed 's/\.//g'`.tgz"
+aws --endpoint-url "https://${AWS_ENDPOINT}" s3 rm "s3://${AWS_BUCKET}/compiled-release/${new_name}"
 
 echo "Remove compiled-deploy/compiled-deploy-${BUILD_VERSION}.yml"
 aws --endpoint-url "https://${AWS_ENDPOINT}" s3 rm "s3://${AWS_BUCKET}/compiled-deploy/compiled-deploy-${BUILD_VERSION}.yml"
