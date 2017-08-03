@@ -11,7 +11,7 @@ resource_pools:
 - name: vms
   network: default
   stemcell:
-    url: file://stemcell/bosh-softlayer-xen-ubuntu-trusty-go_agent.tgz
+    url: file://stemcell/((STEMCELL_NAME)).tgz
   cloud_properties:
     deployedByBoshcli: true
     Domain: softlayer.com

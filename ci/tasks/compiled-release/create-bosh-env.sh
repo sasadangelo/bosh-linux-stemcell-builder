@@ -66,7 +66,8 @@ $BOSH_CLI create-env bosh-template.yml \
                       -v SL_API_KEY=${SL_API_KEY} \
                       -v SL_DATACENTER=${SL_DATACENTER} \
                       -v SL_VLAN_PUBLIC=${SL_VLAN_PUBLIC} \
-                      -v SL_VLAN_PRIVATE=${SL_VLAN_PRIVATE}
+                      -v SL_VLAN_PRIVATE=${SL_VLAN_PRIVATE}\
+                      -v STEMCELL_NAME=${STEMCELL_NAME}
 
 echo "Trying to set target to director..."
 
