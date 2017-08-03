@@ -240,7 +240,7 @@ jobs:
     plan:
       - aggregate:
           - get: version
-            passed: [delete-compiled-deploy]
+            passed: [export-compiled-release]
           - get: pipeline-src
           - get: bosh-softlayer-cpi-release
           - get: bosh-cli

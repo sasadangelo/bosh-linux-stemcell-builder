@@ -22,7 +22,7 @@ cp pipeline-src/ci/tasks/templates/bosh-template.yml bosh-template.yml
 SL_VM_DOMAIN=${SL_VM_PREFIX}.softlayer.com
 
 mkdir bosh-release
-wget ${DIRECTOR_URL} -P bosh-release
+wget --content-disposition ${DIRECTOR_URL} -P bosh-release
 mv bosh-release/*.tgz bosh-release/release.tgz
 
 mkdir stemcell
