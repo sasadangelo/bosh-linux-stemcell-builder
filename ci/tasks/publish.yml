@@ -24,4 +24,4 @@ params:
   CANDIDATE_BUCKET_NAME: required
   PUBLISHED_BUCKET_NAME: required
   COPY_KEYS:             required
-  BOSHIO_TOKEN:          required
+  #BOSHIO_TOKEN:          required

@@ -21,4 +21,4 @@ params:
   HYPERVISOR:   replace-me
   OS_NAME:      replace-me
   OS_VERSION:   replace-me
-  BOSHIO_TOKEN: ""
+  #BOSHIO_TOKEN: ""
