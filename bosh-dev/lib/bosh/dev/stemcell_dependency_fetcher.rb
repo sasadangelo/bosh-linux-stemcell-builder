@@ -21,7 +21,7 @@ module Bosh::Dev
       end
 
       os_image_uri = URI.join('https://s3.amazonaws.com/', "#{bucket_name}/", key)
-      os_image_uri.query = URI.encode_www_form([['versionId', os_image_version]])
+      os_image_uri.query = URI.encode_www_form([['versionId', 'b9463dfd9b008671300ba80c41f10e48-72']])
 
       @downloader.download(os_image_uri, output_path)
     end

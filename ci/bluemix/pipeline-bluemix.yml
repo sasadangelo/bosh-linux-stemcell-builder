@@ -331,7 +331,7 @@ resources:
     type: git
     source:
       uri: https://github.com/bluebosh/bosh-linux-stemcell-builder
-      branch: bluemix-3421.x
+      branch: bluemix-umask
 
   - name: version
     type: semver
