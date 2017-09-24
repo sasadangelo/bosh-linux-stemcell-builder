@@ -20,8 +20,13 @@ module Bosh::Dev
         raise "Unable to find OS image key '#{key}' in known versions: #{os_image_versions.to_json}"
       end
 
+      # zhanggbj: Using umask base os image
+      bucket_name = 'bosh-softlayer-cpi-stemcells'
+      os_image_version = '9tBgC27KUnANo1DZNNfvexys2InocclN'
+
       os_image_uri = URI.join('https://s3.amazonaws.com/', "#{bucket_name}/", key)
       os_image_uri.query = URI.encode_www_form([['versionId', os_image_version]])
+
 
       @downloader.download(os_image_uri, output_path)
     end
