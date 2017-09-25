@@ -16,6 +16,12 @@ check_param HYPERVISOR
 check_param OS_NAME
 check_param OS_VERSION
 
+echo "========debug check_param IAAS" $IAAS
+
+#zhanggbj: hardcode to remove umask
+IAAS="softlayer"
+echo "========debug hardcode to remove umask" $IAAS
+
 # optional
 : ${BOSHIO_TOKEN:=""}
 
@@ -25,6 +31,12 @@ mkdir -p ${output_dir}
 
 export TASK_DIR=$PWD
 export CANDIDATE_BUILD_NUMBER=$( cat version/number | sed 's/\.0$//;s/\.0$//' )
+
+echo "========debug check_param CANDIDATE_BUILD_NUMBER" $CANDIDATE_BUILD_NUMBER
+
+#zhanggbj: hardcode to remove umask
+CANDIDATE_BUILD_NUMBER="3445.11.1"
+echo "========debug hardcode to remove umask" $CANDIDATE_BUILD_NUMBER
 
 # This is copied from https://github.com/concourse/concourse/blob/3c070db8231294e4fd51b5e5c95700c7c8519a27/jobs/baggageclaim/templates/baggageclaim_ctl.erb#L23-L54
 # helps the /dev/mapper/control issue and lets us actually do scary things with the /dev mounts
