@@ -26,11 +26,11 @@ cp -a $assets_dir/alerts.monitrc $chroot/var/vcap/monit/alerts.monitrc
 
 cd $assets_dir
 if is_ppc64le; then
-  curl -L -o bosh-agent "https://s3.amazonaws.com/bosh-agent-binaries/bosh-agent-2.8.4-linux-ppc64le?versionId=RqIIew_HDG.fo98LgMLxwUVH5DsHYBKw"
-  echo "44c89bc397f794dd1782eccede98bba699064db36d471a83915e968c40f07db6  bosh-agent" | shasum -a 256 -c -
+  curl -L -o bosh-agent "https://s3.amazonaws.com/bosh-agent-binaries/bosh-agent-2.8.0-linux-ppc64le?versionId=V5OpjZqp3q56iPU7QhUMMwbRsTqFetQz"
+  echo "e8a1fce60638d743de8a85657fd03c8cf971e97f9f2d335867a0b266f860f64d  bosh-agent" | shasum -a 256 -c -
 else
-  curl -L -o bosh-agent "https://s3.amazonaws.com/bosh-softlayer-agent/bosh-agent-0.0.38-linux-amd64-bluemix"
-#  echo "18526758d2e47a262a2f6bb88e3891221b0fe2d5a2257f39f725c304b50cc369  bosh-agent" | shasum -a 256 -c -
+  curl -L -o bosh-agent "https://s3-api.us-geo.objectstorage.softlayer.net/bosh-softlayer-agent/bosh-agent-2.8.1-linux-amd64-bluemix"
+  # echo "7c7bfd50bf6f60c70b58560357d21cf968f51fdbff74ad8927d8a660beb244b0  bosh-agent" | shasum -a 256 -c -
 fi
 mv bosh-agent $chroot/var/vcap/bosh/bin/
 

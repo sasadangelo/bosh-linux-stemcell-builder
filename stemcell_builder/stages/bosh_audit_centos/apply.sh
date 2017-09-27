@@ -25,4 +25,6 @@ echo '
 
 record_use_of_privileged_binaries
 
+make_audit_rules_immutable
+
 override_default_audit_variables

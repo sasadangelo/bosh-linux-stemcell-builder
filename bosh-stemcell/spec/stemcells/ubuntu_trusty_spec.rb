@@ -59,7 +59,7 @@ describe 'Ubuntu 14.04 stemcell image', stemcell_image: true do
     describe file('/var/vcap/bosh/etc/dev_tools_file_list') do
       its(:content) { should match('/usr/bin/gcc') }
     end
-    end
+  end
 
   context 'static libraries to remove' do
     describe file('/var/vcap/bosh/etc/static_libraries_list') do
