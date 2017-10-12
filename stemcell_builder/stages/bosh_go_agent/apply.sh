@@ -31,7 +31,7 @@ if is_ppc64le; then
 else
   #curl -L -o bosh-agent "https://s3.amazonaws.com/bosh-agent-binaries/bosh-agent-2.30.0-linux-amd64?versionId=6VY6f_xeBLnJLiNU6Ay2c6CYCJ6K1oNq"
   #echo "480c52aaf6c6be8711a802549bd2bb755cf7a2596752ea73e9a5551ca90e8fbf  bosh-agent" | shasum -a 256 -c -
-  curl -L -o bosh-agent "https://s3.amazonaws.com/bosh-agent-binaries/bosh-agent-2.33.0-linux-amd64"
+  curl -L -o bosh-agent "https://s3.amazonaws.com/bosh-softlayer-agent/bosh-agent-2.33.1-linux-amd64"
 fi
 mv bosh-agent $chroot/var/vcap/bosh/bin/
 
