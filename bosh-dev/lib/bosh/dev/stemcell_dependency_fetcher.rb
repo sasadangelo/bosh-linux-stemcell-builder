@@ -22,7 +22,7 @@ module Bosh::Dev
 
       # zhanggbj: Using umask base os image
       bucket_name = 'bosh-softlayer-cpi-stemcells'
-      os_image_version = '9tBgC27KUnANo1DZNNfvexys2InocclN'
+      os_image_version = 'ATRxBz9.5KddjmiZovJi_brnDxLxK.1z'
 
       os_image_uri = URI.join('https://s3.amazonaws.com/', "#{bucket_name}/", key)
       os_image_uri.query = URI.encode_www_form([['versionId', os_image_version]])
