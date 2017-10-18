@@ -12,6 +12,7 @@ run_in_chroot $chroot "rsyslogd -v"
 run_in_chroot $chroot "
 add-apt-repository -y ppa:adiscon/v8-stable
 apt-get update
+apt-get -y install libfastjson4
 apt-get -y install rsyslog
 wget https://s3.amazonaws.com/bosh-softlayer-tmp/libnl-route-3-200_3.2.21-1ubuntu4.1_amd64.deb
 wget https://s3.amazonaws.com/bosh-softlayer-tmp/ldap-utils_2.4.31-1%2Bnmu2ubuntu8.4_amd64.deb
