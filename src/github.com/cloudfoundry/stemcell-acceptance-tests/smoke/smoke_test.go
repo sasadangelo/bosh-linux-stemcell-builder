@@ -152,10 +152,6 @@ var _ = Describe("Stemcell", func() {
 		stdOut, stdErr, exitStatus, err = cmdRunner.RunCommand(boshBinaryPath, "-d", "bosh-stemcell-smoke-tests", "ssh", "syslog_storer/0", `sudo cat /var/vcap/store/syslog_storer/syslog.log`)
 		Expect(err).ToNot(HaveOccurred())
 		Expect(exitStatus).To(Equal(0), fmt.Sprintf("Could not read from syslog stdOut: %s \n stdErr: %s", stdOut, stdErr))
-		Expect(stdOut).To(ContainSubstring(`exe="/usr/bin/chage"`))
-		stdOut, stdErr, exitStatus, err = cmdRunner.RunCommand(boshBinaryPath, "-d", "bosh-stemcell-smoke-tests", "ssh", "syslog_storer/0", `sudo cat /var/vcap/store/syslog_storer/syslog.log`)
-		Expect(err).ToNot(HaveOccurred())
-		Expect(exitStatus).To(Equal(0), fmt.Sprintf("Could not read from syslog stdOut: %s \n stdErr: %s", stdOut, stdErr))
 		//Expect(stdOut).To(ContainSubstring(`exe="/usr/bin/chage"`))
 	})
 
