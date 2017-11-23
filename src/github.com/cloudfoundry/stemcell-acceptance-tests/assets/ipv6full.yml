@@ -1,5 +1,5 @@
 ---
-name: bosh-stemcell-ipv6basic-tests
+name: bosh-stemcell-ipv6full-tests
 
 releases: []
 
@@ -18,12 +18,8 @@ instance_groups:
 - name: test
   stemcell: default
   vm_type: default
-  instances: 1
+  instances: 3
   networks:
-  - {name: default}
+  - name: ipv6
   azs: [z1]
   jobs: []
-  env:
-    bosh:
-      ipv6:
-        enable: true

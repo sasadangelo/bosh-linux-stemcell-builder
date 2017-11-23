@@ -8,25 +8,38 @@ OS images are stored in S3 bucket [bosh-os-images](http://s3.amazonaws.com/bosh-
 
 Ubuntu 14.04 images have filename `bosh-ubuntu-trusty-os-image.tgz`
 
-* `8ST2.Y87x5ZqrL6damVsPDwxWByoSPNJ`
-  - USN-3422-2: Linux kernel (Trusty HWE) vulnerabilities
-  - built from 3445.x (65d1ab83e430be260a04c89986bd783d60de84af)
-
-* `35l0iPazGqSveKv_Ya0O0Hu95.0C8.zv`
+* `EZM2fHbzrZ4C2QIQo8QE.eQLaUqJ6CQO`
   - Periodic bump
-  - built from 3445.x (958acffc4409e638c20f8dcd8689eff75153ac96)
+  - built from 3468.x (0083e5e144806b2660a45f23b02aa5c9e5ca696b)
 
-* `lYOh4rWeyfohyld4LKgTuKA7X15YaWMf`
-  - Bump os-image to get logrotate 3.8.7-1ubuntu1.2
-  - built from 3445.x (8d4400beda34978f1c8c631e270834a356bfe1d7)
+* `OY3y1wuupJ8ol2qYCy1N2Ns7vDQqSdsE`
+  - Periodic bump
+  - built from 3468.x (e2e05cd12c69406cfad612069f4a8346f953d636)
 
-* `_jf_uhySbVw.ZuCsgslxPsB.lzLAucdo`
+* `GNgUw4y2PHvXNEzf6KrWKi3ltKF_iali`
+  - Periodic bump
+  - built from 3468.x (4df7311d4d17932338a9d0ef8ce256d740b29834)
+
+* `K8sMoXIn64ezn6zu6cBNr3JJQhTEHbhn`
+  - Periodic bump
+  - built from master (fe5d5856dcb70619f5de30147751ec68a1003f82)
+
+* `2cZrhVYgNhEyqf7ufEewlkczbHZeAG1L`
+  - Periodic bump
+  - USN-3422-2: Linux kernel (Trusty HWE) vulnerabilities
+  - built from master (b8e13968d41b9c51f3eee59e1e7560bc297a2af2)
+
+* `m_U29czb58XlvKg1Mrqtjwj0p84mtdSC`
+  - Bump os-image to get logrotate 3.8.7-1ubuntu12
+  - built from master (051a340072e25babefc1a1a117ab044e12cd377f)
+
+* `ihJo8x_d96oR38fLItL5y7tpWL6lgj.B`
   - Make auditd rules mutable by default
-  - built from 3445.x (21d26d72d9e6fd8de0bc6204fe2b557538f45eec)
+  - built from master (7aa3cd9b0cacf646852e1ee762eaf31e1baaf2b1)
 
-* `795Bgks7KtLQxfPiYkhzmXcVO3GGak9H`
+* `cxAdZKzPogT77Dmk_J9DeLbSY46ts.dB`
   - USN-3392-2: Linux kernel (Xenial HWE) regression
-  - built from 3445.x (fbc0bac4c0f405fafc4fe4bf846adec93022e056)
+  - built from master (75623d0c4cd7ec002f26d763fa8db3740efa4f69)
 
 * `lFTzZ3l8SjN7jdGk20ccirvC8Zmgpwjg`
   - USN-3385-2: Linux kernel (Xenial HWE) vulnerabilities
@@ -623,21 +636,25 @@ CentOS 6.6 images have filename `bosh-centos-6-os-image.tgz`
 
 CentOS 7 images have filename `bosh-centos-7-os-image.tgz`
 
-* `.4F24xF2CMBOp.D8ERS4KAL_TjVjNHhx`
+* `uj6ZPEV1pruts7JEbnRrrdYR2NXBelmc`
   - Periodic bump
-  - built from 3445.x (958acffc4409e638c20f8dcd8689eff75153ac96)
+  - built from 3468.x (0083e5e144806b2660a45f23b02aa5c9e5ca696b)
 
-* `z60NFstU4UIQRWa1mpXM._exveG6D.RQ`
-  - Bump os-image to get new logrotate
-  - built from 3445.x (8d4400beda34978f1c8c631e270834a356bfe1d7)
+* `WDMFg92TECb4wMFnFgkebBDmMkhmcZWI`
+  - bump to centos-7.4
+  - built from 3468.x (e2e05cd12c69406cfad612069f4a8346f953d636)
 
-* `RwjM.ulSVODCDKzu_WNa3aDxhBGZsMOY`
+* `JRWJGXQazjhzWM.S5qW.573fmI4dsfFi`
+  - bump os-image to get newer logrotate
+  - built from master (051a340072e25babefc1a1a117ab044e12cd377f)
+
+* `AxujRQcXRggs7x17hKz3ImaI6q3b.ik7`
   - Make auditd rules mutable by default
-  - built from 3445.x (21d26d72d9e6fd8de0bc6204fe2b557538f45eec)
+  - built from master (7aa3cd9b0cacf646852e1ee762eaf31e1baaf2b1)
 
-* `E4nGcx.1jle3B4MPjLbCUi8oDUjN12tZ`
+* `ZF9M8.wWClnvTrXSSrreednJcDAzns.9`
   - Periodic bump
-  - built from 3445.x (fbc0bac4c0f405fafc4fe4bf846adec93022e056)
+  - built from master (75623d0c4cd7ec002f26d763fa8db3740efa4f69)
 
 * `MOpHI7NvEQyUoGjMDEzqU2vR3nNqoDj4`
   - Periodic bump
