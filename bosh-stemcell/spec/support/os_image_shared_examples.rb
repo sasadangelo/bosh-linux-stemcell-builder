@@ -448,14 +448,6 @@ shared_examples_for 'every OS image' do
         expect(sshd_config.content).to match(/^PasswordAuthentication no$/)
       end
     end
-
-    context 'unless: softlayer', {
-        exclude_on_softlayer: true,
-    } do
-      it 'disallows root login (stig: V-38613)' do
-        expect(sshd_config.content).to match(/^PermitRootLogin no$/)
-      end
-    end
   end
 
   describe package('xinetd') do
