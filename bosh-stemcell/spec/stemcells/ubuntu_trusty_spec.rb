@@ -10,7 +10,7 @@ describe 'Ubuntu 14.04 stemcell image', stemcell_image: true do
       its(:content) { should match 'timeout=1' }
       its(:content) { should match %r{^title Ubuntu 14\.04.* LTS \(.*\)$} }
       its(:content) { should match /^  root \(hd0,0\)$/ }
-      its(:content) { should match %r{kernel /boot/vmlinuz-\S+-generic ro root=UUID=} }
+      its(:content) { should match %r{kernel /boot/vmlinuz-\S+-generic ro root=} }
       its(:content) { should match ' selinux=0' }
       its(:content) { should match ' cgroup_enable=memory swapaccount=1' }
       its(:content) { should match ' console=tty0 console=ttyS0,115200n8' }
@@ -59,7 +59,7 @@ describe 'Ubuntu 14.04 stemcell image', stemcell_image: true do
     describe file('/var/vcap/bosh/etc/dev_tools_file_list') do
       its(:content) { should match('/usr/bin/gcc') }
     end
-    end
+  end
 
   context 'static libraries to remove' do
     describe file('/var/vcap/bosh/etc/static_libraries_list') do
@@ -85,7 +85,7 @@ describe 'Ubuntu 14.04 stemcell image', stemcell_image: true do
   end
 
   context 'installed by system-network', {
-    exclude_on_warden: true
+      exclude_on_warden: true
   } do
     describe file('/etc/hostname') do
       it { should be_file }
@@ -297,71 +297,89 @@ HERE
     let(:dpkg_list_warden_ubuntu) { File.read(spec_asset('dpkg-list-warden-ubuntu.txt')) }
     let(:dpkg_list_google_ubuntu) { File.read(spec_asset('dpkg-list-google-ubuntu.txt')) }
     let(:dpkg_list_openstack_ubuntu) { File.read(spec_asset('dpkg-list-openstack-ubuntu.txt')) }
+    let(:dpkg_list_softlayer_ubuntu) { File.read(spec_asset('dpkg-list-softlayer-ubuntu.txt')) }
 
     describe command(dpkg_list_packages), {
-      exclude_on_aws: true,
-      exclude_on_google: true,
-      exclude_on_vcloud: true,
-      exclude_on_vsphere: true,
-      exclude_on_warden: true,
-      exclude_on_azure: true,
+        exclude_on_aws: true,
+        exclude_on_google: true,
+        exclude_on_vcloud: true,
+        exclude_on_vsphere: true,
+        exclude_on_warden: true,
+        exclude_on_azure: true,
+        exclude_on_softlayer: true,
     } do
       its(:stdout) { should eq(dpkg_list_openstack_ubuntu) }
     end
 
     describe command(dpkg_list_packages), {
-      exclude_on_aws: true,
-      exclude_on_vcloud: true,
-      exclude_on_vsphere: true,
-      exclude_on_warden: true,
-      exclude_on_azure: true,
-      exclude_on_openstack: true,
+        exclude_on_aws: true,
+        exclude_on_vcloud: true,
+        exclude_on_vsphere: true,
+        exclude_on_warden: true,
+        exclude_on_azure: true,
+        exclude_on_openstack: true,
+        exclude_on_softlayer: true,
     } do
       its(:stdout) { should eq(dpkg_list_google_ubuntu) }
     end
 
     describe command(dpkg_list_packages), {
-      exclude_on_aws: true,
-      exclude_on_google: true,
-      exclude_on_vcloud: true,
-      exclude_on_vsphere: true,
-      exclude_on_azure: true,
-      exclude_on_openstack: true,
+        exclude_on_aws: true,
+        exclude_on_google: true,
+        exclude_on_vcloud: true,
+        exclude_on_vsphere: true,
+        exclude_on_azure: true,
+        exclude_on_openstack: true,
+        exclude_on_softlayer: true,
     } do
       its(:stdout) { should eq(dpkg_list_warden_ubuntu) }
     end
 
     describe command(dpkg_list_packages), {
-      exclude_on_aws: true,
-      exclude_on_google: true,
-      exclude_on_vsphere: true,
-      exclude_on_warden: true,
-      exclude_on_azure: true,
-      exclude_on_openstack: true,
+        exclude_on_aws: true,
+        exclude_on_google: true,
+        exclude_on_vsphere: true,
+        exclude_on_warden: true,
+        exclude_on_azure: true,
+        exclude_on_openstack: true,
+        exclude_on_softlayer: true,
     } do
       its(:stdout) { should eq(dpkg_list_vcloud_ubuntu) }
     end
 
     describe command(dpkg_list_packages), {
-      exclude_on_aws: true,
-      exclude_on_google: true,
-      exclude_on_vcloud: true,
-      exclude_on_warden: true,
-      exclude_on_azure: true,
-      exclude_on_openstack: true,
+        exclude_on_aws: true,
+        exclude_on_google: true,
+        exclude_on_vcloud: true,
+        exclude_on_warden: true,
+        exclude_on_azure: true,
+        exclude_on_openstack: true,
+        exclude_on_softlayer: true,
     } do
       its(:stdout) { should eq(dpkg_list_vsphere_ubuntu) }
     end
 
     describe command(dpkg_list_packages), {
-      exclude_on_google: true,
-      exclude_on_vcloud: true,
-      exclude_on_vsphere: true,
-      exclude_on_warden: true,
-      exclude_on_azure: true,
-      exclude_on_openstack: true,
+        exclude_on_google: true,
+        exclude_on_vcloud: true,
+        exclude_on_vsphere: true,
+        exclude_on_warden: true,
+        exclude_on_azure: true,
+        exclude_on_openstack: true,
+        exclude_on_softlayer: true,
     } do
       its(:stdout) { should eq(dpkg_list_aws_ubuntu) }
+    end
+
+    describe command(dpkg_list_packages), {
+        exclude_on_google: true,
+        exclude_on_vcloud: true,
+        exclude_on_vsphere: true,
+        exclude_on_warden: true,
+        exclude_on_azure: true,
+        exclude_on_openstack: true,
+    } do
+      its(:stdout) { should eq(dpkg_list_softlayer_ubuntu) }
     end
   end
 end
