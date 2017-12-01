@@ -72,3 +72,5 @@
 /usr/lib/x86_64-linux-gnu/libxslt.a
 /usr/lib/x86_64-linux-gnu/liby.a
 /usr/lib/x86_64-linux-gnu/libz.a
+/usr/local/ssl/lib/libcrypto.a
+/usr/local/ssl/lib/libssl.a

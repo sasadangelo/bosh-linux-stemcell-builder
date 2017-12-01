@@ -452,7 +452,6 @@ module Bosh::Stemcell
             expect(stage_collection.build_stemcell_image_stages).to eq(
               [
                 :system_openssl_fips,
-                :bosh_audit_bluemix,
                 :system_network,
                 :system_softlayer_open_iscsi,
                 :system_softlayer_multipath_tools,
@@ -466,6 +465,8 @@ module Bosh::Stemcell
                 :bosh_clean_ssh,
                 :image_create,
                 :image_install_grub,
+                :bosh_audit_bluemix,
+                :xen_enable_hvm,
                 :bosh_package_list
               ]
             )
