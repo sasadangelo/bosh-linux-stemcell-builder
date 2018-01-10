@@ -61,7 +61,9 @@ describe 'Ubuntu 16.04 stemcell image', stemcell_image: true do
     end
   end
 
-  context 'static libraries to remove' do
+  context 'static libraries to remove', {
+    exclude_on_softlayer: true,
+  }  do
     describe file('/var/vcap/bosh/etc/static_libraries_list') do
       it { should be_file }
 
