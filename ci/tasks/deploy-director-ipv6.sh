@@ -16,6 +16,10 @@ export BOSH_internal_gw=$(fromEnvironment '.network1.vCenterGateway')
 export BOSH_internal_ip=$(fromEnvironment '.network1["staticIP-1"]')
 export BOSH_network_name=$(fromEnvironment '.network1.vCenterVLAN')
 export BOSH_reserved_range="[$(fromEnvironment '.network1.reservedRange')]"
+export BOSH_second_network_name=$BOSH_network_name
+export BOSH_second_internal_gw=$(fromEnvironment '.network1IPv6.vCenterGateway')
+export BOSH_second_internal_cidr=$(fromEnvironment '.network1IPv6["vCenterCIDR"]')
+export BOSH_second_internal_ip=$(fromEnvironment '.network1IPv6["staticIP-1"]')
 export BOSH_stemcell_path=$(realpath stemcell/*.tgz)
 
 cat > director-creds.yml <<EOF
@@ -27,6 +31,11 @@ chmod +x $bosh_cli
 
 $bosh_cli interpolate bosh-deployment/bosh.yml \
   -o bosh-deployment/vsphere/cpi.yml \
+  -o bosh-deployment/jumpbox-user.yml \
+  -o bosh-deployment/misc/ipv6/bosh.yml \
+  -o bosh-deployment/misc/second-network.yml \
+  -o bosh-deployment/vsphere/second-network.yml \
+  -o bosh-linux-stemcell-builder/ci/assets/ipv6-director.yml \
   -o bosh-linux-stemcell-builder/ci/assets/local-stemcell.yml \
   --vars-store director-creds.yml \
   -v director_name=stemcell-smoke-tests-director \
@@ -45,6 +54,7 @@ export BOSH_CLIENT_SECRET=`$bosh_cli int director-creds.yml --path /admin_passwo
 
 $bosh_cli -n update-cloud-config bosh-deployment/vsphere/cloud-config.yml \
           --ops-file bosh-linux-stemcell-builder/ci/assets/reserve-ips.yml \
+          --ops-file bosh-linux-stemcell-builder/ci/assets/ipv6-cc.yml \
           --vars-env "BOSH"
 
 mv $HOME/.bosh director-state/
