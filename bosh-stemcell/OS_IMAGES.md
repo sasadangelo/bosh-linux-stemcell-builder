@@ -8,6 +8,30 @@ OS images are stored in S3 bucket [bosh-os-images](http://s3.amazonaws.com/bosh-
 
 Ubuntu 14.04 images have filename `bosh-ubuntu-trusty-os-image.tgz`
 
+* `a20JI4pbCOXMK504Ds2LKnkNjCrhOZxj`
+  - USN-3522-2: Linux kernel (Xenial HWE) regression
+  - built from 3468.x (30597f4a50958dd69f8c3f6aa79beb5a87e8281c)
+
+* `SMbpSRRkZlhwfFfxVbef.O9ZHsiA690e`
+  - USN-3522-2: Linux kernel (Xenial HWE) regression
+  - built from 3468.x (2f979ade76352c367b133864fa854593ee4aa313)
+
+* `CRobkG_PspFQYcZuObdeo8N1BR64bpy3`
+  - USN-3509-4: Linux kernel (Xenial HWE) regression
+  - built from 3468.x (d5389cf29a19668c8bd5433ea4997a86e26be928)
+
+* `Rt6MSnLwflYybIrWj_nIKMStWRQEqmuf`
+  - USN-3509-2: Linux kernel (Xenial HWE) vulnerabilities
+  - built from 3468.x (1fcf28d6be25d7f60c77d1ff077097af48a55ccd)
+
+* `iOZPe5ea7W9nAjN4gaOyxkbWm0sFQr9X`
+  - USN-3505-1: Linux firmware vulnerabilities
+  - built from 3468.x (4f27ff661c6513fbe67cc1360b07731e3b548b0c)
+
+* `EZM2fHbzrZ4C2QIQo8QE.eQLaUqJ6CQO`
+  - Periodic bump
+  - built from 3468.x (0083e5e144806b2660a45f23b02aa5c9e5ca696b)
+
 * `ipKHEBjNoTNfWb5R61tGJ.0mxd.VugpW`
   - Periodic bump
   - built from 3422.x (7047bcef8265bb5d363d145d4c2adaffd58d2d39)
@@ -640,13 +664,21 @@ CentOS 6.6 images have filename `bosh-centos-6-os-image.tgz`
 
 CentOS 7 images have filename `bosh-centos-7-os-image.tgz`
 
-* `8Y4iLyCtbyIQQ6WRQvjzIb3mjmvByAbJ`
+* `AdJbrMlHo84MKV3ph37IlqsQI4W8dr9f`
   - Periodic bump
-  - built from 3422.x (7047bcef8265bb5d363d145d4c2adaffd58d2d39)
+  - built from 3468.x (30597f4a50958dd69f8c3f6aa79beb5a87e8281c)
 
-* `ze6l1lVCbT4d_FGheJe9ZIc8b9.qRTvd`
+* `_ihXtTBvJKVwj5bu.wY4aYacbwVImjGl`
   - Periodic bump
-  - built from 3422.x (4830d94854efdb9837fb747c7175479007ae02ca)
+  - built from 3468.x (2f979ade76352c367b133864fa854593ee4aa313)
+
+* `BUd5rrpSPn_T503AJiXoo9gw0qCVwUzq`
+  - USN-3505-1: Linux firmware vulnerabilities
+  - built from 3468.x (4f27ff661c6513fbe67cc1360b07731e3b548b0c)
+
+* `uj6ZPEV1pruts7JEbnRrrdYR2NXBelmc`
+  - Periodic bump
+  - built from 3468.x (0083e5e144806b2660a45f23b02aa5c9e5ca696b)
 
 * `WDMFg92TECb4wMFnFgkebBDmMkhmcZWI`
   - bump to centos-7.4
