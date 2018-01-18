@@ -198,8 +198,7 @@ module Bosh::Stemcell
           :bosh_clean_ssh,
           :image_create,
           :image_install_grub,
-          :bosh_audit_bluemix,
-          :xen_enable_hvm
+          :bosh_audit_bluemix
       ]
     end
 
