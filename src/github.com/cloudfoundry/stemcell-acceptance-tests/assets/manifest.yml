@@ -24,8 +24,7 @@ instance_groups:
   vm_type: default
   instances: 1
   networks:
-  - { name: dynamic_public,  default: [dns, gateway] }
-  - { name: dynamic_private }
+  - {name: default}
   azs: [z1]
   jobs:
   - name: auditd
@@ -36,7 +35,7 @@ instance_groups:
   vm_type: default
   instances: 1
   networks:
-  - { name: dynamic,  default: [dns, gateway] }
+  - {name: default}
   azs: [z1]
   jobs:
   - name: syslog_storer
@@ -52,7 +51,7 @@ instance_groups:
   azs: [z1]
   instances: 1
   networks:
-  - { name: dynamic, default: [dns, gateway] }
+  - {name: default}
   jobs:
   - name: syslog_forwarder
     release: syslog

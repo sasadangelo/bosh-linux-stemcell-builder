@@ -10,7 +10,7 @@ describe 'Ubuntu 14.04 stemcell image', stemcell_image: true do
       its(:content) { should match 'timeout=1' }
       its(:content) { should match %r{^title Ubuntu 14\.04.* LTS \(.*\)$} }
       its(:content) { should match /^  root \(hd0,0\)$/ }
-      its(:content) { should match %r{kernel /boot/vmlinuz-\S+-generic ro root=} }
+      its(:content) { should match %r{kernel /boot/vmlinuz-\S+-generic ro root=UUID=} }
       its(:content) { should match ' selinux=0' }
       its(:content) { should match ' cgroup_enable=memory swapaccount=1' }
       its(:content) { should match ' console=tty0 console=ttyS0,115200n8' }
