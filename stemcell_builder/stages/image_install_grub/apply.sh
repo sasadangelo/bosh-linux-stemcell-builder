@@ -26,7 +26,7 @@ add_on_exit "losetup --verbose --detach ${device}"
 
 if ! is_ppc64le; then
 
-  device_partition=$(kpartx -av ${device} | grep "^add" | cut -d" " -f3)
+  device_partition=$(kpartx -sav ${device} | grep "^add" | cut -d" " -f3)
   add_on_exit "kpartx -dv ${device}"
 
   loopback_dev="/dev/mapper/${device_partition}"
@@ -79,9 +79,18 @@ if ! is_ppc64le; then
     # install bootsector into disk image file
     run_in_chroot ${image_mount_point} "grub2-install -v --no-floppy --grub-mkdevicemap=/device.map --target=i386-pc ${device}"
 
-    cat >${image_mount_point}/etc/default/grub <<EOF
-GRUB_CMDLINE_LINUX="vconsole.keymap=us net.ifnames=0 crashkernel=auto selinux=0 plymouth.enable=0 console=ttyS0,115200n8 earlyprintk=ttyS0 rootdelay=300 audit=1"
+    # Enable password-less booting in openSUSE, only editing the boot menu needs to be restricted
+    if [ -f ${image_mount_point}/etc/SuSE-release ]; then
+      run_in_chroot ${image_mount_point} "sed -i 's/CLASS=\\\"--class gnu-linux --class gnu --class os\\\"/CLASS=\\\"--class gnu-linux --class gnu --class os --unrestricted\\\"/' /etc/grub.d/10_linux"
+
+      cat >${image_mount_point}/etc/default/grub <<EOF
+GRUB_CMDLINE_LINUX="vconsole.keymap=us net.ifnames=0 crashkernel=auto selinux=0 plymouth.enable=0 console=ttyS0,115200n8 earlyprintk=ttyS0 rootdelay=300 audit=1 cgroup_enable=memory swapaccount=1"
 EOF
+    else
+      cat >${image_mount_point}/etc/default/grub <<EOF
+GRUB_CMDLINE_LINUX="vconsole.keymap=us net.ifnames=0 biosdevname=0 crashkernel=auto selinux=0 plymouth.enable=0 console=ttyS0,115200n8 earlyprintk=ttyS0 rootdelay=300 audit=1"
+EOF
+    fi
 
     # we use a random password to prevent user from editing the boot menu
     pbkdf2_password=`run_in_chroot ${image_mount_point} "echo -e '${random_password}\n${random_password}' | grub2-mkpasswd-pbkdf2 | grep -Eo 'grub.pbkdf2.sha512.*'"`
@@ -127,8 +136,8 @@ EOF
 else
   # ppc64le guest images have a PReP partition followed by the file system
   # This and following changes in this file made with the help of Paulo Flabio Smorigo @ IBM
-  boot_device_partition=$(kpartx -av ${device} | grep "^add" | grep "p1 " | grep -v "p2 " | cut -d" " -f3)
-  device_partition=$(kpartx -av ${device} | grep "^add" | grep "p2 " | cut -d" " -f3)
+  boot_device_partition=$(kpartx -sav ${device} | grep "^add" | grep "p1 " | grep -v "p2 " | cut -d" " -f3)
+  device_partition=$(kpartx -sav ${device} | grep "^add" | grep "p2 " | cut -d" " -f3)
   loopback_boot_dev="/dev/mapper/${boot_device_partition}"
   loopback_dev="/dev/mapper/${device_partition}"
 
@@ -151,15 +160,22 @@ fi
 uuid=$(blkid -c /dev/null -sUUID -ovalue ${loopback_dev})
 
 if is_ppc64le; then
-  kernel_version=$(basename $(ls ${image_mount_point}/boot/vmlinux-* |tail -1) |cut -f2-8 -d'-')
+  kernel_version=$(basename $(ls -rt ${image_mount_point}/boot/vmlinux-* |tail -1) |cut -f2-8 -d'-')
 else
-  kernel_version=$(basename $(ls ${image_mount_point}/boot/vmlinuz-* |tail -1) |cut -f2-8 -d'-')
+  kernel_version=$(basename $(ls -rt ${image_mount_point}/boot/vmlinuz-* |tail -1) |cut -f2-8 -d'-')
 fi
 
 if [ -f ${image_mount_point}/etc/debian_version ] # Ubuntu
 then
   initrd_file="initrd.img-${kernel_version}"
   os_name=$(source ${image_mount_point}/etc/lsb-release ; echo -n ${DISTRIB_DESCRIPTION})
+  if [ ${DISTRIB_CODENAME} == 'xenial' ]
+  then
+    cat > ${image_mount_point}/etc/fstab <<FSTAB
+# /etc/fstab Created by BOSH Stemcell Builder
+UUID=${uuid} / ext4 defaults 1 1
+FSTAB
+  fi
 elif [ -f ${image_mount_point}/etc/redhat-release ] # Centos or RHEL
 then
   initrd_file="initramfs-${kernel_version}.img"
@@ -176,13 +192,20 @@ then
 # /etc/fstab Created by BOSH Stemcell Builder
 UUID=${uuid} / ext4 defaults 1 1
 FSTAB
+elif [ -f ${image_mount_point}/etc/SuSE-release ] # openSUSE
+then
+  initrd_file="initramfs-${kernel_version}.img"
+  os_name=$(cat ${image_mount_point}/etc/SuSE-release)
+  cat > ${image_mount_point}/etc/fstab <<FSTAB
+# /etc/fstab Created by BOSH Stemcell Builder
+UUID=${uuid} / ext4 defaults 1 1
+FSTAB
 else
   echo "Unknown OS, exiting"
   exit 2
 fi
 
 if [ -f ${image_mount_point}/etc/debian_version ] # Ubuntu
-
 then
   if is_ppc64le; then
     run_in_chroot ${image_mount_point} "
@@ -197,7 +220,7 @@ default=0
 timeout=1
 title ${os_name} (${kernel_version})
   root (hd0,0)
-  kernel /boot/vmlinuz-${kernel_version} ro root=UUID=${uuid} selinux=0 cgroup_enable=memory swapaccount=1 console=tty0 console=ttyS0,115200n8 earlyprintk=ttyS0 rootdelay=300 ipv6.disable=1 audit=1
+  kernel /boot/vmlinuz-${kernel_version} ro root=UUID=${uuid} net.ifnames=0 biosdevname=0 selinux=0 cgroup_enable=memory swapaccount=1 console=ttyS0,115200n8 console=tty0 earlyprintk=ttyS0 rootdelay=300 ipv6.disable=1 audit=1
   initrd /boot/${initrd_file}
 GRUB_CONF
 fi
@@ -223,6 +246,18 @@ title ${os_name} (${kernel_version})
   kernel /boot/vmlinuz-${kernel_version} ro root=UUID=${uuid} net.ifnames=0 plymouth.enable=0 selinux=0 console=tty0 console=ttyS0,115200n8 earlyprintk=ttyS0 rootdelay=300 ipv6.disable=1 audit=1
   initrd /boot/${initrd_file}
 GRUB_CONF
+
+elif [ -f ${image_mount_point}/etc/SuSE-release ] # openSUSE
+then
+  cat > ${image_mount_point}/boot/grub/grub.conf <<GRUB_CONF
+default=0
+timeout=1
+title ${os_name} (${kernel_version})
+  root (hd0,0)
+  kernel /boot/vmlinuz-${kernel_version} ro root=UUID=${uuid} net.ifnames=0 plymouth.enable=0 selinux=0 console=tty0 console=ttyS0,115200n8 earlyprintk=ttyS0 rootdelay=300 ipv6.disable=1 audit=1
+  initrd /boot/${initrd_file}
+GRUB_CONF
+
 else
   echo "Unknown OS, exiting"
   exit 2

@@ -2,9 +2,16 @@
 
 set -eu
 
-STEMCELL_VERSION=3422.x
+pipeline="bosh:os-image"
+args=""
 
-fly -t production set-pipeline -p bosh:os-image:$STEMCELL_VERSION \
-    -c ci/os-images/pipeline.yml \
-    --load-vars-from <(lpass show "concourse:production pipeline:os-images" --notes) \
-    -v branch=$STEMCELL_VERSION
+if [ -n "${RELEASE_BRANCH:-}" ]; then
+  pipeline="$pipeline:$RELEASE_BRANCH"
+  args="-v branch=$RELEASE_BRANCH"
+fi
+
+fly -t production set-pipeline \
+  -p "$pipeline" \
+  -c ci/os-images/pipeline.yml \
+  --load-vars-from <(lpass show "concourse:production pipeline:os-images" --notes) \
+  $args
