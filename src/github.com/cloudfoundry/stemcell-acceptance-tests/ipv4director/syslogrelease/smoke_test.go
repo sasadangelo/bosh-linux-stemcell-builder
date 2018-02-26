@@ -15,7 +15,7 @@ var _ = Describe("Syslogrelease", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(exitStatus).To(Equal(0))
 
-			_, _, exitStatus, err := bosh.Run("ssh", "syslog_storer/0", `cat /var/vcap/store/syslog_storer/syslog.log`)
+			_, _, exitStatus, err = bosh.Run("ssh", "syslog_storer/0", `cat /var/vcap/store/syslog_storer/syslog.log`)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(exitStatus).To(Equal(0))
 			// Expect(stdOut).To(ContainSubstring("COMMAND=/sbin/modprobe -r floppy"))
