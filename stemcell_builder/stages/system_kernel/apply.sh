@@ -6,8 +6,12 @@ base_dir=$(readlink -nf $(dirname $0)/../..)
 source $base_dir/lib/prelude_apply.bash
 source $base_dir/lib/prelude_bosh.bash
 
-pkg_mgr install wireless-crda
 
 mkdir -p $chroot/tmp
 
-pkg_mgr install linux-generic-lts-xenial
+
+if [[ "${DISTRIB_CODENAME}" == "xenial" ]]; then
+  pkg_mgr install linux-headers-4.10.0-38-generic linux-image-4.10.0-38-generic
+else
+  pkg_mgr install wireless-crda linux-generic-lts-xenial
+fi

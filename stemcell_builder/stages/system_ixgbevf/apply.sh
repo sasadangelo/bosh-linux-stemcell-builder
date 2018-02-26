@@ -16,7 +16,7 @@ cp $assets_dir/usr/src/ixgbevf-4.2.2/dkms.conf $chroot/usr/src/ixgbevf-4.2.2/dkm
 
 pkg_mgr install dkms
 
-kernelver=$( ls $chroot/lib/modules )
+kernelver=$( ls -rt $chroot/lib/modules | tail -1 )
 run_in_chroot $chroot "dkms -k ${kernelver} add -m ixgbevf -v 4.2.2"
 run_in_chroot $chroot "dkms -k ${kernelver} build -m ixgbevf -v 4.2.2"
 run_in_chroot $chroot "dkms -k ${kernelver} install -m ixgbevf -v 4.2.2"
@@ -29,6 +29,9 @@ elif [ -f ${chroot}/etc/redhat-release ] # Centos or RHEL
 then
   run_in_chroot $chroot "dracut --force --kver ${kernelver}"
 elif [ -f ${chroot}/etc/photon-release ] # PhotonOS
+then
+  run_in_chroot $chroot "dracut --force --kver ${kernelver}"
+elif [ -f ${chroot}/etc/SuSE-release ] # openSUSE
 then
   run_in_chroot $chroot "dracut --force --kver ${kernelver}"
 else
