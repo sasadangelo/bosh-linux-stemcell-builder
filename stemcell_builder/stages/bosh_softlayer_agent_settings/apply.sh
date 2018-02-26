@@ -9,6 +9,7 @@ cat > $chroot/var/vcap/bosh/agent.json <<JSON
 {
   "Platform": {
     "Linux": {
+      $(get_partitioner_type_mapping)
       "CreatePartitionIfNoEphemeralDisk": true,
       "ScrubEphemeralDisk": true
     }
