@@ -3,54 +3,49 @@
 
 OS images are stored in S3 bucket [bosh-os-images](http://s3.amazonaws.com/bosh-os-images/).
 
-
 ## Ubuntu 14.04
 
 Ubuntu 14.04 images have filename `bosh-ubuntu-trusty-os-image.tgz`
 
-* `SUU8oZoZ.FZDaMmMOm3T5Qmz92SIoVaN`
+* `q10s1hP1IjS15u5bLOSS7azIGTeEJU3a`
+  - USN-3582-2: Linux kernel (Xenial HWE) vulnerabilities
+  - built from 3541.x (77574307bd176c1f22e425be7ef4d20541b3d920)
+
+* `rBGkZW5pIvJ6_js8N_hkYbmTm8cIDRve`
+  - Remove umask changes
+  - built from 3541.x (b95fbaefe4fd5f4737d941baaef1129eb18eb5fa)
+
+* `D5EvMKKnRCGvQAECRBwyfLdLLD5.BVFG`
   - Periodic bump
-  - built from 3468.x (790fe7f27ca3e67b19ae613925b4d5f049fcfbf0)
+  - built from 3541.x (d19252b0da6978c3a94e9c6c717da4b6cbc6c189)
 
-* `4Jg7s6pl_ixlU7sBsv55yHq.xJpaI78b`
-  - USN-3540-2: Linux kernel (Xenial HWE) vulnerabilities
-  - built from 3468.x (19443138d8b4c5ff21a69426a70c4a4721b1c568)
+* `UziQ_fCYp2tG4nKVZUKj_0O8MRGUQAFA`
+  - Add umask changes
+  - built from master (07a11844704dd14d0bd248f1c3ae306e72249f51)
 
-* `Am1VapkqwI6fJokQEf0WP5VQpyziviTO`
-  - USN-3534-1: GNU C Library vulnerabilities
-  - built from 3468.x (7c88dcf24b5bffcb11531f9ccd31d94c1c043463)
+* `U8wCPwxQsoiG1.0izDMVrRObun1n_J.W`
+  - Fix sync-time script
+  - built from master (de77af6929dc48a07d7c8e3db6d7b92b78285730)
 
-* `a20JI4pbCOXMK504Ds2LKnkNjCrhOZxj`
-  - USN-3522-2: Linux kernel (Xenial HWE) regression
-  - built from 3468.x (30597f4a50958dd69f8c3f6aa79beb5a87e8281c)
-
-* `SMbpSRRkZlhwfFfxVbef.O9ZHsiA690e`
-  - USN-3522-2: Linux kernel (Xenial HWE) regression
-  - built from 3468.x (2f979ade76352c367b133864fa854593ee4aa313)
-
-* `CRobkG_PspFQYcZuObdeo8N1BR64bpy3`
-  - USN-3509-4: Linux kernel (Xenial HWE) regression
-  - built from 3468.x (d5389cf29a19668c8bd5433ea4997a86e26be928)
-
-* `Rt6MSnLwflYybIrWj_nIKMStWRQEqmuf`
-  - USN-3509-2: Linux kernel (Xenial HWE) vulnerabilities
-  - built from 3468.x (1fcf28d6be25d7f60c77d1ff077097af48a55ccd)
-
-* `iOZPe5ea7W9nAjN4gaOyxkbWm0sFQr9X`
-  - USN-3505-1: Linux firmware vulnerabilities
-  - built from 3468.x (4f27ff661c6513fbe67cc1360b07731e3b548b0c)
-
-* `EZM2fHbzrZ4C2QIQo8QE.eQLaUqJ6CQO`
+* `lz1PrZ22wbWzWPz9mmAx1xJFN8HAsOAU`
   - Periodic bump
-  - built from 3468.x (0083e5e144806b2660a45f23b02aa5c9e5ca696b)
+  - built from master (7f891a225df648456711855c3604b59198c1b04f)
 
-* `OY3y1wuupJ8ol2qYCy1N2Ns7vDQqSdsE`
+* `tuNJU7fC4UCAP92IdpCKKV5uMAd4RTdW`
   - Periodic bump
-  - built from 3468.x (e2e05cd12c69406cfad612069f4a8346f953d636)
+  - built from master (c92e74444ef79eb4d5e827dee16dacc27f65d89e)
 
-* `GNgUw4y2PHvXNEzf6KrWKi3ltKF_iali`
+* `8kwlt1sVR2A4Je95x3_MjzkzxZe5q3vx`
+  - refactor /var/vcap/bosh/bin/sync-time
+  - built from master (d81ef5110368b61fd92051fda81ae020ab6aabe6)
+
+* `G71XaogxhnOY6VIeATzFi.EsTUvLhNNM`
   - Periodic bump
-  - built from 3468.x (4df7311d4d17932338a9d0ef8ce256d740b29834)
+  - built from master (a495c5481dea40016bbc9bdcd03313d7bfc019a3)
+
+* `vtxhmn43pPhrsF0Z1J6ANe0qLknE7cTA`
+  - Bump version of ixgbevf to 4.2.2
+  - built from master (98e2153c0d16ef03a915e50ad74f0b7c30caf83b)
 
 * `K8sMoXIn64ezn6zu6cBNr3JJQhTEHbhn`
   - Periodic bump
@@ -616,37 +611,45 @@ Ubuntu 14.04 images have filename `bosh-ubuntu-trusty-os-image.tgz`
 
 CentOS 7 images have filename `bosh-centos-7-os-image.tgz`
 
-* `aibx_YZmJkB7FGRfrDckZEP7t__qL66o`
+* `0D_NdPeIr0uKe.jeEChtEkoMAYFkn3l3`
+  - Remove umask changes
+  - built from 3541.x (b95fbaefe4fd5f4737d941baaef1129eb18eb5fa)
+
+* `f4l23fzh57NyXdbtQqjtGmPe9M2mlC3l`
   - Periodic bump
-  - built from 3468.x (790fe7f27ca3e67b19ae613925b4d5f049fcfbf0)
+  - built from 3541.x (d19252b0da6978c3a94e9c6c717da4b6cbc6c189)
 
-* `WxcUFGbRv6Ns2HrQwhCD42RsZ54C4l3F`
+* `nGbRvopAX.1uoP3gddZ4dUl7d3Y_WeF6`
+  - Add umask changes
+  - built from master (07a11844704dd14d0bd248f1c3ae306e72249f51)
+
+* `skD_a_3vQcVRfWaWidnN.HrD6srcyoVl`
+  - Ensure rsyslog is started after bind mount is created at /var/log
+  - built from master (0a52c872e6e0bf5f0b225027040270dc63596de6)
+
+* `X.5SPARRtIEqJUce18JMMR7AEdemYV26`
   - Periodic bump
-  - built from 3468.x (19443138d8b4c5ff21a69426a70c4a4721b1c568)
+  - built from master (7f891a225df648456711855c3604b59198c1b04f)
 
-* `HU8gYfF19xehkvzcKBIzcbZRlIMW543p`
+* `vb_TNB_nbU4Q689j_LSLX2SIxLRKnjPe`
   - Periodic bump
-  - built from 3468.x (7c88dcf24b5bffcb11531f9ccd31d94c1c043463)
+  - built from master (c92e74444ef79eb4d5e827dee16dacc27f65d89e)
 
-* `AdJbrMlHo84MKV3ph37IlqsQI4W8dr9f`
+* `pEKS.VlpukuR0SQaLdOjuf9ZhT7YBeIq`
+  - refactor /var/vcap/bosh/bin/sync-time
+  - built from master (d81ef5110368b61fd92051fda81ae020ab6aabe6)
+
+* `uAVB2a0ojcpV9Vq0t2hkdHi_ScFr21x5`
   - Periodic bump
-  - built from 3468.x (30597f4a50958dd69f8c3f6aa79beb5a87e8281c)
+  - built from master (4d3571fb6acc41224b1470ae4d7518d459b54637)
 
-* `_ihXtTBvJKVwj5bu.wY4aYacbwVImjGl`
+* `7Lo4I8Cc__obnPb011SL_KzZfKyXqVLf`
   - Periodic bump
-  - built from 3468.x (2f979ade76352c367b133864fa854593ee4aa313)
+  - built from master (a495c5481dea40016bbc9bdcd03313d7bfc019a3)
 
-* `BUd5rrpSPn_T503AJiXoo9gw0qCVwUzq`
-  - USN-3505-1: Linux firmware vulnerabilities
-  - built from 3468.x (4f27ff661c6513fbe67cc1360b07731e3b548b0c)
-
-* `uj6ZPEV1pruts7JEbnRrrdYR2NXBelmc`
-  - Periodic bump
-  - built from 3468.x (0083e5e144806b2660a45f23b02aa5c9e5ca696b)
-
-* `WDMFg92TECb4wMFnFgkebBDmMkhmcZWI`
-  - bump to centos-7.4
-  - built from 3468.x (e2e05cd12c69406cfad612069f4a8346f953d636)
+* `7Fx.ggVjNsKByV_t3arRW2pBpzJ_nE9W`
+  - Upgrade to centos 7.4
+  - built from master (98e2153c0d16ef03a915e50ad74f0b7c30caf83b)
 
 * `JRWJGXQazjhzWM.S5qW.573fmI4dsfFi`
   - bump os-image to get newer logrotate

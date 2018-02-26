@@ -15,22 +15,18 @@ shared_examples_for 'an upstart-based OS image' do
     end
 
     # Make sure that rsyslog starts with the machine
-    describe file('/etc/init.d/rsyslog') do
-      xit { should be_linked_to('/lib/init/upstart-job') }
-      xit { should be_executable }
+    describe file('/etc/init.d/rsyslog'), :rsyslog_check do
+      if ENV["DISTRIB_CODENAME"] == "trusty"
+        it { should be_linked_to('/lib/init/upstart-job') }
+      end
+      it { should be_executable }
     end
 
     describe service('rsyslog') do
-      xit { should be_enabled_for_level(2) }
-      xit { should be_enabled_for_level(3) }
-      xit { should be_enabled_for_level(4) }
-      xit { should be_enabled_for_level(5) }
-    end
-  end
-
-  context 'X Windows must not be enabled unless required (stig: V-38674)' do
-    describe package('xserver-xorg') do
-      it { should_not be_installed }
+      it { should be_enabled_for_level(2) }
+      it { should be_enabled_for_level(3) }
+      it { should be_enabled_for_level(4) }
+      it { should be_enabled_for_level(5) }
     end
   end
 end

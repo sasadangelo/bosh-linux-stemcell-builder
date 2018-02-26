@@ -1,0 +1,5 @@
+kpartx
+multipath-tools
+open-iscsi
+ldap-utils
+libnl-route-3-200:amd64
