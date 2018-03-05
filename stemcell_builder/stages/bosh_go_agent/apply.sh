@@ -26,10 +26,10 @@ cp -a $assets_dir/alerts.monitrc $chroot/var/vcap/monit/alerts.monitrc
 
 cd $assets_dir
 if is_ppc64le; then
-  curl -L -o bosh-agent "https://s3.amazonaws.com/bosh-agent-binaries/bosh-agent-2.30.2-linux-ppc64le?versionId=BYHDmiSttpCtd_CanK2bPd77mPPWKrnr"
-  echo "34705d808e93b0f9a1cae7da68d94a7fadb09b420eff7092e7aa89e4397349a5  bosh-agent" | shasum -a 256 -c -
+  curl -L -o bosh-agent "https://s3.amazonaws.com/bosh-agent-binaries/bosh-agent-2.67.0-linux-ppc64le?versionId=vIue_SZVb8sNI4HtCoSrGgRTdFU1Ng3r"
+  echo "a280152bbf1ba6381710402e30c21830c1c999170aae5093fffe4b32dcab5454  bosh-agent" | shasum -a 256 -c -
 else
-  curl -L -o bosh-agent "https://s3.amazonaws.com/ng-bosh-softlayer-agent/bosh-agent-2.52.7-linux-amd64"
+  curl -L -o bosh-agent "https://s3.amazonaws.com/ng-bosh-softlayer-agent/bosh-agent-2.52.23-linux-amd64-bluemix"
 #  echo "18526758d2e47a262a2f6bb88e3891221b0fe2d5a2257f39f725c304b50cc369  bosh-agent" | shasum -a 256 -c -
 fi
 mv bosh-agent $chroot/var/vcap/bosh/bin/
@@ -41,9 +41,9 @@ cp $assets_dir/mbus/agent.{cert,key} $chroot/var/vcap/bosh/
 cd $assets_dir
 rm -rf davcli
 mkdir davcli
-current_version=0.0.23
+current_version=0.0.26
 curl -L -o davcli/davcli https://s3.amazonaws.com/davcli/davcli-${current_version}-linux-amd64
-echo "bd8c1f02061ca5c5774f1a5eb75b11362b2c1d84 davcli/davcli" | sha1sum -c -
+echo "cd75e886b4f5d27ce41841d5cc902fe64bab7b78 davcli/davcli" | sha1sum -c -
 mv davcli/davcli $chroot/var/vcap/bosh/bin/bosh-blobstore-dav
 chmod +x $chroot/var/vcap/bosh/bin/bosh-blobstore-dav
 
@@ -83,9 +83,6 @@ chown root:root /var/vcap/monit/alerts.monitrc
 # Since go agent is always specified with -C provide empty conf.
 # File will be overwritten in whole by infrastructures.
 echo '{}' > $chroot/var/vcap/bosh/agent.json
-
-# We need to capture ssh events
-cp $assets_dir/rsyslog.d/10-auth_agent_forwarder.conf $chroot/etc/rsyslog.d/10-auth_agent_forwarder.conf
 
 # this directory is utilized by the agent/init/create-env
 # https://github.com/cloudfoundry/bosh-agent/blob/1a6b1e11acd941e65c4f4155c22ff9a8f76098f9/micro/https_handler.go#L119

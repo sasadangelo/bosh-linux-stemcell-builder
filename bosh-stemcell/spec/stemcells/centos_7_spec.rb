@@ -76,11 +76,70 @@ HERE
       its (:content) { should_not match /nfs/ }
     end
   end
+
+  describe 'installed packages' do
+    rpm_list_packages = 'rpm --query --all --queryformat="%{NAME}\n"'
+
+    let(:rpm_list_centos) { File.readlines(spec_asset('rpm-list-centos-7.txt')).map(&:chop) }
+    let(:rpm_list_google_centos) { File.readlines(spec_asset('rpm-list-centos-7-google-additions.txt')).map(&:chop) }
+    let(:rpm_list_vsphere_centos) { File.readlines(spec_asset('rpm-list-centos-7-vsphere-additions.txt')).map(&:chop) }
+    let(:rpm_list_azure_centos) { File.readlines(spec_asset('rpm-list-centos-7-azure-additions.txt')).map(&:chop) }
+
+    describe command(rpm_list_packages), {
+      exclude_on_google: true,
+      exclude_on_vcloud: true,
+      exclude_on_vsphere: true,
+      exclude_on_azure: true,
+    } do
+      it 'contains only the base set of packages for aws, openstack, warden' do
+        expect(subject.stdout.split("\n")).to match_array(rpm_list_centos)
+      end
+    end
+
+    describe command(rpm_list_packages), {
+      exclude_on_aws: true,
+      exclude_on_vcloud: true,
+      exclude_on_vsphere: true,
+      exclude_on_warden: true,
+      exclude_on_azure: true,
+      exclude_on_openstack: true,
+    } do
+      it 'contains only the base set of packages plus google-specific packages' do
+        expect(subject.stdout.split("\n")).to match_array(rpm_list_centos.concat(rpm_list_google_centos))
+      end
+    end
+
+    describe command(rpm_list_packages), {
+      exclude_on_aws: true,
+      exclude_on_google: true,
+      exclude_on_warden: true,
+      exclude_on_azure: true,
+      exclude_on_openstack: true,
+    } do
+      it 'contains only the base set of packages plus vsphere-specific packages' do
+        expect(subject.stdout.split("\n")).to match_array(rpm_list_centos.concat(rpm_list_vsphere_centos))
+      end
+    end
+
+    describe command(rpm_list_packages), {
+      exclude_on_aws: true,
+      exclude_on_vcloud: true,
+      exclude_on_vsphere: true,
+      exclude_on_google: true,
+      exclude_on_warden: true,
+      exclude_on_openstack: true,
+    } do
+      it 'contains only the base set of packages plus azure-specific packages' do
+        expect(subject.stdout.split("\n")).to match_array(rpm_list_centos.concat(rpm_list_azure_centos))
+      end
+    end
+  end
+
 end
 
 describe 'CentOS 7 stemcell tarball', stemcell_tarball: true do
   context 'installed by bosh_rpm_list stage' do
-    describe file("#{ENV['STEMCELL_WORKDIR']}/stemcell/stemcell_rpm_qa.txt", no_chroot) do
+    describe file("#{ENV['STEMCELL_WORKDIR']}/stemcell/packages.txt", no_chroot) do
       it { should be_file }
     end
   end

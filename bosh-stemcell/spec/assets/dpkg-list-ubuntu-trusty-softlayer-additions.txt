@@ -1,0 +1,3 @@
+kpartx
+multipath-tools
+open-iscsi

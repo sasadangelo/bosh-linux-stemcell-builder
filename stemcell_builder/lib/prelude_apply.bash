@@ -15,6 +15,8 @@ fi
 if [ -f $chroot/etc/lsb-release ]
 then
   source $chroot/etc/lsb-release
+else
+  export DISTRIB_CODENAME="no-distrib-codename"
 fi
 
 function get_os_type {
@@ -22,6 +24,7 @@ function get_os_type {
   rhel_file=$chroot/etc/redhat-release
   ubuntu_file=$chroot/etc/lsb-release
   photonos_file=$chroot/etc/photon-release
+  opensuse_file=$chroot/etc/SuSE-release
 
   os_type=''
   if [ -f $photonos_file ]
@@ -36,10 +39,16 @@ function get_os_type {
   elif [ -f $rhel_file ]
   then
     os_type='rhel'
+  elif [ -f $opensuse_file ]
+  then
+    os_type='opensuse'
   fi
 
   echo $os_type
 }
+
+os_type=$(get_os_type)
+export OS_TYPE=$os_type
 
 function pkg_mgr {
   os_type=$(get_os_type)
@@ -47,12 +56,15 @@ function pkg_mgr {
   if [ "${os_type}" == 'ubuntu' ]
   then
     run_in_chroot $chroot "apt-get update"
-    run_in_chroot $chroot "apt-get -f -y --force-yes --no-install-recommends $*"
+    run_in_chroot $chroot "export DEBIAN_FRONTEND=noninteractive;apt-get -f -y --force-yes --no-install-recommends $*"
     run_in_chroot $chroot "apt-get clean"
   elif [ "${os_type}" == 'centos' -o "${os_type}" == 'rhel' -o "${os_type}" == 'photonos' ]
   then
     run_in_chroot $chroot "yum --verbose --assumeyes $*"
     run_in_chroot $chroot "yum clean all"
+  elif [ "${os_type}" == 'opensuse' ]
+  then
+    run_in_chroot $chroot "zypper -n $*"
   else
     echo "Unknown OS, exiting"
     exit 2
@@ -77,6 +89,14 @@ function pkg_exists {
   then
     result=`run_in_chroot $chroot "if yum list $1 2>/dev/null >/dev/null; then echo exists; else echo does not exist; fi"`
     if [[ "$result" == *"exists"* ]]; then
+      return 0
+    else
+      return 1
+    fi
+  elif [ "${os_type}" == 'opensuse' ]
+  then
+    result=`run_in_chroot $chroot "if zypper se $1 2>/dev/null >/dev/null; then echo exists; else echo does not exist; fi"`
+    if [ "$result" == 'exists' ]; then
       return 0
     else
       return 1
