@@ -359,7 +359,7 @@ HERE
         exclude_on_azure: true,
         exclude_on_openstack: true,
     } do
-      it 'contains only the base set of packages plus softlayer-specific packages' do
+      it 'contains only the base set of packages plus azure-specific packages' do
         expect(subject.stdout.split("\n")).to match_array(dpkg_list_ubuntu.concat(dpkg_list_softlayer_ubuntu))
       end
     end
