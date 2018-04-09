@@ -90,6 +90,7 @@ describe 'Stig test case verification', stemcell_image: true, security_spec: tru
       V-38610
       V-38611
       V-38612
+      V-38613
       V-38614
       V-38615
       V-38616
@@ -149,6 +150,13 @@ describe 'Stig test case verification', stemcell_image: true, security_spec: tru
     when 'opensuse'
       expected_stig_test_cases = expected_base_stig_test_cases + [
         'V-38586'
+      ]
+    end
+
+    case ENV['IAAS']
+    when 'softlayer'
+      expected_stig_test_cases = expected_stig_test_cases - [
+        'V-38613'
       ]
     end
 
