@@ -58,7 +58,7 @@ At this point, you should be ssh'd and running within your container in the `bos
 
 ### Build an OS image
 
-An OS image is a tarball that contains a snapshot of an entire OS filesystem that contains all the libraries and system utilities that the BOSH agent depends on. It does not contain the BOSH agent or the virtualization tools: there is [a separate Rake task](#building-the-stemcell-with-local-os-image) that adds the BOSH agent and a chosen set of virtualization tools to any base OS image, thereby producing a stemcell.
+An OS image is a tarball that contains a snapshot of an entire OS filesystem that contains all the libraries and system utilities that the BOSH agent depends on. It does not contain the BOSH agent or the virtualization tools: there is [a separate Rake task](#with-local-os-image) that adds the BOSH agent and a chosen set of virtualization tools to any base OS image, thereby producing a stemcell.
 
 The OS Image should be rebuilt when you are making changes to which packages we install in the operating system, or when making changes to how we configure those packages, or if you need to pull in and test an updated package from upstream.
 
@@ -67,7 +67,7 @@ The OS Image should be rebuilt when you are making changes to which packages we 
 
 The arguments to `stemcell:build_os_image` are:
 
-0. *`operating_system_name`* identifies which type of OS to fetch. Determines which package repository and packaging tool will be used to download and assemble the files. Must match a value recognized by the  [OperatingSystem](lib/bosh/stemcell/operatingsystem.rb) module. Currently, `ubuntu` `centos` and `rhel` are recognized.
+0. *`operating_system_name`* identifies which type of OS to fetch. Determines which package repository and packaging tool will be used to download and assemble the files. Must match a value recognized by the  [OperatingSystem](bosh-stemcell/lib/bosh/stemcell/operating_system.rb) module. Currently, `ubuntu` `centos` and `rhel` are recognized.
 0. *`operating_system_version`* an identifier that the system may use to decide which release of the OS to download. Acceptable values depend on the operating system. For `ubuntu`, use `trusty`. For `centos` or `rhel`, use `7`.
 0. *`os_image_path`* the path to write the finished OS image tarball to. If a file exists at this path already, it will be overwritten without warning.
 
@@ -92,7 +92,7 @@ There are a few extra steps you need to do before building a RHEL OS image:
 
         $ bundle exec rake stemcell:build_os_image[rhel,7,$PWD/tmp/rhel_7_base_image.tgz]
 
-See below [Building the stemcell with local OS image](#building-the-stemcell-with-local-os-image) on how to build stemcell with the new OS image.
+See below [Building the stemcell with local OS image](#with-local-os-image) on how to build stemcell with the new OS image.
 
 
 #### Special requirements for building a PhotonOS image
@@ -110,7 +110,7 @@ There are a few extra steps you need to do before building a PhotonOS image:
 
         $ bundle exec rake stemcell:build_os_image[photonos,TP2,$PWD/tmp/photon_TP2_base_image.tgz]
 
-See below [Building the stemcell with local OS image](#building-the-stemcell-with-local-os-image) on how to build stemcell with the new OS image.
+See below [Building the stemcell with local OS image](#with-local-os-image) on how to build stemcell with the new OS image.
 
 
 #### Special requirements for building an openSUSE image
@@ -139,7 +139,7 @@ The stemcell should be rebuilt when you are making and testing BOSH-specific cha
 
 The last two arguments to the rake command are the S3 bucket and key of the OS image to use (i.e. in the example below, the .tgz will be downloaded from [http://bosh-os-images.s3.amazonaws.com/bosh-centos-7-os-image.tgz](http://bosh-os-images.s3.amazonaws.com/bosh-centos-7-os-image.tgz)). More info at OS\_IMAGES.
 
-    $ bundle exec rake stemcell:build[aws,xen,ubuntu,trusty,bosh-os-images,bosh-ubuntu-trusty-os-image.tgz,"1234.56"]
+    $ bundle exec rake stemcell:build[aws,xen,ubuntu,trusty,"1234.56"]
 
 The final argument, which specifies the build number, is optional and will default to '0000'
 
@@ -151,12 +151,20 @@ If you want to use an OS Image that you just created, use the `stemcell:build_wi
 
 The final argument, which specifies the build number, is optional and will default to '0000'
 
-You can also download OS Images from the public S3 bucket. Public OS images can be obtained here:
+You can also download OS Images from the public S3 bucket.  Download information
+and metadata can be found in the corresponding [metalink files](./bosh-stemcell/image-metalinks).
+Public OS images can be obtained by:
 
-* latest Ubuntu - https://s3.amazonaws.com/bosh-os-images/bosh-ubuntu-trusty-os-image.tgz
-* latest CentOS - https://s3.amazonaws.com/bosh-os-images/bosh-centos-7-os-image.tgz
+```
+# latest ubuntu-trusty
+$ bundle exec rake stemcell:download_os_image[ubuntu,trusty]
 
-*Note*: you may need to append `?versionId=value` to those tarballs. You can find the expected `versionId` by looking at [`os_image_versions.json`](./os_image_versions.json).
+# latest centos-7
+$ bundle exec rake stemcell:download_os_image[centos,7]
+```
+
+**NOTE**: The `download_os_image` rake task has a dependency on the
+[meta4 binary](https://github.com/dpb587/metalink/releases).
 
 #### How to run tests for Stemcell
 When you run the `stemcell:build_with_local_os_image` or `stemcell:build` rake task, it will create a stemcell that it runs the stemcell specific tests against. You will need to run the rake task the first time you create your docker container, but everytime after, as long as you do not destroy the container, you should be able to just run the specific tests.

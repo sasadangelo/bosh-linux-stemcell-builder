@@ -1,11 +1,4 @@
 PATH
-  remote: bosh-dev
-  specs:
-    bosh-dev (0.0.0)
-      bosh-stemcell
-      bundler
-
-PATH
   remote: bosh-stemcell
   specs:
     bosh-stemcell (0.0.0)
@@ -44,14 +37,13 @@ GEM
       rspec-support (~> 3.4.0)
     rspec-support (3.4.1)
     timecop (0.7.3)
-    yajl-ruby (1.2.1)
+    yajl-ruby (1.2.3)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   bosh-core
-  bosh-dev!
   bosh-stemcell!
   fakefs
   logging
