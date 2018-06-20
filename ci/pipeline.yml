@@ -3,6 +3,7 @@ groups:
   - name: all
     jobs:
       - start-job
+      - create-story
       - build-ubuntu-trusty-image
       - build-centos-7-image
       - bump-os-images
@@ -123,6 +124,18 @@ jobs:
         - get: bosh-linux-stemcell-builder
         - get: every-2-weeks-on-monday
           trigger: true
+  - name: create-story
+    plan:
+      - aggregate:
+        - get: every-2-weeks-on-monday
+          trigger: true
+        - get: bosh-linux-stemcell-builder
+      - task: create-story
+        file: bosh-linux-stemcell-builder/ci/tasks/create-story.yml
+        params:
+          BRANCH: master
+          PROJECT_ID: ((story_creator_tracker_project_id))
+          TOKEN: ((story_creator_tracker_token))
 
   - name: build-ubuntu-trusty-image
     plan:
@@ -686,8 +699,6 @@ jobs:
     serial: true
     plan:
     - aggregate:
-      - get: bosh-release
-      - get: cpi-release
       - get: stemcell
         trigger: true
         tags:
@@ -695,6 +706,12 @@ jobs:
         resource: vsphere-esxi-centos-7
         passed:
         - build-vsphere-esxi-centos-7
+      - get: ubuntu-stemcell
+        tags:
+        - vsphere-v6.5
+        resource: vsphere-esxi-ubuntu-trusty
+        passed:
+          - build-vsphere-esxi-ubuntu-trusty
       - get: bosh-cli
       - get: bats
       - get: bosh-deployment
@@ -734,6 +751,8 @@ jobs:
 
       - do:
         - <<: *deploy-director
+          input_mapping:
+            stemcell: ubuntu-stemcell
 
         - <<: *prepare-bats-config
           params:
@@ -751,8 +770,6 @@ jobs:
     serial: true
     plan:
     - aggregate:
-      - get: bosh-release
-      - get: cpi-release
       - get: stemcell
         trigger: true
         tags:
@@ -865,16 +882,6 @@ resources:
     type: bosh-io-release
     source:
       repository: cloudfoundry/os-conf-release
-
-  - name: bosh-release
-    type: bosh-io-release
-    source:
-      repository: cloudfoundry/bosh
-
-  - name: cpi-release
-    type: bosh-io-release
-    source:
-      repository: cloudfoundry-incubator/bosh-vsphere-cpi-release
 
   #
   # WARDEN

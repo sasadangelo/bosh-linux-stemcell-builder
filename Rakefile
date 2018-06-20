@@ -115,6 +115,8 @@ namespace :stemcell do
 
       sh(environment.os_image_rspec_command)
 
+      puts "Working from #{environment.work_path}..."
+      puts "########################################"
       runner = Bosh::Stemcell::StageRunner.new(
         build_path: environment.build_path,
         command_env: environment.command_env,
@@ -158,6 +160,6 @@ namespace :stemcell do
   end
 
   def print_help
-    puts "\nFor help with stemcell building, see: <https://github.com/cloudfoundry/bosh/blob/master/bosh-stemcell/README.md>\n\n"
+    puts "\nFor help with stemcell building, see: https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/README.md\n\n"
   end
 end

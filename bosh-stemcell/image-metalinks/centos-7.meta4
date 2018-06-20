@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metalink xmlns="urn:ietf:params:xml:ns:metalink">
   <file name="bosh-centos-7-os-image.tgz">
-    <hash type="md5">f7d9724f6362340b7414aa472de24143</hash>
-    <hash type="sha-1">0ed13de817e6a00b827fecbbffa8c51409545ec7</hash>
-    <hash type="sha-256">01c8a1a3efa910423bba7ef071bb2c80d940039e5d58b80e143ea9a8fe3dad50</hash>
-    <hash type="sha-512">6f5ff2a7020ae6ee278b41140953021ff18a30b37b237258626ab1dbd624b72c2225b91e04c08316da4035ec5811c354d81396c16a7d8fe6da06c789d74b255e</hash>
-    <size>579067010</size>
-    <url>https://s3.amazonaws.com/bosh-os-images/bosh-centos-7-os-image.tgz?versionId=dgbx8enY2eh_hU9qWMasXQYY0HTVJfff</url>
+    <hash type="md5">1667a95568501ce746b571a35c0c7438</hash>
+    <hash type="sha-1">3c5a6c9f319976e722a4217971f9c59d227572b0</hash>
+    <hash type="sha-256">33cb70d638be3cd5dab657e0757221b1979ae22d6aa4e45b44cdc304e309bbc1</hash>
+    <hash type="sha-512">1b8ec0d71d5e656aaf8478dd4ffd117621d6ff971f86163ef91298b61d85724b4c07c7135ee44d1bd140155c4c4de2ded8fcf68b646e66287a53f4ce6e3c1cd8</hash>
+    <size>615224859</size>
+    <url>https://s3.amazonaws.com/bosh-os-images/bosh-centos-7-os-image.tgz?versionId=btXyqn5GRfTAf5BEu36GHpnXiPE7kNki</url>
   </file>
   <generator>metalink.dpb587.github.io/0.0.0</generator>
 </metalink>
