@@ -3,7 +3,7 @@
 set -e
 
 source /etc/profile.d/chruby.sh
-chruby 2.1.7
+chruby ruby
 
 function fromEnvironment() {
   local key="$1"
@@ -27,6 +27,7 @@ chmod +x $bosh_cli
 
 $bosh_cli interpolate bosh-deployment/bosh.yml \
   -o bosh-deployment/vsphere/cpi.yml \
+  -o bosh-deployment/vsphere/resource-pool.yml \
   -o bosh-linux-stemcell-builder/ci/assets/local-stemcell.yml \
   --vars-store director-creds.yml \
   -v director_name=stemcell-smoke-tests-director \
