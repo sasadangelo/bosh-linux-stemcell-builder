@@ -454,7 +454,6 @@ module Bosh::Stemcell
                 :system_network,
                 :system_softlayer_open_iscsi,
                 :system_softlayer_multipath_tools,
-                :system_rsyslog_bluemix,
                 :system_parameters,
                 :bosh_clean,
                 :bosh_harden,
@@ -464,6 +463,7 @@ module Bosh::Stemcell
                 :bosh_clean_ssh,
                 :image_create,
                 :image_install_grub,
+                :system_rsyslog_bluemix,
                 :bosh_audit_bluemix,
                 :bosh_package_list
               ]
