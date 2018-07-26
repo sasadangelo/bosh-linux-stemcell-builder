@@ -10,13 +10,21 @@ echo "echo the version of rsyslog before upgrade"
 run_in_chroot $chroot "rsyslogd -v"
 
 curl -L -o $chroot/tmp/libfastjson4_0.99.8-2_amd64.deb "https://s3.amazonaws.com/bosh-softlayer-artifacts/packages/libfastjson4_0.99.8-2_amd64.deb"
+curl -L -o $chroot/tmp/librelp0_1.2.15-0adiscon1xenial1_amd64.deb "https://s3.amazonaws.com/bosh-softlayer-artifacts/packages/librelp0_1.2.15-0adiscon1xenial1_amd64.deb"
 curl -L -o $chroot/tmp/rsyslog_8.34.0-0adiscon2xenial1_amd64.deb "https://s3.amazonaws.com/bosh-softlayer-artifacts/packages/rsyslog_8.34.0-0adiscon2xenial1_amd64.deb"
+curl -L -o $chroot/tmp/rsyslog-gnutls_8.34.0-0adiscon2xenial1_amd64.deb "https://s3.amazonaws.com/bosh-softlayer-artifacts/packages/rsyslog-gnutls_8.34.0-0adiscon2xenial1_amd64.deb"
+curl -L -o $chroot/tmp/rsyslog-mmjsonparse_8.34.0-0adiscon2xenial1_amd64.deb "https://s3.amazonaws.com/bosh-softlayer-artifacts/packages/rsyslog-mmjsonparse_8.34.0-0adiscon2xenial1_amd64.deb"
+curl -L -o $chroot/tmp/rsyslog-relp_8.34.0-0adiscon2xenial1_amd64.deb "https://s3.amazonaws.com/bosh-softlayer-artifacts/packages/rsyslog-relp_8.34.0-0adiscon2xenial1_amd64.deb"
 
 run_in_chroot $chroot "
 cd /tmp
 
 dpkg -i --force-confold libfastjson4_0.99.8-2_amd64.deb \
-   rsyslog_8.34.0-0adiscon2xenial1_amd64.deb
+    librelp0_1.2.15-0adiscon1xenial1_amd64.deb \
+    rsyslog-relp_8.34.0-0adiscon2xenial1_amd64.deb \
+    rsyslog-mmjsonparse_8.34.0-0adiscon2xenial1_amd64.deb \
+    rsyslog-gnutls_8.34.0-0adiscon2xenial1_amd64.deb \
+    rsyslog_8.34.0-0adiscon2xenial1_amd64.deb
 
 rm *.deb
 "
@@ -29,4 +37,5 @@ run_in_chroot $chroot "
 #ln -sf /lib/init/upstart-job /etc/init.d/rsyslog
 #update-rc.d rsyslog defaults
 rsyslogd -v
+systemctl disable rsyslog.service
 "
