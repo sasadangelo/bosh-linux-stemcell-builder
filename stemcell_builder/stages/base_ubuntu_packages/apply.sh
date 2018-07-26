@@ -16,12 +16,12 @@ scsitools mg htop module-assistant debhelper runit parted \
 cloud-guest-utils anacron software-properties-common \
 xfsprogs gdisk libpam-cracklib"
 
-if [[ "${DISTRIB_CODENAME}" != 'xenial' ]]; then
-  debs="$debs nfs-common"
+if [[ "${DISTRIB_CODENAME}" == 'trusty' ]]; then
+  debs="$debs nfs-common acpid"
 fi
 
 if [[ "${DISTRIB_CODENAME}" == 'xenial' ]]; then
-  debs="$debs chrony module-init-tools"
+  debs="$debs chrony module-init-tools dbus nvme-cli"
 fi
 
 if is_ppc64le; then
@@ -32,13 +32,24 @@ fi
 
 pkg_mgr install $debs
 
+if [[ "${DISTRIB_CODENAME}" == 'trusty' ]]; then
+  run_in_chroot $chroot "
+    cd /tmp
+
+    wget http://archive.ubuntu.com/ubuntu/pool/universe/n/nvme-cli/nvme-cli_0.5-1_amd64.deb
+    echo 'd2eee79dd72d1102c2c6e685f134b82f98768041eca7e1ae2a3575ce36a6bbee  nvme-cli_0.5-1_amd64.deb' | shasum -a 256 -c -
+    dpkg -i nvme-cli_0.5-1_amd64.deb
+    rm -f nvme-cli_0.5-1_amd64.deb
+  "
+fi
+
 if ! is_ppc64le; then
   run_in_chroot $chroot "
     cd /tmp
 
     if [ ${DISTRIB_CODENAME} == 'xenial' ]; then
-      wget http://security.ubuntu.com/ubuntu/pool/main/libg/libgcrypt11/libgcrypt11_1.5.3-2ubuntu4.5_amd64.deb
-      echo '0201413ef7b9f8a1818a53e0e4e3445304b3d53c976220ba69e61f15047e2224  libgcrypt11_1.5.3-2ubuntu4.5_amd64.deb' | shasum -a 256 -c -
+      wget http://security.ubuntu.com/ubuntu/pool/main/libg/libgcrypt11/libgcrypt11_1.5.3-2ubuntu4.6_amd64.deb
+      echo '39ab5032aa4597366d2c33f31e06ba91ba2ad79c8f68aff8ffcfab704b256a2c  libgcrypt11_1.5.3-2ubuntu4.6_amd64.deb' | shasum -a 256 -c -
 
       wget http://security.ubuntu.com/ubuntu/pool/main/g/gnutls26/libgnutls26_2.12.23-12ubuntu2.8_amd64.deb
       echo '75417c39414ab8919ee02eb4f1761c412d92c10a9ac1839fcd1e04bcfc85f607  libgnutls26_2.12.23-12ubuntu2.8_amd64.deb' | shasum -a 256 -c -
@@ -75,7 +86,7 @@ if ! is_ppc64le; then
     echo '8b7f68efc0bf69e5f5a5fc4e19feb15edea875be3f8d8f0fc8a306dde6bf8777  rsyslog-relp_8.22.0-0adiscon1trusty1_amd64.deb' | shasum -a 256 -c -
 
     if [ ${DISTRIB_CODENAME} == 'xenial' ]; then
-      dpkg -i libgcrypt11_1.5.3-2ubuntu4.5_amd64.deb \
+      dpkg -i libgcrypt11_1.5.3-2ubuntu4.6_amd64.deb \
         libgnutls26_2.12.23-12ubuntu2.8_amd64.deb
     fi
 
@@ -145,6 +156,7 @@ fi
 if [ ${DISTRIB_CODENAME} == 'xenial' ]; then
   cp $(dirname $0)/assets/runit.service ${chroot}/lib/systemd/system/
   run_in_chroot ${chroot} "systemctl enable runit"
+  run_in_chroot ${chroot} "systemctl enable systemd-logind"
   pkgs_to_purge="crda iw mg wireless-crda wireless-regdb"
   pkg_mgr purge --auto-remove $pkgs_to_purge
   run_in_chroot ${chroot} "systemctl disable chrony"

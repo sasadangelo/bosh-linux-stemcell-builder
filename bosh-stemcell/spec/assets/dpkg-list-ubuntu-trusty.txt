@@ -1,3 +1,4 @@
+acpid
 adduser
 amd64-microcode
 anacron
@@ -330,6 +331,7 @@ netbase
 netcat-openbsd
 nfs-common
 ntpdate
+nvme-cli
 openssh-client
 openssh-server
 openssh-sftp-server

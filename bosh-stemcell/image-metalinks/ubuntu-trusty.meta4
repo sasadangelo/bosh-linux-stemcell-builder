@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metalink xmlns="urn:ietf:params:xml:ns:metalink">
   <file name="bosh-ubuntu-trusty-os-image.tgz">
-    <hash type="md5">36438c1fe23bc3a1c386efe92ee2f196</hash>
-    <hash type="sha-1">1539d7d5fb1c832f084a2dc874179e29dff62e9b</hash>
-    <hash type="sha-256">b569450c6d8bcdf32e2d277ff197c1111e491123878ac5af1e716b4aa504e658</hash>
-    <hash type="sha-512">52e6f6e8de6efc19445c827e5d5edf2702b723345fe23319f04bc6b46d9c245f01eb98d45b62376b4cb1c8d3e1a6073803aa09fef01727a433ee09b595e6e201</hash>
-    <size>382852073</size>
-    <url>https://s3.amazonaws.com/bosh-os-images/bosh-ubuntu-trusty-os-image.tgz?versionId=D7xsh1q5C27yeYt3XB0l6OM63TSb_0xb</url>
+    <hash type="md5">a965f40da2d5b703ef6c618be115c998</hash>
+    <hash type="sha-1">1c50053e21ab042bb47aa1d47ee4995dab9513a8</hash>
+    <hash type="sha-256">e819bd968d173db37f56489bed30315f71c186358255fb1a23536f13a6a1fb31</hash>
+    <hash type="sha-512">bcf20e0fccbf783618215fac28c62aaafb20a9050f8c3ed34dd408123ba34897587ab41f539fd3ac1cef10b5bb92def380cd805b4360d06fe623bb4743ddc8ea</hash>
+    <size>383017647</size>
+    <url>https://s3.amazonaws.com/bosh-os-images/bosh-ubuntu-trusty-os-image.tgz?versionId=JQJ_kENq5TL0tbWTmEEKGo0GaWERoGV1</url>
   </file>
   <generator>metalink.dpb587.github.io/0.0.0</generator>
 </metalink>
