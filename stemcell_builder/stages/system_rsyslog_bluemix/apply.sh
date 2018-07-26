@@ -15,7 +15,7 @@ curl -L -o $chroot/tmp/rsyslog_8.34.0-0adiscon2xenial1_amd64.deb "https://s3.ama
 run_in_chroot $chroot "
 cd /tmp
 
-dpkg -i --force-confnew libfastjson4_0.99.8-2_amd64.deb \
+dpkg -i --force-confold libfastjson4_0.99.8-2_amd64.deb \
    rsyslog_8.34.0-0adiscon2xenial1_amd64.deb
 
 rm *.deb

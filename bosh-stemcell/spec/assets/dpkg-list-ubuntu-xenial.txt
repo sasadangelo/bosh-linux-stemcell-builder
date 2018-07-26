@@ -152,7 +152,7 @@ libedit2:amd64
 libelf1:amd64
 libestr0
 libexpat1:amd64
-libfastjson4
+libfastjson4:amd64
 libfdisk1:amd64
 libffi6:amd64
 libfile-stripnondeterminism-perl
@@ -399,3 +399,6 @@ xz-utils
 zip
 zlib1g-dev:amd64
 zlib1g:amd64
+dbus
+libcap-ng0:amd64
+nvme-cli
