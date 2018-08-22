@@ -5,9 +5,6 @@ set -e
 base_dir=$(readlink -nf $(dirname $0)/../..)
 source $base_dir/lib/prelude_apply.bash
 
-mount --bind /sys $chroot/sys
-add_on_exit "umount $chroot/sys"
-
 if is_ppc64le; then
 cat > $chroot/etc/apt/sources.list <<EOS
 deb http://ports.ubuntu.com/ubuntu-ports/ $DISTRIB_CODENAME main restricted

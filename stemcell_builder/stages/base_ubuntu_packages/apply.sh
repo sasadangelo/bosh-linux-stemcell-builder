@@ -22,6 +22,7 @@ libreadline-dev libtool texinfo ppc64-diag libffi-dev \
 libruby bundler libgmp-dev libgmp3-dev libmpfr-dev libmpc-dev"
 fi
 
+sed -i "s/^exit 101$/exit 0/" /usr/sbin/policy-rc.d
 pkg_mgr install $debs
 
 if ! is_ppc64le; then

@@ -8,8 +8,7 @@ chmod 0700 $chroot/$bosh_dir
 mkdir -p $chroot/$bosh_dir/log
 
 function run_in_bosh_chroot {
-  local chroot=$1
-  local script=$2
+  local script=$1
 
   run_in_chroot $chroot "
     export PATH=$bosh_dir/bin:\$PATH

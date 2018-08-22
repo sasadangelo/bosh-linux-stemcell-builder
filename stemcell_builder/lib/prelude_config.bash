@@ -1,7 +1,7 @@
 source $base_dir/lib/prelude_common.bash
 
 # Include actual settings
-source $1
+#source $1
 
 mkdir -p $(dirname $settings_file)
 rm -f $settings_file
