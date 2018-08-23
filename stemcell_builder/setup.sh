@@ -1,6 +1,6 @@
-export DISTRIB_CODENAME=trusty
+export DISTRIB_CODENAME=xenial
 export stemcell_operating_system=ubuntu
-export stemcell_operating_system_version=14.04
+export stemcell_operating_system_version=16.04
 export base_debootstrap_arch=x86_64
 export bosh_users_password=Lasciapassare02
 
@@ -110,6 +110,12 @@ STAGES=(
     system_kernel
     system_kernel_modules
     system_ixgbevf
+    bosh_sysctl
+    bosh_limits
+    bosh_users
+    bosh_monit
+    bosh_ntp
+    bosh_sudoers
     password_policies
     restrict_su_command
     tty_config
@@ -128,6 +134,8 @@ STAGES=(
 touch /etc/init.d/idmapd
 touch /etc/init.d/gssd
 touch /etc/init.d/statd
+
+apt-get update && apt-get install -y tzdata locales initramfs-tools
 
 # Execute installation steps in the order they are provided
 for (( I = 0; I < ${#STAGES[@]}; I++ )); do
