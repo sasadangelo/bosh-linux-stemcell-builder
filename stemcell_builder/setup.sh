@@ -99,28 +99,28 @@ function doStage() {
 preset_env
 
 STAGES=(
-    base_debootstrap
-    base_ubuntu_firstboot
-    base_apt
-    base_ubuntu_build_essential
-    base_ubuntu_packages
-    base_file_permission
-    base_ssh
-    bosh_sysstat
-    system_kernel
-    system_kernel_modules
-    system_ixgbevf
-    bosh_sysctl
-    bosh_limits
-    bosh_users
-    bosh_monit
-    bosh_ntp
-    bosh_sudoers
-    password_policies
-    restrict_su_command
-    tty_config
-    rsyslog_config
-    make_rootdir_rprivate,
+    #base_debootstrap
+    #base_ubuntu_firstboot
+    #base_apt
+    #base_ubuntu_build_essential
+    #base_ubuntu_packages
+    #base_file_permission
+    #base_ssh
+    #bosh_sysstat
+    #system_kernel
+    #system_kernel_modules
+    #system_ixgbevf
+    #bosh_sysctl
+    #bosh_limits
+    #bosh_users
+    #bosh_monit
+    #bosh_ntp
+    #bosh_sudoers
+    #password_policies
+    #restrict_su_command
+    #tty_config
+    #rsyslog_config
+    make_rootdir_rprivate
     delay_monit_start
     system_grub
     vim_tiny
@@ -135,7 +135,7 @@ touch /etc/init.d/idmapd
 touch /etc/init.d/gssd
 touch /etc/init.d/statd
 
-apt-get update && apt-get install -y tzdata locales initramfs-tools
+apt-get update && apt-get install -y tzdata locales initramfs-tools sudo
 
 # Execute installation steps in the order they are provided
 for (( I = 0; I < ${#STAGES[@]}; I++ )); do
